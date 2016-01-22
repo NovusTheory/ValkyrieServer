@@ -1,0 +1,105 @@
+<% if not bare then %>
+    <style>
+    .demo-card-square.mdl-card {
+    position: absolute;
+    width: 500px;
+    top: calc(50% - 150px);
+    left: calc(50% - 250px);
+    }
+    .demo-card-square > .mdl-card__title {
+    height: 4em;
+    color: #fff;
+    background-color: #2196F3;
+    }
+            main {
+                position: absolute;
+                width: 500px;
+                top: calc(50% - 170px);
+                left: calc(50% - 250px);
+            }
+            .card-title {
+                display: inline-block;
+                width: 100%;
+            }
+            label:after {
+                white-space: nowrap;
+                margin-top: -2em;
+            }
+    </style>
+
+    <% render('utilRenders.Nav',{HideLogin=true}) %>
+    <main>
+<% end %>
+<%
+    local UsernameClasses = "";
+    local PasswordClasses = "";
+    
+    local UsernameError   = "";
+    local PasswordError   = "";
+    if invalid.username then
+        UsernameClasses   = "invalid";
+        UsernameError     = invalid.username;
+    end
+    if invalid.password then
+        PasswordClasses   = "invalid";
+        PasswordError     = invalid.password;
+    end
+%>
+    <div class="card">
+        <form>
+            <span class="card-title white-text blue row" style="padding: 1em; padding-top: .5em; padding-bottom: .5em;">
+                Log In
+            </span>
+            <div class="card-content row">
+                <div class="input-field col s12">
+                    <input name="username" id="username" type="text" class="<%= UsernameClasses %>" placeholder="Username">
+                    <label for="username" data-error="<%= UsernameError %>"></label>
+                </div>
+                <div class="input-field col s12">
+                    <input id="password" name="password" type="password" class="<%= PasswordClasses %>" placeholder="Password">
+                    <label for="password" data-error="<%= PasswordError %>"></label>
+                </div>
+            </div>
+            <div class="card-action">
+                <button id="login_button" class="btn waves-effect waves-light blue" type="submit" name="action">
+                    Log In
+                    <i class="material-icons right">send</i>
+                </button>
+                <a href="//valkyrie.crescentcode.net/signup" style="margin-left:2em" class="indigo-text">Sign Up</a>
+                <div class="preloader-wrapper small" style="margin: auto; position: absolute; top:0;left:0;right:0;bottom:0" id="login_spinner">
+                    <div class="spinner-layer spinner-green-only">
+                        <div class="circle-clipper left">
+                            <div class="circle"></div>
+                        </div>
+                        <div class="gap-patch">
+                            <div class="circle"></div>
+                        </div>
+                        <div class="circle-clipper right">
+                            <div class="circle"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script type="text/javascript">
+        Element.prototype.remove = function() {
+            this.parentElement.removeChild(this);
+        };
+        var onInput = function() {
+            var error = document.getElementById("serverReturnedError");
+            error.remove();
+            var jsError = document.getElementById("invalidUsername");
+            jsError.removeAttribute("style");
+        };
+        $("#login_button").click(function() {
+                $("#login_spinner").addClass("active");
+                $.post("//valkyrie.crescentcode.net/login", $("form").serialize(), function(data) {
+                    $("main").html(data);
+                });
+            return false;
+        });
+    </script>
+<% if not bare then %>
+    </main>
+<% end %>

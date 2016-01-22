@@ -1,0 +1,254 @@
+<% render('utilRenders.Nav',{SignedIn=session.user}) %>
+<style>
+	.card-content p {
+		font-size:1.3rem;
+	}
+	@media screen and (min-width:992px) {
+		.row {
+			display: flex;
+			flex-wrap: wrap;
+		}
+		#user .row .card, #dev .row .card {
+			flex: 1;
+			position: relative;
+			margin: 0 .5em;
+		}
+		#user .row .card .card-content, #dev .row .card .card-content {
+			padding-bottom: 5rem;
+		}
+		#user .row .card .card-action, #dev .row .card .card-action {
+			bottom: 0;
+			position: absolute;
+			left: 1.75rem;
+			right: 1.75rem;
+			margin-top: 1.75rem;
+		}
+	}
+</style>
+<section class="container">
+	<h1 class="center">Features</h1>
+	<div class="row">
+		<div class="col s12">
+			<ul class="tabs">
+				<li class="tab col s6"><a href="#user">Players</a></li>
+				<li class="tab col s6"><a href="#dev">Developers</a></li>
+			</ul>
+		</div>
+	</div>
+</section>
+<div class="row">
+	<div id="user" class="col s12 row">
+		<div class="row">
+			<!-- Player stuff -->
+			<div class="card col s12 l6">
+				<div class="card-content">
+					<span class="card-title">Overlay</span>
+					<p>
+						Easily access Valkyrie from within every Valkyrie enabled
+						game using the in-game overlay, quickly providing access
+						to your achievements, your level, your friends and other
+						features configured by the developer and delivered through
+						Valkyrie.
+					</p>
+				</div>
+				<div class="card-action">
+					<a href="//valkyrie.crescentcode.net/docs/Features/Overlay">Learn More</a>
+				</div>
+			</div>
+			<div class="card col s12 l6">
+				<div class="card-content">
+					<span class="card-title">Messaging</span>
+					<p>
+						Valkyrie provides support for easy cross-game messaging
+						accessible both through the Valkyrie overlay and the
+						Valkyrie website. Always be able to talk to your friends,
+						invite them to your game, organise a group game or raid,
+						all from the comfort of your game - You should never have
+						to come out of the game you're in to interact with your
+						friends.
+					</p>
+				</div>
+				<div class="card-action">
+					<a href="//valkyrie.crescentcode.net/docs/Features/Friends#Messages">Learn More</a>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="card col s12 l6">
+				<div class="card-content">
+					<span class="card-title">Achievements</span>
+					<p>
+						Everyone should know that achievements = bragging rights.
+						If you did something of note, you can be recognised for
+						your greatness in all of its glory in the form of a Valkyrie
+						achievement. Do stuff, get points, be awesome.
+						<br>
+						Happy gaming.
+					</p>
+				</div>
+				<div class="card-action">
+					<a href="//valkyrie.crescentcode.net/docs/Features/Achievements">Learn More</a>
+				</div>
+			</div>
+			<div class="card col s12 l6">
+				<div class="card-content">
+					<span class="card-title">Points</span>
+					<p>
+						You love points. You know you love points. Points tell
+						other players that you're better than them, and that's
+						because you <em>are</em> better than them; your points
+						say so. Get points when you play games, and level up
+						when you get points.
+					</p>
+				</div>
+				<div class="card-action">
+					<a href="//valkyrie.crescentcode.net/docs/Features/Points">Learn More</a>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="card col s12 l6">
+				<div class="card-content">
+					<span class="card-title">Custom controls</span>
+					<p>
+						Your game, your way. It doesn't matter if you're on a
+						computer with a keyboard, a phone with a touchscreen, or
+						playing with your console controller - On Valkyrie games,
+						you can play the way you want to play.
+					</p>
+				</div>
+				<div class="card-action">
+					<a href="//valkyrie.crescentcode.net/docs/Features/Overlay#Controls">Learn More</a>
+				</div>
+			</div>
+			<div class="card col s12 l6">
+				<div class="card-content">
+					<span class="card-title">Web portal</span>
+					<p>
+						Check your achievements, check your friends' activity,
+						find out about your favourite games or talk to your
+						friends - No matter what you're looking for, if it's
+						with Valkyrie then you can find it inside your browser.
+					</p>
+				</div>
+				<div class="card-action">
+					<a href="//valkyrie.crescentcode.net/">Learn More</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="dev" class="col s12 row">
+		<div class="row">
+			<div class="card col s12 l6">
+				<div class="card-content">
+					<span class="card-title">Anti-Cheat</span>
+					<p>
+						Valkyrie's Anti-cheat protects your games against any
+						cheaters, exploiters, or generally unwanted players. If
+						somebody is caught cheating or exploiting in any game,
+						they will be banned from all games using Valkyrie. The
+						Anti-cheat is completely automatic, and can be configured
+						to capture certain circumstances (Such as a gun having
+						more ammo than the maximum).
+						<br>
+						Developers can not manually ban players on a global
+						basis (To prevent abuse), but can manually ban players
+						from their games from both in-game and through the game
+						management panel on the website.
+					</p>
+				</div>
+				<div class="card-action">
+					<a href="//valkyrie.crescentcode.net/docs/Features/Anticheat">Learn More</a>
+				</div>
+			</div>
+			<div class="card col s12 l6">
+				<div class="card-content">
+					<span class="card-title">Achievements</span>
+					<p>
+						Achievements aren't just for users - Developers are in
+						charge of how much they're worth, when they're given,
+						what they're called and what their image is. Developers
+						are given 1000P per game that they can allocate to
+						achievements (in 5P increments, making for a maximum of
+						200 achievements per game).
+						<br> <br>
+						Players love achievements.
+					</p>
+				</div>
+				<div class="card-action">
+					<a href="//valkyrie.crescentcode.net/docs/Features/Achievements">Learn More</a>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="card col s12 l6">
+				<div class="card-content">
+					<span class="card-title">Libraries</span>
+					<p>
+						Libraries help you code the way that feels natural to
+						you, and to help you solve problems elegantly. Libraries
+						are designed to help you do your job by letting Valkyrie
+						do everything else; Let designers design, let programmers
+						program, let scripters script, and let end users enjoy it.
+					</p>
+				</div>
+				<div class="card-action">
+					<a href="//valkyrie.crescentcode.net/docs/Core/Libraries">Learn More</a>
+					<a href="//valkyrie.crescentcode.net/docs/Core/BaseLib">Behind the Code</a>
+				</div>
+			</div>
+			<div class="card col s12 l6">
+				<div class="card-content">
+					<span class="card-title">Components</span>
+					<p>
+						Components are little bundled modules for Valkyrie which
+						are designed as solutions to the problems that you might
+						have as a developer, but shouldn't need to face.
+						Valkyrie solves your development problems so that you
+						don't need to, so that you can spend more time making
+						content and less time working around problems.
+					</p>
+				</div>
+				<div class="card-action">
+					<a href="//valkyrie.crescentcode.net/docs/Core/Components">Learn More</a>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="card col s12 l6">
+				<div class="card-content">
+					<span class="card-title">Admin</span>
+					<p>
+						Valkyrie has its own admin built in. You're probably
+						wondering why you'd need it, and the answer is that you
+						probably don't; but you'll find it more useful than any
+						other admin scripts because it integrates with Valkyrie
+						Permissions, and doesn't come with any hidden admins or
+						modules - All of our code is open source, go read it
+						yourself.
+					</p>
+				</div>
+				<div class="card-action">
+					<a href="//valkyrie.crescentcode.net/docs/Features/Admin">Learn More</a>
+					<a href="https://github.com/ValkyrieRBXL/ValkyrieFramework/tree/bleeding-edge/Core/Components/ValkyrieAdmin.mod.lua">Source Code</a>
+				</div>
+			</div>
+			<div class="card col s12 l6">
+				<div class="card-content">
+					<span class="card-title">Plugins</span>
+					<p>
+						Because Valkyrie has an API that is accessible to all,
+						3rd party developers can easily integrate Valkyrie support
+						for their modules, allowing developers to create their own
+						libraries, components and integrations, and for them to
+						be used as easily as putting them in your game and
+						letting them talk to Valkyrie.
+					</p>
+				</div>
+				<div class="card-action">
+					<a href="//valkyrie.crescentcode.net/docs/Core/Components">Learn More</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

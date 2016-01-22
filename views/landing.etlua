@@ -1,0 +1,124 @@
+<% render('utilRenders.Nav',{SignedIn=session.user}) %>
+<link rel="stylesheet" href="//valkyrie.crescentcode.net/static/styles/monokai.css">
+<script src="//valkyrie.crescentcode.net/static/highlight.pack.js"></script>
+<script>hljs.configure({languages:["lua"]});hljs.initHighlightingOnLoad();</script>
+<style>
+    .comparison-container {
+        display: flex;
+    }
+    .comparison-container > div, .comparison-container > div > pre {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+    pre > code {
+        flex: 1;
+        width: 100%;
+        overflow: wrap;
+        text-align: left;
+    }
+    .btn {
+        margin: .5em
+    }
+</style>
+
+<p class="flow-text container" style="margin-top:48px; text-align:center">
+	Valkyrie is a framework for development on Roblox, providing solutions for
+	development that developers shouldn't have to make themselves.
+	<br>
+    <a href="//valkyrie.crescentcode.net/features" class="">See the Features</a><%
+    if not SignedIn then %> - 
+        <a href="//valkyrie.crescentcode.net/signup" class="">Get Started</a> - 
+        <a href="//valkyrie.crescentcode.net/login" class="">Log In</a>
+    <% else %> -
+    <a href="//valkyrie.crescentcode.net/user/<%= session.user %>/games">Manage Games</a>
+    <% end %>
+</p>
+<!--
+Make it feel like Valkyrie:
+	The whole point of Valkyrie is not only to be a framework, but also to be an
+	extension to how Roblox games are developed and how they interact with the
+	player. The site should be clean, but it should feel like an app more than
+	just a site. It should feel native.
+
+Navbar:
+	If the page is at the top, and the type of page suits the style, the navbar
+	should be transparent and the text should be black. As soon as the page has
+	been scrolled, the text should become black and the navbar background should
+	become visible. The sidebar button is always visible, and the sidebar should
+	contain context which isn't found on the nav bar, except for in the case of
+	on mobile in which case the sidebar should contain an expanded view of the
+	player details (if logged in) and all of the items on the nav bar alongside
+	the context.
+
+Login:
+	Log in, inline with the page. A nice as having a login page is, it is
+	completely useless to have it on its own as it has too little content in a
+	space that is far too big for its worth. On Mobile, this login prompt can
+	take up the entire screen space.
+
+Signup:
+	This one is allowed to be on a separate page. It should be descriptive,
+	intuitive and multistage. Username, password (next ->) Verify (next ->)
+	links to various places to get started with Valkyrie. Point them in the
+	right direction for setting up their first game.
+
+Docs:
+	The docs are fine. I wanted the docs to be special and I got what I wanted.
+
+Features:
+	Don't just list the features. Show the features next to an image of them,
+	and on mobile put it in a material expanding accordion. In each entry, put a
+	link to learn more, which opens a blocking modal menu which explains the
+	feature in more detail, with relevant links to the correct places of the
+	site.
+-->
+<div class="container" style="text-align: center">
+    <h1>
+        See the difference
+    </h1>
+</div>
+<div class="comparison-container container" style="position: absolute; left: 0; right:0;">
+    <div id="without">
+        <h2>Vanilla</h2>
+        <pre><code class="lua" style="white-space: pre-wrap; word-wrap: break-word; overflow: hidden">
+-- Long hslToRgb, rgbToHsl and easing functions here...
+local Frame = Instance.new("Frame", <wbr/>Instance.new("ScreenGui"), <wbr/>game:GetService("Players").LocalPlayer);
+
+Frame.Size = <wbr/>UDim2.new(0, 200, 0, 100);
+Frame.Position = <wbr/>UDim2.new(0, -200, 0, -100);
+Frame.BackgroundColor3 = <wbr/>Color3.new(0,0,0);
+
+Frame:TweenPosition(UDim2.new(0,0,0,0), <wbr/>Enum.EasingDirection.Out, <wbr/>Enum.EasingStyle.Quint, <wbr/>0.5);
+-- Use HSL tweening for a smooth result
+local BeginH, BeginS, BeginL = <wbr/>rgbToHsl(Frame.BackgroundColor3);
+-- Material Design Blue
+local EndH, EndS, EndL = <wbr/>rgbToHsl(Color3.new(33/255,150/255, 243/255)); <wbr/>
+local i = 0;
+while i &lt; 0.5 do
+    local NewR, NewG, NewB = <wbr/>hslToRgb(easeOutQuint(BeginH, EndH, i, 0.5), <wbr/>easeOutQuint(BeginS, EndS, i, 0.5), <wbr/>easeOutQuint(BeginL, EndL, i, 0.5));
+    Frame.BackgroundColor3 = <wbr/>Color3.new(NewR/255, NewG/255, NewB/255);
+    i = <wbr/>i + wait();
+end
+        </code></pre>
+    </div>
+    <div id="with">
+        <h2>Valkyrie</h2>
+        <pre><code class="lua" style="white-space: pre-wrap; word-wrap: break-word; overflow: hidden">
+_G.Valkyrie:LoadLibrary "Util";
+_G.Valkyrie:LoadLibrary "Design";
+
+local Frame = new 'Frame':Instance{
+    new 'ScreenGui':Instance{LocalPlayer};
+    Position         = new 'UDim2'(0, -200, 0, -100);
+    Size             = new 'UDim2'(0, 200, 0, 100);
+    BackgroundColor3 = Color3.Black;
+};
+
+Frame:VTweenPosition(new 'UDim2'(0,0,0,0), 'outQuint', 0.5);
+Frame:TweenBackgroundColor3(Color3.Blue, 'outQuint', 0.5);
+        </code></pre>
+    </div>
+</div>

@@ -1,0 +1,13 @@
+<!--
+Overview:
+	The Valkyrie user page should show the user all of their games, and give the
+	option to create new games. The sidebar contains info about their games,
+	their permissions status, how many players are in their game, etc.
+	All of their games are viewable as a list of cards, and can be clicked on to
+	be taken to a seperate page with extra management details for the game.
+
+Sidebar:
+	[idk]
+
+
+-->

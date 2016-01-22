@@ -1,0 +1,18 @@
+<% render('docUtils.DocHeader', {SignedIn = SignedIn; cat = params.subtype; sub = params.name}) %>
+
+<div class="container" style="background-color:#ffffff">
+<%
+	if params.subtype then
+		if params.name then
+			render("docTemplates."..params.subtype.."."..params.name);
+		else
+			render("docTemplates."..params.subtype);
+		end;
+	else
+		render("docUtils.DocHome");
+	end;
+%>
+</div>
+<!--
+vim: set syntax=html
+-->

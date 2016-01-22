@@ -1,0 +1,25 @@
+<h1>Libraries</h1>
+<p class="flow-text">
+	Libraries are special types of modules that aren't accessed directly, and
+	instead use injection to load themselves into the code and change how
+	everything works behind the scenes.
+</p>
+<p class="flow-text">
+	To load a Library, you need to use the <code class="z-depth-1">LoadLibrary()
+	</code> method of the Valkyrie controller. It is recommended that you only
+	use the LoadLibrary function at the very top of your scripts and not inside
+	of any functions to avoid unexpected behaviour. It is also recommended that
+	LoadLibrary is used before any variables are declared to avoid unexpected
+	behaviour from unwrapped values.
+</p>
+<p class="flow-text">
+	Libraries are capable of adding methods to all Instance subclasses, changing
+	how certain value types behave, changing the behaviour of most operations on
+	the most common Roblox datatypes and changing how some global values work
+	such as constructors, and making its own global variables. Libraries also
+	defaultly change a few core things to try and solve a lot of common mistakes.
+</p>
+<p class="flow-text">
+	For a full list of libraries available for use, check the
+	<a href="//valkyrie.crescentcode.net/docs/Libraries">Libraries category</a>
+</p>

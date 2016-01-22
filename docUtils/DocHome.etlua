@@ -1,0 +1,76 @@
+<style>
+.clickspan {
+  position:absolute;
+  width:100%;
+  height:100%;
+  top:0;
+  left: 0;
+
+  z-index: 1;
+}
+</style>
+
+<h1>Valkyrie Docs</h1>
+<p class="flow-text">
+	Valkyrie provides various features to developers in various forms. The
+	documentation for how to use each of these features is available here.
+</p>
+<br>
+<div class="row">
+	<div class="col s12 m6 l3" style="position:relative">
+		<!-- Core -->
+		<div class="row">
+			<div class="col s3 m12 red-text text-lighten-1" style="align-content:center; text-align:center">
+				<i class="large material-icons">settings_applications</i>
+			</div>
+			<div class="col s9 m12">
+				<h5>Core</h5>
+				How to use Valkyrie and its features
+			</div>
+		</div>
+		<a href="//valkyrie.crescentcode.net/docs/Core"><span class="clickspan"></span></a>
+	</div>
+	<div class="col s12 m6 l3" style="position:relative">
+		<!-- Components -->
+		<div class="row">
+			<div class="col s3 m12 blue-text text-lighten-1" style="align-content:center; text-align:center">
+				<i class="large material-icons">apps</i>
+			</div>
+			<div class="col s9 m12">
+				<h5>Components</h5>
+				Documentation for all of the core components for Valkyrie.
+			</div>
+		</div>
+		<a href="//valkyrie.crescentcode.net/docs/Components"><span class="clickspan"></span></a>
+	</div>
+	<div class="col s12 m6 l3" style="position:relative">
+		<!-- Libraries -->
+		<div class="row">
+			<div class="col s3 m12 amber-text text-lighten-1" style="align-content:center; text-align:center">
+				<i class="large material-icons">library_books</i>
+			</div>
+			<div class="col s9 m12">
+				<h5>Libraries</h5>
+				Documentation and features for all of the core libraries in
+				Valkyrie
+			</div>
+		</div>
+		<a href="//valkyrie.crescentcode.net/docs/Libraries"><span class="clickspan"></span></a>
+	</div>
+	<div class="col s12 m6 l3" style="position:relative">
+		<!-- Features -->
+		<div class="row">
+			<div class="col s3 m12 green-text text-lighten-1" style="align-content:center; text-align:center">
+				<i class="large material-icons">all_inclusive</i>
+			</div>
+			<div class="col s9 m12">
+				<h5>Features</h5>
+				A comprehensive guide to all of Valkyrie's other features.
+			</div>
+		</div>
+		<a href="//valkyrie.crescentcode.net/docs/Features"><span class="clickspan"></span></a>
+	</div>
+</div>
+<!--
+vim: set syntax=html
+-->

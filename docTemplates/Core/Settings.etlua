@@ -1,0 +1,22 @@
+<h1>Settings</h1>
+<p class="flow-text">
+	Settings are an integral part of Valkyrie as they provide a modular and
+	configurable, event driven method of changing how particular components
+	behave.
+</p>
+<p class="flow-text">
+	Some features of Valkyrie do not have Components available for them, and
+	therefore require the use of settings to configure them. The settings are
+	also necessary to tell features such as the Overlay how to behave and not
+	mess with the game unnecessarily.
+</p>
+<p class="flow-text">
+	To access the settings, you will need to use the <code class="z-depth-1">
+	GetSettings()</code> method of the Valkyrie core. Each component will have
+	its own Settings section, so make sure you get the right one.
+</p>
+<p class="flow-text">
+	The settings for each component of Valkyrie can be found on the component's
+	respective page. Some components do not have settings, and as a result will
+	not have a Settings section on the page.
+</p>

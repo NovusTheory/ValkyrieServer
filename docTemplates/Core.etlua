@@ -1,0 +1,20 @@
+<h1>Core</h1>
+<p class="flow-text">
+	The Valkyrie core is the starting point for interacting with Valkyrie and
+	beginning to properly use it in your games.
+	<br>
+	All features such as components, libraries and settings are accessed through
+	the core, alongside some other features which run automatically and can not
+	be directly accessed.
+</p>
+<br>
+<div class="collection">
+	<a href="//valkyrie.crescentcode.net/docs/Core/Valkyrie_Core" class="collection-item">Valkyrie Core</a>
+	<a href="//valkyrie.crescentcode.net/docs/Core/Components" class="collection-item">Components</a>
+	<a href="//valkyrie.crescentcode.net/docs/Core/Libraries" class="collection-item">Libraries</a>
+	<a href="//valkyrie.crescentcode.net/docs/Core/Settings" class="collection-item">Settings</a>
+	<a href="//valkyrie.crescentcode.net/docs/Core/BaseLib" class="collection-item">BaseLib</a>
+</div>
+<!--
+vim: set syntax=html
+-->

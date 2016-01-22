@@ -1,0 +1,256 @@
+<% if not bare then %>
+	<style>
+		main {
+			position: absolute;
+			width: 500px;
+			top: calc(50% - 170px);
+			left: calc(50% - 250px);
+		}
+		.card-title {
+			display: inline-block;
+			width: 100%;
+		}
+		.fancy-pw-meter {
+			height: 4px;
+			width: 20%;
+			margin-top: calc(1.5rem - 2px);
+			position: absolute;
+			left: calc(80% - .75rem);
+			top: 0;
+		}
+		.fancy-pw-bar {
+			position: absolute;
+			top: calc(100% - 4px);
+			height: 4px;
+			width: calc(20%);
+			background-color: #f44336;
+		}
+		label[data-error]:after {
+			white-space: nowrap;
+		}
+        label:after {
+            white-space: nowrap;
+            margin-top: -2em;
+        }
+	</style>
+
+	<% render('utilRenders.Nav',{SignedIn=SignedIn, HideLogin=true}) %>
+	<main>
+<% end %>
+<% if page == "signup" then %>
+	<%
+		local usernameClasses = "";
+		local usernameError = "";
+		local passwordClasses = "";
+		local passwordError = "";
+		if invalid.username then
+			usernameClasses = "invalid";
+			usernameError = invalid.username;
+		end
+		if invalid.password then
+			passwordClasses = "invalid";
+			passwordError = invalid.password;
+		end
+	%>
+	<div class="card">
+		<form action="#" onsubmit="return false;">
+<span class="card-title white-text blue row" style="padding: 1em; padding-top: .5em; padding-bottom: .5em;">
+				Sign Up
+			</span>
+			<div class="card-content row">
+				<div class="input-field col s12">
+					<input id="username" name="username" type="text" placeholder="Roblox username" value="<%= params.username or "" %>" class="<%= usernameClasses %>">
+					<label for="username" data-error="<%= usernameError %>"></label>
+				</div>
+				<div class="input-field col s12">
+					<input maxlength="50" pattern=".{6,50}" name="password" id="password" type="password" class="validate <%= passwordClasses %>" placeholder="Password (NOT your Roblox password)">
+					<label for="password" data-error="<%= passwordError %>"></label>
+					<div class="fancy-pw-meter">
+						<div class="fancy-pw-bar" id="fancy-pw-bar"></div>
+					</div>
+				</div>
+			</div>
+			<div class="card-action">
+				<button class="btn waves-effect waves-light blue" type="submit">
+					Sign Up
+					<i class="material-icons right">send</i>
+				</button>
+				<a href="//valkyrie.crescentcode.net/login" style="margin-left: 2em" class="indigo-text">Or Log In</a>
+				<div class="preloader-wrapper small" style="float: right">
+					<div class="spinner-layer spinner-green-only">
+						<div class="circle-clipper left">
+							<div class="circle"></div>
+						</div>
+						<div class="gap-patch">
+							<div class="circle"></div>
+						</div>
+						<div class="circle-clipper right">
+							<div class="circle"></div>
+						</div>
+				    </div>
+				</div>
+			</div>
+		</form>
+		<script type="text/javascript" src="//cdn.rawgit.com/dropbox/zxcvbn/master/dist/zxcvbn.js"></script>
+		<script>
+			function connect() {
+				$("#username").on('input', function(evt) {
+					var elem = $("#username");
+					elem.removeClass("valid");
+					elem.removeClass("invalid");
+				});
+				$("#username").on('change', function(evt) {
+					var elem 	= $("#username");
+					var value 	= elem.val();
+					elem.removeClass("valid");
+					elem.removeClass("invalid");
+					if (value) {
+						$.getJSON("//valkyrie.crescentcode.net/validate/" + value, function(data) {
+							elem.addClass(data ? "valid" : "invalid");
+							elem.next().attr("data-error", "This username is already in use");
+						});
+					}
+				});
+				$("#password").on('input', function(evt) {
+					var elem 	= $("#password");
+					elem.removeClass("valid");
+					elem.removeClass("invalid");
+					var result 	= zxcvbn(elem.val());
+					var bar 	= $("#fancy-pw-bar");
+					bar.stop(true);
+					if (elem.val().length < 6) {
+						result.score = 0; // Override
+						elem.next().attr("data-error", "Passwords must be between 6 and 50 characters");
+					}
+					var color;
+					switch (result.score) {
+						case 0:
+							color = "#f44336";
+							break;
+						case 1:
+							color = "#FF5722";
+							break;
+						case 2:
+							color = "#FF9800";
+							break;
+						case 3:
+							color = "#8BC34A";
+							break;
+						case 4:
+							color = "#4CAF50";
+							break;
+					}
+					bar.animate({width: (result.score + 1)/5 * bar.parent().outerWidth() + "px", backgroundColor: color}, 167, "easeOutQuad");
+				});
+				$("form").on('submit', function(evt) {
+					$(".preloader-wrapper").addClass("active");
+					$.post("//valkyrie.crescentcode.net/signup/1", $("form").serialize(), function(data) {
+						$("main").html(data);
+					});
+					return false;
+				});
+			}
+			$(document).ready(connect);
+		</script>
+	</div>
+<% elseif page == "signup2" then %>
+	<div class="card">
+		<form action="#">
+			<input type="hidden" name="username" value="<%= params.username %>">
+			<input type="hidden" name="password" value="<%= params.password %>">
+			<span class="card-title white-text blue row" style="padding: 1em; padding-top: .5em; padding-bottom: .5em;">
+				Verify Your Account
+			</span>
+			<div class="card-content s3">
+				<% if _error then %>
+					<span class="red-text"><%= _error %></span><br>
+				<% end %>
+				To verify your account (<a href="http://www.roblox.com/User.aspx?username=<%= params.username %>"><%= params.username %></a>):<br>
+				First, follow our dear friend <a href="http://www.roblox.com/users/80771103/profile" target="_blank">ValkyrieBot</a>.<br>
+				Next, set "Who can message me" to "Friends and Users I Follow" in <a href="https://www.roblox.com/my/account#!/privacy" target="_blank">your privacy settings</a>.<br>
+				Finally send a message to <a href="http://www.roblox.com/users/80771103/profile" target="_blank">ValkyrieBot</a> containing the following:<br>
+				<% math.randomseed(os.time()); %>
+				<% local token = params.token or require "lapis.util".trim((function(l)
+						if l < 1 then return nil end -- Check for l < 1
+				        local s = "" -- Start string
+				        for i = 1, l do
+				                s = s .. string.char(math.random(32, 126)) -- Generate random number from 32 to 126, turn it into character and add to string
+				        end
+				        return s -- Return string
+					end)(15));
+				%>
+				<input type="hidden" name="token" value="<%= token %>">
+				<code class="green-text"><%= token %></code> <a href="#" id="copy" class="blue-text lighten-text-1"><i class="material-icons" style="font-size: 1em;">content_copy</i></a><br>
+				And when you're done, click the below button:
+			</div>
+			<div class="card-action row">
+				<button class="btn waves-effect waves-light blue col s4" type="button" id="back">
+					<i class="material-icons left">arrow_back</i> Back
+				</button>
+				<div class="center col s4">
+					<div class="preloader-wrapper small">
+						<div class="spinner-layer spinner-green-only">
+							<div class="circle-clipper left">
+								<div class="circle"></div>
+							</div>
+							<div class="gap-patch">
+								<div class="circle"></div>
+							</div>
+							<div class="circle-clipper right">
+								<div class="circle"></div>
+							</div>
+					    </div>
+					</div>
+				</div>
+				<button class="btn waves-effect waves-light blue right col s4" type="submit">
+					Verify
+					<i class="material-icons right">send</i>
+				</button>
+			</div>
+		</form>
+		<script src="https://cdn.rawgit.com/lgarron/clipboard.js/master/clipboard.min.js"></script>
+		<script>
+			$("#copy").on('click', function(evt) {
+				clipboard.copy($("#copy").prev().text());
+				return false;
+			});
+			$("#back").on('click', function(evt) {
+				$(".preloader-wrapper").addClass("active");
+				$.post("//valkyrie.crescentcode.net/signup", $("form").serialize(), function(data) {
+					$("main").html(data);
+				});
+				return false;
+			});
+			$("form").on('submit', function(evt) {
+				$(".preloader-wrapper").addClass("active");
+				$.post("//valkyrie.crescentcode.net/signup/2", $("form").serialize(), function(data) {
+					$("main").html(data);
+				});
+				return false;
+			});
+		</script>
+	</div>
+<% elseif page == "signup3" then %>
+	<div class="card">
+		<form action="#">
+			<span class="card-title white-text blue row" style="padding: 1em; padding-top: .5em; padding-bottom: .5em;">
+				Success
+			</span>
+			<div class="card-content s3">
+				Thank you for registering a Valkyrie account!<br>
+                You can now unfollow <a href="http://www.roblox.com/User.aspx?username=ValkyrieBot">ValkyrieBot</a> and set your <a href="https://www.roblox.com/my/account#!/privacy">privacy settings</a> back to normal.
+			</div>
+			<div class="card-action row">
+                <a href="//valkyrie.crescentcode.net/" class="blue-text">Home page</a>
+                <a href="//valkyrie.crescentcode.net/game/new" class="blue-text">Create a new game</a>
+			</div>
+		</form>
+		<script src="https://cdn.rawgit.com/lgarron/clipboard.js/master/clipboard.min.js"></script>
+		<script>
+			$(".nosession").remove();
+		</script>
+	</div>
+<% end %>
+<% if not bare then %>
+	</main>
+<% end %>

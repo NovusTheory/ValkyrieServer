@@ -1,0 +1,81 @@
+<link rel="stylesheet" href="https://cdn.rawgit.com/Templarian/MaterialDesign-Webfont/master/css/materialdesignicons.min.css" />
+<style>
+nav {
+	background-color:rgba(33,150,243,0);
+}
+@media (min-width : 992px) {
+  .brand-logo {
+    margin-left:56px;
+  }
+}
+.nav-wrapper a {
+	color:#000;
+}
+@font-face {
+  font-family: "Material Design Icons";
+  src: url("https://cdn.rawgit.com/Templarian/MaterialDesign-Webfont/master/fonts/materialdesignicons-webfont.eot");
+  font-weight: normal;
+  font-style: normal;
+}
+</style>
+<div class="navbar-fixed">
+<nav class="z-depth-0">
+	<div class="nav-wrapper" style="margin-left:20px">
+		<a href="/" class="brand-logo">Valkyrie</a>
+		<ul id="nav-mobile" class="right hide-on-med-and-down">
+			<li><a href="//valkyrie.crescentcode.net/get">Get Valkyrie</a></li>
+			<li><a href="//valkyrie.crescentcode.net/docs">Docs</a></li>
+			<% if (not SignedIn) and (not HideLogin) then %>
+				<li class="nosession"><a href="//valkyrie.crescentcode.net/signup">Sign Up</a></li>
+				<li class="nosession"><a href="//valkyrie.crescentcode.net/login">Log In</a></li>
+			<% end %>
+            <% if SignedIn then %>
+                <li><a href="//valkyrie.crescentcode.net/user/<%= session.user %>/games">Manage Games</a></li>
+                <li><a href="//valkyrie.crescentcode.net/logout">Log Out</a></li>
+            <% end %>
+		</ul>
+		<ul id="slide-out" class="side-nav">
+			<li><a href="//valkyrie.crescentcode.net/get">Get Valkyrie</a></li>
+			<li><a href="//valkyrie.crescentcode.net/docs">Docs</a></li>
+			<% if (not SignedIn) and (not HideLogin) then %>
+				<li class="nosession"><a href="//valkyrie.crescentcode.net/signup">Sign Up</a></li>
+				<li class="nosession"><a href="//valkyrie.crescentcode.net/login">Log In</a></li>
+			<% end %>
+            <% if SignedIn then %>
+                <li><a href="//valkyrie.crescentcode.net/user/<%= session.user %>/games">Manage Games</a></li>
+                <li><a href="//valkyrie.crescentcode.net/logout">Log Out</a></li>
+            <% end %>
+		</ul>
+		<a href="#!" data-activates="slide-out" class="button-collapse show-on-large"><i class="mdi-navigation-menu "></i></a>
+	</div>
+</nav>
+</div>
+<script>
+	$(".button-collapse").sideNav();
+	var did = false;
+	$(window).on("scroll", function() {
+		var scrollPos = $(window).scrollTop();
+		if (scrollPos <= 0) {
+			$(".nav-wrapper a").animate({
+				color: "#000"
+			},100);
+			$("nav").animate({
+				backgroundColor: "rgba(33,150,243,0)"
+			},200);
+			$("nav").addClass("z-depth-0");
+			did = false;
+		} else if (!did) {
+			$(".nav-wrapper a").animate({
+				color: "#fff"
+			},100);
+			$("nav").animate({
+				backgroundColor: "rgba(33,150,243,1)"
+			},400);
+			$("nav").removeClass("z-depth-0");
+			did = true;
+		}
+	});
+</script>
+<!--
+vim: set syntax=html
+-->

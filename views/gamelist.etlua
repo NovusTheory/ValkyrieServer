@@ -1,0 +1,36 @@
+<% render('utilRenders.Nav',{SignedIn=session.user}) %>
+
+<%
+local MySQL       = require "lapis.db";
+local MetaManager = require "lib.meta";
+
+local OwnedGIDs = MySQL.select("* from game_ids where owner=(select id from users where username=?)", session.user);
+%>
+<div class="container">
+    <div class="row">
+        <div class="col s12">
+            <div class="card">
+                <div class="card-content">
+                    <div class="card-title valign-wrapper">
+                        <h4>My Games</h4>
+                        <a class="btn-floating btn-medium waves-effect waves-light blue right valign modal-trigger" href="//valkyrie.crescentcode.net/game/new" style="margin-left: auto"><i class="material-icons">add</i></a>
+                    </div>
+                    <div class="collection">
+                        <%
+                        for i = 1, #OwnedGIDs do
+                        %>
+                        <a class="collection-item" href="//valkyrie.crescentcode.net/game/<%= OwnedGIDs[i].gid %>"><%= MetaManager.getMeta("name", OwnedGIDs[i].gid) %> (<code><%= OwnedGIDs[i].gid %></code>)</a>
+                        <%
+                        end
+                        if #OwnedGIDs == 0 then
+                            %>
+                            There are no results. Create a new game using the "+" button on the right.
+                            <%
+                        end
+                        %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

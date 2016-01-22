@@ -1,0 +1,25 @@
+<div class="navbar-fixed">
+<nav>
+	<div class="nav-wrapper">
+		<div class="col s12" style="margin-left:20px">
+			<a href="/" class="breadcrumb">Valkyrie</a>
+			<a href="//valkyrie.crescentcode.net/docs" class="breadcrumb">Docs</a>
+			<% if cat then %>
+				<a href="//valkyrie.crescentcode.net/docs/<%= cat %>" class="breadcrumb"><%= cat %></a>
+				<% if sub then %>
+					<a href="//valkyrie.crescentcode.net/docs/<%= cat %>/<%= sub %>#!" class = "breadcrumb"><%= sub:gsub("_"," ") %></a>
+				<% end %>
+			<% end %>
+			<% if not SignedIn then %>
+				<ul class="right hide-on-small-only">
+					<li><a href="//valkyrie.crescentcode.net/signup">Sign Up</a></li>
+					<li><a href="//valkyrie.crescentcode.net/login">Log In</a></li>
+				</ul>
+			<% end %>
+		</div>
+	</div>
+</nav>
+</div>
+<!--
+vim: set syntax=html
+-->

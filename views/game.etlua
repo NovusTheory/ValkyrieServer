@@ -1,0 +1,311 @@
+<% render('utilRenders.Nav',{SignedIn=session.user}) %>
+<style>
+    .material-icons {
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: .25em;
+    }
+    .mdi {
+        margin-right: .25em;
+    }
+    .online-username {
+        color: white;
+        background-color: #FF4081;
+        padding: .5em 0;
+    }
+    .online-userimage {
+        width: 100%;
+
+        display: inline-block;
+        vertical-align: top;
+        color: #2196F3;
+        font-size: 150px;
+    }
+    @media only screen and (max-width: 993px) {
+        .user {
+            display: none;
+        }
+        .user:nth-last-child(-n+24) {
+            display: inline;
+        }
+    }
+    @media only screen and (max-width: 601px) {
+        .user:nth-last-child(-n+36) {
+            display: inline;
+        }
+    }
+
+    /* Something wrong with Materialize; need to use !important */
+    /* label focus color */
+    .input-field input:focus + label {
+        color: #2196F3!important;
+    }
+    /* label underline focus color */
+    .input-field input:focus {
+        border-bottom: 1px solid #2196F3!important;
+    }
+    /* label focus color */
+    .input-field textarea:focus + label {
+        color: #2196F3!important;
+    }
+    /* label underline focus color */
+    .input-field textarea:focus {
+        border-bottom: 1px solid #2196F3!important;
+    }
+</style>
+
+<%
+local MySQL         = require "lapis.db";
+local LapisHTTP     = require "lapis.nginx.http";
+local LapisUtil     = require "lapis.util";
+local LapisHTML     = require "lapis.html";
+local JSONLib       = require "cjson";
+local MetaManager   = require "lib.meta";
+local GIDTable      = require "lib.gid_table";
+
+local IsOwner       = MySQL.select("count(id) from game_ids where owner=(select id from users where username=?) and gid=?", session.user, params.gid)[1]["count(id)"] == "1";
+
+local OnlineResult  = MySQL.select("* from player_ingame where gid=? order by id desc", params.gid);
+%>
+
+<div class="container">
+    <h1><%= MetaManager.getMeta("name", params.gid) %></h1>
+    <div class="row">
+        <div class="col s12">
+            <div class="list-online card">
+                <div class="card-content">
+                    <div class="card-title">
+                        <i class="material-icons" style="font-size: 100%">people</i> <%= #OnlineResult %> Players Online
+                    </div>
+                    <div class="row users">
+                        <%
+                        local ThumbnailRequest = {};
+                        for i = 1, math.min(48, #OnlineResult) do
+                        table.insert(ThumbnailRequest, {userId = OnlineResult[i].player});
+                        end
+
+                        local ThumbnailURLs;
+                        if #ThumbnailRequest > 0 then
+                            ThumbnailURLs = JSONLib.decode(({LapisHTTP.simple("http://www.roblox.com/avatar-thumbnails?params=" .. JSONLib.encode(ThumbnailRequest))})[1]);
+                        else
+                            ThumbnailURLs = {};
+                        end
+
+
+                        for i = 1, math.min(48, #OnlineResult), 12 do
+                        for j = i, math.min(48, i + 11, #OnlineResult) do
+                        local User = OnlineResult[j];
+                        local ThumbnailURL = ThumbnailURLs[j].thumbnailUrl;
+                        %>
+                        <div class="user col s4 m2 l1 center" style="margin:0; padding:0;">
+                            <img src="<%= ThumbnailURL %>" class="online-userimage">
+                            <div class="online-username center <%= j % 12 == 1 and "first" or (j % 12 == 0 or j == #OnlineResult) and "last" or "" %>">
+                                <b><%= User.name %></b>
+                            </div>
+                        </div>
+                        <%
+                        end
+                        end
+                        if #ThumbnailURLs < 1 then
+                            %>
+                                <div class="row">
+                                    <div class="col s12 center">
+                                        Nobody is online...
+                                    </div>
+                                </div>
+                            <%
+                            end
+                        %>
+                    </div>
+                    <%
+                    if #OnlineResult > 48 then
+                    %>
+                    <div class="row">
+                        <div class="col s12 center">
+                            <a href="/game/<%= params.gid %>/players" class="btn waves-effect waves-light blue">See more</a>
+                        </div>
+                    </div>
+                    <%
+                    end
+                    %>
+                </div>
+            </div>
+        </div>
+        <div class="col s12">
+            <div class="achievement-view card">
+                <div class="card-content">
+                    <div class="card-title valign-wrapper">
+                        <i class="mdi mdi-crown"></i>Achievements
+                        <% if IsOwner then %><a class="btn-floating btn-medium waves-effect waves-light blue right valign modal-trigger" href="#achv_modal" style="margin-left: auto"><i class="material-icons">add</i></a><% end %>
+                    </div>
+                    <ul class="collection">
+                        <%
+                        local Achievements = MySQL.select("allachv.*, count(awards.id) from ? allachv left join awarded_achv awards on gid=?", GIDTable("achievements", params.gid), params.gid);
+
+                        ThumbnailRequest = {};
+                        for i = 1, #Achievements do
+                        if type(Achievements[i].id) ~= "userdata" then
+                        table.insert(ThumbnailRequest, {assetId = Achievements[i].icon});
+                        end
+                        end
+                        if #ThumbnailRequest > 0 then
+                            ThumbnailURLs = JSONLib.decode(({LapisHTTP.simple("http://www.roblox.com/item-thumbnails?params=" .. JSONLib.encode(ThumbnailRequest))})[1]);
+                        else
+                            ThumbnailURLs = {};
+                        end
+
+                        for i = 1, #Achievements do
+                        if type(Achievements[i].id) ~= "userdata" then
+                            %>
+                            <li class="collection-item avatar">
+                                <img src="<%= ThumbnailURLs[i].thumbnailUrl or "https://cdn.rawgit.com/Templarian/MaterialDesign/master/icons/svg/help.svg" %>" alt="<%= Achievements[i].name %>" class="circle">
+                                <span class="title"><b><%= Achievements[i].name %></b></span>
+                                <p>
+                                    "<%- LapisHTML.escape(Achievements[i].description):gsub("\n", "<br>") %>"<br>
+                                    ID: <code><%= Achievements[i].achv_id %></code><br>
+                                    <%= Achievements[i].reward %> reward points<br>
+                                    Awarded <%= Achievements[i]["count(awards.id)"] %> times
+                                </p>
+                            </li>
+                            <%
+                            end
+                        end
+                        %>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <% if IsOwner then %><div class="col s12">
+            <div class="meta-view card">
+                <div class="card-content">
+                    <div class="card-title">
+                        <i class="mdi mdi-pencil"></i>Internal metadata
+                    </div>
+                    <table>
+                        <thead>
+                            <th data-field="key">
+                                Key
+                            </th>
+                            <th data-field="value">
+                                Value
+                            </th>
+                        </thead>
+                        <tbody>
+                            <%
+                            local Metadata = MySQL.select("* from ? order by `key` asc", GIDTable("meta", params.gid));
+                            for i = 1, #Metadata do
+                            %>
+                            <tr>
+                                <td>
+                                    <%= Metadata[i].key %>
+                                </td>
+                                <td>
+                                    <%= Metadata[i].value %>
+                                </td>
+                            </tr>
+                            <%
+                            end
+                            %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal modal-fixed-footer" id="achv_modal">
+        <form action="#" id="achv_form">
+            <div class="modal-content" style="overflow: hidden">
+                <h4>Create a new Achievement</h4>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="achv_name" name="achv_name" type="text" class="validate" maxlength="255" required>
+                        <label for="achv_name">Name</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <textarea id="achv_description" name="achv_description" class="materialize-textarea validate" required></textarea>
+                        <label for="achv_description">Description</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="achv_reward" name="achv_reward" type="number" min="5" step="5" max="1000" class="validate" required>
+                        <label for="achv_reward">Reward points</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s11">
+                        <input id="achv_icon" name="achv_icon" type="text" required pattern="http://www\.roblox\.com/[A-Za-z0-9\-]-item\?id=\d+" placeholder="http://www.roblox.com/A-item?id=231496692" data-error="Enter a Roblox decal URL">
+                        <label for="achv_icon">Icon</label>
+                    </div>
+                    <img class="prefix circle col s1" src="https://cdn.rawgit.com/Templarian/MaterialDesign/master/icons/svg/help.svg" id="achv_icon_display">
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input style="font-family: monospace" id="achv_id" name="achv_id" type="text" class="validate" maxlength="255" required>
+                        <label for="achv_id">ID</label>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="modal-footer center" style="overflow: hidden">
+            <div class="preloader-wrapper small" id="achv_spinner" style="margin: auto; position: absolute; top:0;left:0;right:0;bottom:0">
+                <div class="spinner-layer spinner-green-only">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+            <a class="waves-effect waves-light btn-flat modal-action blue-text" id="achv_create">Create</a>
+            <a class="waves-effect waves-light red-text btn-flat modal-action modal-close">Cancel</a>
+        </div>
+        <script>
+            $(document).ready(function(){
+                // the "href" attribute of .modal-trigger must specify the modal ID that wants to be triggered
+                $('.modal-trigger').leanModal();
+                var achv_icon = $("#achv_icon");
+                achv_icon.on('change', function() {
+                    var value = achv_icon.val();
+                    var id = value.match(/\?id=(\d+)/);
+                    achv_icon.removeClass("invalid");
+                    achv_icon.removeClass("valid");
+
+                    if (id == null) {
+                        achv_icon.addClass("invalid");
+                        $("#achv_icon_display").attr("src", "https://cdn.rawgit.com/Templarian/MaterialDesign/master/icons/svg/help.svg");
+                    }
+                    else {
+                        achv_icon.addClass("valid");
+                        $.getJSON("//valkyrie.crescentcode.net/item-thumbnails-proxy?params=" + JSON.stringify([{assetId: parseInt(id[1])}]), function(result) {
+                            if (!result[0])
+                                achv_icon.addClass("invalid");
+                            else
+                                achv_icon.addClass("valid");
+
+
+                            $('#achv_icon_display').attr("src", result[0] ? result[0].thumbnailUrl : "https://cdn.rawgit.com/Templarian/MaterialDesign/master/icons/svg/help.svg");
+                        });
+                    }
+                });
+
+                $("#achv_create").click(function() {
+                    $("#achv_spinner").addClass("active");
+                    $.ajax({
+                        url: "//valkyrie.crescentcode.net/game/test/achievements/" + $("#achv_id").val(),
+                        type: 'PUT',
+                        success: function(data) {
+                            // TODO
+                        }
+                    });
+                });
+            });
+        </script>
+    </div><% end %>
+</div>

@@ -1,0 +1,214 @@
+<% render("docUtils.RenderDocs",{
+Title = "BaseLib";
+Body = [[
+The Valkyrie wrapper is controlled by a part of the core called BaseLib. The
+wrapper object has a few methods and properties which can be used to control how
+it behaves.
+]];
+Properties = {
+ 	{
+ 		Name = "useStackedWrappers";
+ 		Type = "bool";
+ 		Default = false;
+ 		Body = [[
+useStackedWrappers is an experimental setting property for the Valkyrie wrapper
+object which tells the wrapper to wrap objects that are already wrapped. This
+can cause instability when enabled and is disabled by default for a reason.
+
+Wrapper stacking should only be enabled if you know what you're doing and you
+need integrity across multiple levels of user code. (Sandboxes)
+ 		]];
+ 		Meta = "Experimental";
+ 	};
+ 	{
+ 		Name = "useFullConversion";
+ 		Type = "bool";
+ 		Default = false;
+ 		Body = [[
+If useFullConversion is enabled, the wrapper will attempt to unwrap any userdata
+objects which try to be unwrapped even if they're not wrapped.
+
+By default, the wrapper doesn't unwrap userdata if it's not already wrapped and
+doesn't have an unwrap target.
+ 		]];
+ 	};
+ 	{
+ 		Name = "convertFullBidirectional";
+ 		Type = "bool";
+ 		Default = true;
+ 		Body = [[
+If enabled, the wrapper will try to unwrap anything that needs unwrapping, even
+if it isn't wrapped. This allows functions and tables made inside a wrapped env
+function reliably outside of a wrapped environment. Only disable for applications
+using manual wrapper conversion.
+ 		]];
+ 	};
+ 	{
+ 		Name = "useContextInversion";
+ 		Type = "bool";
+ 		Default = true;
+ 		Body = [[
+If enabled, the wrapper will not unwrap anything that has a wrap target and no
+unwrap target. This pairs with useStackedWrappers and useFullConversion, and if
+you are changing useContextInversion, you should also change useStackedWrappers
+and useFullConversion.
+ 		]];
+ 	};
+ 	{
+ 		Name = "genSeed";
+ 		Type = "number";
+ 		Default = "tick()";
+ 		Body = [[
+A unique identifier for the wrapper. Doesn't actually do anything at the moment
+and is unlikely to do anything in the near future.
+		]];
+		Meta = "Unused";
+	};
+	{
+		Name = "TypeIdentities";
+		Type = "table";
+		Default = "_G.TypeIdentities or {}";
+		Body = [[
+Stores unique type identifiers for objects. Should be used by developers that
+want their objects to be Valkyrie compatible.
+		]];
+	};
+	{
+		Name = "TypeChecks";
+		Type = "table";
+		Default = "{Vector3 = function(...),...}";
+		Body = [[
+Stores pcallable functions used to systematically check the internal type of
+userdata objects such as Vector3, Color3, UDim2, etc.
+		]];
+	};
+	{
+		Name = "mt";
+		Type = "table";
+		Default = "{__index = function(...),...}";
+		Body = [[
+Contains the default metamethods applied to all applicable datatypes. All
+metamethods are wrapped AoT.
+		]];
+	};
+	{
+		Name = "imt";
+		Type = "table";
+		Default = "{__index = function(...),...}";
+		Body = [[
+Contains all of the metamethod overrides for Instances.
+		]];
+	};
+	{
+		Name = "umt";
+		Type = "table";
+		Default = "{}";
+		Body = [[
+Contains all metamethod overrides for identifiable types from TypeIdentities.
+		]];
+	};
+	{
+		Name = "inversemt";
+		Type = "table";
+		Default = "{__index = function(...),...}";
+		Body = [[
+Contains the default metamethods applied to all applicable datatypes. Exactly
+the same as mt, but the wrapping order is inverted.
+		]];
+	};
+	{
+		Name = "ulist";
+		Type = "table";
+		Default = "{}";
+		Body = [[
+Contains all of the unwrap targets for objects. unwrap [k] -> v
+		]];
+		Aliases = {"unwrapper"};
+	};
+	{
+		Name = "wlist";
+		Type = "table";
+		Default = "{}";
+		Body = [[
+Contains all of the wrap targets for objects. wrap [k] -> v
+		]];
+		Aliases = {"wrapper"};
+	};
+	{
+		Name = "Overrides";
+		Type = "table";
+		Default = "{Globals = {}; Instance = {}; Types = {}}";
+		Body = [[
+Contains all of the overrides from the override methods. The Globals table is a
+simple table used by LoadLibrary's injector as an __index fallback, the Instance
+table is a table of added methods by class, and the Types table is a table of
+metamethod overrides by class.
+		]];
+	};
+};
+Methods = {
+	{
+		Name = "wrap";
+		Arguments = {
+		{
+			Name = "Value";
+			Type = "var";
+		};
+		};
+		Returns = {
+		{
+			Name = "WrappedValue";
+			Type = "var";
+		};
+		};
+		Body = "Wraps the supplied value";
+	};
+	{
+		Name = "unwrap";
+		Arguments = {
+		{
+			Name = "Value";
+			Type = "var";
+		};
+		};
+		Returns = {
+		{
+			Name = "WrappedValue";
+			Type = "var";
+		};
+		};
+		Body = "Unwraps the supplied value";
+	};
+	{
+		Name = "mod";
+		Arguments = {
+		{
+			Name = "From";
+			Type = "var";
+		};
+		{
+			Name = "To";
+			Type = "var";
+			Nullable = true;
+		};
+		};
+		Body = [[
+When ever the wrapper encounters the object in For, it will replace it with the
+object in To
+		]];
+	};
+	{
+		Name = "Override";
+		Arguments = {
+		{
+			Name = "Type";
+			Type = "string";
+		};
+		};
+		Body = [[
+Allows a developer or library to override the metamethods and members of classes
+when the class in question is wrapped.
+		]];
+	};
+};
+}) %>
