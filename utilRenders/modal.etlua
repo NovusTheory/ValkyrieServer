@@ -1,0 +1,41 @@
+<div class="modal modal-fixed-footer" id="<%= ModalID %>_modal">
+    <form action="#" id="<%= ModalID %>_form">
+        <div class="modal-content">
+            <h4><%= ModalHeader %></h4>
+            <div class="row">
+                <% for i = 1, #Fields do %>
+                    <%- Fields[i].BeforeDiv or "" %>
+                    <div class="input-field col <%= Fields[i].DivClasses and table.concat(Fields[i].DivClasses, " ") or "s12" %>">
+                        <%- Fields[i].Before or "" %>
+                        <<%= Fields[i].TagName or "input" %> id="<%= ModalID .. "_" .. Fields[i].Name %>" name="<%= ModalID .. "_" .. Fields[i].Name %>" type="<%= Fields[i].Type or "text" %>" class="<%= Fields[i].Classes and table.concat(Fields[i].Classes, " ") or "" %>" <%- Fields[i].ExtraAttrs or "" %>><%- Fields[i].TagName and ("</" .. Fields[i].TagName .. ">") or "" %>
+                        <%- Fields[i].Between or "" %>
+                        <label for="<%= ModalID .. "_" .. Fields[i].Name %>" <%- Fields[i].ExtraLabelAttrs or "" %>><%= Fields[i].LabelContent or "" %></label>
+                        <%- Fields[i].After or "" %>
+                    </div>
+                    <%- Fields[i].AfterDiv or "" %>
+                <% end %>
+            </div>
+        </div>
+        <div class="modal-footer center" style="overflow: hidden">
+            <div class="preloader-wrapper small" id="<%= ModalID %>_spinner" style="margin: auto; position: absolute; top:0;left:0;right:0;bottom:0">
+                <div class="spinner-layer spinner-green-only">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+            <% for i = 1, #Buttons do %>
+            <a class="waves-effect waves-light modal-action <%= Buttons[i].ExtraClasses and table.concat(Buttons[i].ExtraClasses, " ") or "" %>"><%= Buttons[i].Content %></a>
+            <% end %>
+        </div>
+    </form>
+    <script>
+
+    </script>
+</div>
