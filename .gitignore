@@ -22,3 +22,4 @@ mime.types
 permissions.perms
 security.sec
 config.lua
+nginx.conf.compiled
