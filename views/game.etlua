@@ -276,7 +276,7 @@ local OnlineResult  = MySQL.select("* from player_ingame where gid=? order by id
                     }
                     else {
                         achv_icon.addClass("valid");
-                        $.getJSON("//valkyrie.crescentcode.net/item-thumbnails-proxy?params=" + JSON.stringify([{assetId: parseInt(id[1])}]), function(result) {
+                        $.getJSON("/item-thumbnails-proxy?params=" + JSON.stringify([{assetId: parseInt(id[1])}]), function(result) {
                             if (!result[0])
                                 achv_icon.addClass("invalid");
                             else
@@ -291,7 +291,7 @@ local OnlineResult  = MySQL.select("* from player_ingame where gid=? order by id
                 $("#achv_create").click(function() {
                     $("#achv_spinner").addClass("active");
                     $.ajax({
-                        url: "//valkyrie.crescentcode.net/game/test/achievements/" + $("#achv_id").val(),
+                        url: "/game/test/achievements/" + $("#achv_id").val(),
                         type: 'PUT',
                         success: function(data) {
                             // TODO
