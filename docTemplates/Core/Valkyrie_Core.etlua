@@ -32,7 +32,7 @@
 				GetComponent takes a single argument, which is the name of the
 				component you're trying to access, and returns the component
 				which matches the name. For a complete list of components, take
-				a look at the <a href="//valkyrie.crescentcode.net/docs/Components">
+				a look at the <a href="/docs/Components">
 					Components
 				</a> section.
 			</p>
@@ -120,9 +120,9 @@
 				the scenes.
 			</p>
 			<p class="flow-text">
-				For more information on Libraries, look at the <a href="//valkyrie.crescentcode.net/docs/Core/Libraries">
+				For more information on Libraries, look at the <a href="/docs/Core/Libraries">
 				Libraries Documentation</a>. For a complete list of all the
-				Valkyrie libraries, look at the <a href="//valkyrie.crescentcode.net/docs/Libraries">
+				Valkyrie libraries, look at the <a href="/docs/Libraries">
 				Libraries Category</a>.
 			</p>
 		</div>

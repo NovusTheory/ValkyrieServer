@@ -75,7 +75,7 @@
 					Sign Up
 					<i class="material-icons right">send</i>
 				</button>
-				<a href="//valkyrie.crescentcode.net/login" style="margin-left: 2em" class="indigo-text">Or Log In</a>
+				<a href="/login" style="margin-left: 2em" class="indigo-text">Or Log In</a>
 				<div class="preloader-wrapper small" style="float: right">
 					<div class="spinner-layer spinner-green-only">
 						<div class="circle-clipper left">
@@ -105,7 +105,7 @@
 					elem.removeClass("valid");
 					elem.removeClass("invalid");
 					if (value) {
-						$.getJSON("//valkyrie.crescentcode.net/validate/" + value, function(data) {
+						$.getJSON("/validate/" + value, function(data) {
 							elem.addClass(data ? "valid" : "invalid");
 							elem.next().attr("data-error", "This username is already in use");
 						});
@@ -144,7 +144,7 @@
 				});
 				$("form").on('submit', function(evt) {
 					$(".preloader-wrapper").addClass("active");
-					$.post("//valkyrie.crescentcode.net/signup/1", $("form").serialize(), function(data) {
+					$.post("/signup/1", $("form").serialize(), function(data) {
 						$("main").html(data);
 					});
 					return false;
@@ -216,14 +216,14 @@
 			});
 			$("#back").on('click', function(evt) {
 				$(".preloader-wrapper").addClass("active");
-				$.post("//valkyrie.crescentcode.net/signup", $("form").serialize(), function(data) {
+				$.post("/signup", $("form").serialize(), function(data) {
 					$("main").html(data);
 				});
 				return false;
 			});
 			$("form").on('submit', function(evt) {
 				$(".preloader-wrapper").addClass("active");
-				$.post("//valkyrie.crescentcode.net/signup/2", $("form").serialize(), function(data) {
+				$.post("/signup/2", $("form").serialize(), function(data) {
 					$("main").html(data);
 				});
 				return false;
@@ -241,8 +241,8 @@
                 You can now unfollow <a href="http://www.roblox.com/User.aspx?username=ValkyrieBot">ValkyrieBot</a> and set your <a href="https://www.roblox.com/my/account#!/privacy">privacy settings</a> back to normal.
 			</div>
 			<div class="card-action row">
-                <a href="//valkyrie.crescentcode.net/" class="blue-text">Home page</a>
-                <a href="//valkyrie.crescentcode.net/game/new" class="blue-text">Create a new game</a>
+                <a href="/" class="blue-text">Home page</a>
+                <a href="/game/new" class="blue-text">Create a new game</a>
 			</div>
 		</form>
 		<script src="https://cdn.rawgit.com/lgarron/clipboard.js/master/clipboard.min.js"></script>

@@ -23,27 +23,27 @@ nav {
 	<div class="nav-wrapper" style="margin-left:20px">
 		<a href="/" class="brand-logo">Valkyrie</a>
 		<ul id="nav-mobile" class="right hide-on-med-and-down">
-			<li><a href="//valkyrie.crescentcode.net/get">Get Valkyrie</a></li>
-			<li><a href="//valkyrie.crescentcode.net/docs">Docs</a></li>
+			<li><a href="/get">Get Valkyrie</a></li>
+			<li><a href="/docs">Docs</a></li>
 			<% if (not SignedIn) and (not HideLogin) then %>
-				<li class="nosession"><a href="//valkyrie.crescentcode.net/signup">Sign Up</a></li>
-				<li class="nosession"><a href="//valkyrie.crescentcode.net/login">Log In</a></li>
+				<li class="nosession"><a href="/signup">Sign Up</a></li>
+				<li class="nosession"><a href="/login">Log In</a></li>
 			<% end %>
             <% if SignedIn then %>
-                <li><a href="//valkyrie.crescentcode.net/user/<%= session.user %>/games">Manage Games</a></li>
-                <li><a href="//valkyrie.crescentcode.net/logout">Log Out</a></li>
+                <li><a href="/user/<%= session.user %>/games">Manage Games</a></li>
+                <li><a href="/logout">Log Out</a></li>
             <% end %>
 		</ul>
 		<ul id="slide-out" class="side-nav">
-			<li><a href="//valkyrie.crescentcode.net/get">Get Valkyrie</a></li>
-			<li><a href="//valkyrie.crescentcode.net/docs">Docs</a></li>
+			<li><a href="/get">Get Valkyrie</a></li>
+			<li><a href="/docs">Docs</a></li>
 			<% if (not SignedIn) and (not HideLogin) then %>
-				<li class="nosession"><a href="//valkyrie.crescentcode.net/signup">Sign Up</a></li>
-				<li class="nosession"><a href="//valkyrie.crescentcode.net/login">Log In</a></li>
+				<li class="nosession"><a href="/signup">Sign Up</a></li>
+				<li class="nosession"><a href="/login">Log In</a></li>
 			<% end %>
             <% if SignedIn then %>
-                <li><a href="//valkyrie.crescentcode.net/user/<%= session.user %>/games">Manage Games</a></li>
-                <li><a href="//valkyrie.crescentcode.net/logout">Log Out</a></li>
+                <li><a href="/user/<%= session.user %>/games">Manage Games</a></li>
+                <li><a href="/logout">Log Out</a></li>
             <% end %>
 		</ul>
 		<a href="#!" data-activates="slide-out" class="button-collapse show-on-large"><i class="mdi-navigation-menu "></i></a>
