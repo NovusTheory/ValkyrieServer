@@ -29,8 +29,8 @@
 	development that developers shouldn't have to make themselves.
 	<br>
     <a href="//valkyrie.crescentcode.net/features" class="">See the Features</a><%
-    if not SignedIn then %> - 
-        <a href="//valkyrie.crescentcode.net/signup" class="">Get Started</a> - 
+    if not SignedIn then %> -
+        <a href="//valkyrie.crescentcode.net/signup" class="">Get Started</a> -
         <a href="//valkyrie.crescentcode.net/login" class="">Log In</a>
     <% else %> -
     <a href="//valkyrie.crescentcode.net/user/<%= session.user %>/games">Manage Games</a>
@@ -46,7 +46,7 @@ Make it feel like Valkyrie:
 Navbar:
 	If the page is at the top, and the type of page suits the style, the navbar
 	should be transparent and the text should be black. As soon as the page has
-	been scrolled, the text should become black and the navbar background should
+	been scrolled, the text should become white and the navbar background should
 	become visible. The sidebar button is always visible, and the sidebar should
 	contain context which isn't found on the nav bar, except for in the case of
 	on mobile in which case the sidebar should contain an expanded view of the
@@ -85,7 +85,7 @@ Features:
         <h2>Vanilla</h2>
         <pre><code class="lua" style="white-space: pre-wrap; word-wrap: break-word; overflow: hidden">
 -- Long hslToRgb, rgbToHsl and easing functions here...
-local Frame = Instance.new("Frame", <wbr/>Instance.new("ScreenGui"), <wbr/>game:GetService("Players").LocalPlayer);
+local Frame = Instance.new("Frame", <wbr/>Instance.new("ScreenGui"), <wbr/>game:GetService("Players").LocalPlayer.PlayerGui);
 
 Frame.Size = <wbr/>UDim2.new(0, 200, 0, 100);
 Frame.Position = <wbr/>UDim2.new(0, -200, 0, -100);
@@ -111,7 +111,7 @@ _G.Valkyrie:LoadLibrary "Util";
 _G.Valkyrie:LoadLibrary "Design";
 
 local Frame = new 'Frame':Instance{
-    new 'ScreenGui':Instance{LocalPlayer};
+    new 'ScreenGui':Instance{LocalPlayer.PlayerGui};
     Position         = new 'UDim2'(0, -200, 0, -100);
     Size             = new 'UDim2'(0, 200, 0, 100);
     BackgroundColor3 = Color3.Black;

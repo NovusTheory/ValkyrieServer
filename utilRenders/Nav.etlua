@@ -19,7 +19,7 @@ nav {
 }
 </style>
 <div class="navbar-fixed">
-<nav class="z-depth-0">
+<nav class="z-depth-0 hover">
 	<div class="nav-wrapper" style="margin-left:20px">
 		<a href="/" class="brand-logo">Valkyrie</a>
 		<ul id="nav-mobile" class="right hide-on-med-and-down">
@@ -56,21 +56,25 @@ nav {
 	$(window).on("scroll", function() {
 		var scrollPos = $(window).scrollTop();
 		if (scrollPos <= 0) {
-			$(".nav-wrapper a").animate({
-				color: "#000"
-			},100);
-			$("nav").animate({
-				backgroundColor: "rgba(33,150,243,0)"
-			},200);
+			<% if not DisableColour then %>
+				$(".nav-wrapper a").animate({
+					color: "#000"
+				},100);
+				$("nav").animate({
+					backgroundColor: "rgba(33,150,243,0)"
+				},200);
+			<% end %>
 			$("nav").addClass("z-depth-0");
 			did = false;
 		} else if (!did) {
-			$(".nav-wrapper a").animate({
-				color: "#fff"
-			},100);
-			$("nav").animate({
-				backgroundColor: "rgba(33,150,243,1)"
-			},400);
+			<% if not DisableColour then %>
+				$(".nav-wrapper #nav-mobile a, .button-collapse, .brand-logo").animate({
+					color: "#fff"
+				},100);
+				$("nav").animate({
+					backgroundColor: "rgba(33,150,243,1)"
+				},400);
+			<% end %>
 			$("nav").removeClass("z-depth-0");
 			did = true;
 		}

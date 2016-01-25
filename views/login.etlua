@@ -11,20 +11,20 @@
     color: #fff;
     background-color: #2196F3;
     }
-            main {
-                position: absolute;
-                width: 500px;
-                top: calc(50% - 170px);
-                left: calc(50% - 250px);
-            }
-            .card-title {
-                display: inline-block;
-                width: 100%;
-            }
-            label:after {
-                white-space: nowrap;
-                margin-top: -2em;
-            }
+    main {
+        position: absolute;
+        width: 500px;
+        top: calc(50% - 170px);
+        left: calc(50% - 250px);
+    }
+    .card-title {
+        display: inline-block;
+        width: 100%;
+    }
+    label:after {
+        white-space: nowrap;
+        margin-top: -2em;
+    }
     </style>
 
     <% render('utilRenders.Nav',{HideLogin=true}) %>
@@ -33,7 +33,7 @@
 <%
     local UsernameClasses = "";
     local PasswordClasses = "";
-    
+
     local UsernameError   = "";
     local PasswordError   = "";
     if invalid.username then

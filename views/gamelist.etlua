@@ -13,7 +13,7 @@ local OwnedGIDs = MySQL.select("* from game_ids where owner=(select id from user
                 <div class="card-content">
                     <div class="card-title valign-wrapper">
                         <h4>My Games</h4>
-                        <a class="btn-floating btn-medium waves-effect waves-light blue right valign modal-trigger" href="//valkyrie.crescentcode.net/game/new" style="margin-left: auto"><i class="material-icons">add</i></a>
+                        <a class="btn-floating btn-medium waves-effect waves-light blue right valign modal-trigger<%= #OwnedGIDs == 5 and " disabled" or "" %>" href="//valkyrie.crescentcode.net/game/new" style="margin-left: auto"<%- #OwnedGIDs == 5 and " title=\"You already own 5 games!\"" or "" %>><i class="material-icons">add</i></a>
                     </div>
                     <div class="collection">
                         <%

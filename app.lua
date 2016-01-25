@@ -404,12 +404,16 @@ app:match("gamelist", "/user/:user/games", function(self)
     return {render = true};
 end);
 
+local CSRF = require "lapis.csrf";
+
 app:match("newgame", "/game/new", function(self)
     if not self.session.user then
         return {redirect_to = self:url_for "login"};
     end
     self.invalid = {};
     self.bare = false;
+    self.CSRFToken = CSRF.generate_token(self, self.session.user); -- Has to be done here for access to 'self'
+    -- Or it might work in etlua with getfenv(), but I'm not sure
     return {render = true};
 end);
 
@@ -421,7 +425,12 @@ app:match("game", "/game/:gid", respond_to{
         if self.session.user == nil then
             return {redirect_to = self:url_for("login")};
         end
+        self.CSRFToken = self.params.csrf_token;
         self.invalid = {};
+
+        if not CSRF.validate_token(self, self.session.user) then
+            self.invalid.gid = "Error: Invalid CSRF Token! (This message should never be displayed on a browser. If it has, contant gskw)";
+        end
 
         if not self.params.gid or #self.params.gid < 1 then
             self.invalid.gid = "Enter a GID";
@@ -436,6 +445,10 @@ app:match("game", "/game/:gid", respond_to{
         if mysql.select("count(*) from game_ids where gid=?", self.params.gid)[1]["count(*)"] == "1" then
             self.invalid.gid = "This GID is already in use!";
             return {render = "newgame"};
+        end
+
+        if mysql.select("count(*) from game_ids where owner=(select id from users where username=?)", self.session.user)[1]["count(*)"] == "5" then
+            self.invalid.gid = "You already own 5 games!";
         end
 
         if self.params.gid:find "\n" then

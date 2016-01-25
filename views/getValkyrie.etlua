@@ -1,1 +1,245 @@
-<% render('utilRenders.Nav',{SignedIn=SignedIn}) %>
+<% render('utilRenders.Nav',{SignedIn=session.user, DisableColour=true}) %>
+<style>
+	nav, .bgblue {
+		background-color:rgb(33,150,243);
+	}
+	.nav-wrapper #nav-mobile a, .nav-wrapper .button-collapse, .nav-wrapper .brand-logo, .bgblue {
+		color:#fff;
+	}
+	.tabs {
+		overflow:visible;
+		width:100%;
+	}
+	section:not(:first-child) {
+		padding-top:24px;
+	}
+</style>
+<div class="bgblue row z-depth-2" style="margin-top:-48px; padding-top:48px">
+<section class="container">
+	<h1 class="center-align">Get Valkyrie</h1>
+	<div class="blue row white-text center-align">
+		<div class="col s12">
+			<ul class="tabs blue">
+				<li class="tab col s4"><a href="#stable" class="white-text">Stable</a></li>
+				<li class="tab col s4"><a href="#beta" class="white-text">Beta</a></li>
+				<li class="tab col s4"><a href="#dev" class="white-text">Developer</a></li>
+			</ul>
+		</div>
+	</div>
+</section>
+</div>
+<div class="row" style="margin-top:-20px; padding-top:68px">
+	<div id="stable" class="col s12">
+		<!--
+
+		# image; Valkyrie Stable
+		Valkyrie Stable builds are designed to bring you only major updates
+		after being tested thoroughly to make sure that they are ready for
+		implementation in what ever needs it.
+
+		* [card -- panel]
+		|* How to get it in my game?
+		|| Require in the module with `require(VALKYRIESTABLEIDITDOESNTEXIST)`
+		|| and authenticate it for your game.
+
+		-->
+
+		<div class="center-align">
+			There's supposed to be an image right about here.
+			<br>
+			<h2> Valkyrie Stable </h2>
+		</div>
+		<br>
+
+		<div class="container flow-text">
+			<section>
+			Valkyrie Stable builds are designed to bring you only major updates
+			after being tested thoroughly to make sure that they are ready for
+			implementation in what ever needs it.
+			<br>
+			All of the API is tested to work in most cases, and should work with
+			most of the code written to work with Valkyrie, except for code which
+			uses a different build of Valkyrie.
+			<br> <br>
+			The documentation covers the stable builds completely, and should
+			explain all components in enough detail for you to understand how
+			to use them.
+			<br> <br>
+			</section>
+			<div>
+				<h4>
+					How do I use it?
+				</h4>
+				<!--Require in the module with
+				<code class="z-depth-1">require(stable)</code>
+				and authenticate it for your game. -->
+				We don't have a stable build yet, but you can use the beta.
+			</div>
+		</div>
+	</div>
+	<div id="beta" class="col s12">
+		<!--
+
+		# image; Valkyrie Beta
+		Valkyrie Beta builds are designed to bring you new features as soon as
+		they are working. They are tested to make sure that all of the API is
+		working (Given that they are used as expected), but are not tested for
+		use in all implementations yet.
+		By using Valkyrie Beta, you can help contribute to the next stable build
+		by finding any cases which cause errors and submitting them to the
+		[Bug tracker]
+
+		* [card -- panel]
+		|* How to get it in my game?
+		|| Require in the module with `require(VALKYRIEBETAID)` and authenticate
+		|| it for your game.
+
+		-->
+
+		<div class="center-align">
+			There's supposed to be an image right about here.
+			<br>
+			<h2> Valkyrie Beta </h2>
+		</div>
+		<br>
+
+		<div class="container flow-text">
+			<section>
+			Valkyrie Beta builds are designed to bring you new features as soon as
+			they are working. They are tested to make sure that all of the API is
+			working (Given that they are used as expected), but are not tested for
+			use in all implementations yet.
+			<br>
+			<br>
+			By using Valkyrie Beta, you can help contribute to the next stable build
+			by finding any cases which cause errors and submitting them to the
+			<a href="https://github.com/ValkyrieRBXL/ValkyrieFramework/issues">
+			Bug Tracker
+			</a>
+			<br> <br>
+			</section>
+			<div>
+				<h4>
+					How do I use it?
+				</h4>
+				<!-- Require in the module with
+				<code class="z-depth-1">require(beta)</code>
+				and authenticate it for your game. -->
+				We don't have a beta build yet, but you can use the dev build.
+				<br>
+				<br>
+				Be aware that some components may not work in your game yet.
+			</div>
+		</div>
+	</div>
+	<div id="dev" class="col s12">
+		<!--
+
+		# image; Valkyrie Developer
+		Valkyrie Developer builds are only certified to not break your game by
+		loading in all of the Components and Libraries available to you. None
+		of the API has even been tested by the time that a build hits Developer,
+		and this is for people who want to test features as soon as they're
+		available.
+		You only need to be using Valkrie Developer if your game is not
+		production-ready yet, and therefore you can deal with occasional API
+		breaking (And prompt fixes, if you [report them](Bug tracker)), or if you're developing
+		3rd party extensions which rely on Valkyrie or extend Valkyrie.
+
+		* [card -- panel]
+		|* How to get it in my game?
+		|| Require in the module with `require(VALKYRIEDEVID)` and authenticate
+		|| it for your game.
+
+		** Want to test a specific feature, or test things as they're developed?
+		| Take a look at the [CI server] for all of the available builds, or
+		| grab the [bleeding-edge build]
+
+		-->
+
+		<div class="center-align">
+			There's supposed to be an image right about here.
+			<br>
+			<h2> Valkyrie Developer </h2>
+		</div>
+		<br>
+
+		<div class="container flow-text">
+			<section>
+			Valkyrie Developer builds are only certified to not break your game by
+			loading in all of the Components and Libraries available to you. None
+			of the API has even been tested by the time that a build hits Developer,
+			and this is for people who want to test features as soon as they're
+			available.
+			<br>
+			<br>
+			You should only be using Valkyrie Developer if your game is not
+			production-ready yet, and therefore you can deal with occasional API
+			breaking (And prompt fixes, if you
+			<a href="https://github.com/ValkyrieRBXL/ValkyrieFramework/issues">
+			report them
+			</a>), or if you're developing 3rd party extensions which rely on
+			Valkyrie or extend Valkyrie.
+			<br> <br>
+			</section>
+			<div>
+				<h4>
+					How do I use it?
+				</h4>
+				Require in the module with
+				<code class="z-depth-1">require(335094538)</code>
+				and authenticate it for your game.
+				<br>
+				<br>
+				Be aware that some functions may not work.
+			</div>
+			<section>
+				<h5>Looking to test things sooner?</h5>
+				If you want to test out changes before they hit the Developer
+				builds, you can use the bleeding-edge builds. They're likely to
+				break at any time, so be careful.
+				<br>
+				If you want to test out new features before they even hit the
+				bleeding-edge builds, take a look at the
+				<a href="https://ci.crescentcode.net/models">
+				complete list of builds
+				</a>
+				and choose a feature branch.
+				<br>
+			</section>
+		</div>
+
+	</div>
+	<!--
+
+	* How do I authenticate Valkyrie for my game?
+	| After requiring in the Valkyrie loader for the build you plan on using,
+	| call it with your GameId and Valkyrie Key as parameters.
+	| Example: `require(ValkyrieBuildId)("TestGame", "TestKey123")`
+	|
+	| To get your game auth keys, you need to go to the page for the game you
+	| want to connect to [Games ->]
+
+	* What if I want to use Valkyrie like a normal module?
+	| Just put your authentication code into a ModuleScript and make it return
+	| Valkyrie after it's authenticated.
+
+	-->
+
+	<section style="clear:both">
+	<div class="container flow-text">
+	<section>
+		<h5>How do I authenticate Valkyrie?</h5>
+		After requiring in the Valkyrie loader for the build you plan on using,
+		call it with your GameId and Valkyrie Key as parameters.
+		<br>
+		Example: <code class="z-depth-1">require(ValkyrieBuildId)("TestGame", "TestKey123")</code>
+	</section>
+	<section>
+		<h5>How can I use Valkyrie like a normal module?</h5>
+		Just put your authentication code into a ModuleScript and make it return
+		Valkyrie after it has been authenticated.
+	</section>
+	</div>
+	</section>
+</div>
