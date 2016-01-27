@@ -1,4 +1,12 @@
 <% render('utilRenders.Nav',{SignedIn=session.user}) %>
+<% 
+    local TimesTable = {"once", "twice", "thrice"}; -- No pun intended
+    local function SensibleTimes(HowMany)
+        HowMany = tonumber(HowMany);
+        return TimesTable[HowMany] or (HowMany .. " times");
+    end
+%>
+        
 <style>
     .material-icons {
         display: inline-block;
@@ -34,23 +42,8 @@
             display: inline;
         }
     }
-
-    /* Something wrong with Materialize; need to use !important */
-    /* label focus color */
-    .input-field input:focus + label {
-        color: #2196F3!important;
-    }
-    /* label underline focus color */
-    .input-field input:focus {
-        border-bottom: 1px solid #2196F3!important;
-    }
-    /* label focus color */
-    .input-field textarea:focus + label {
-        color: #2196F3!important;
-    }
-    /* label underline focus color */
-    .input-field textarea:focus {
-        border-bottom: 1px solid #2196F3!important;
+    label[data-error] {
+        width: 100%; /* Materialize is so buggy */
     }
 </style>
 
@@ -140,7 +133,7 @@ local OnlineResult  = MySQL.select("* from player_ingame where gid=? order by id
                     </div>
                     <ul class="collection">
                         <%
-                        local Achievements = MySQL.select("allachv.*, count(awards.id) from ? allachv left join awarded_achv awards on gid=?", GIDTable("achievements", params.gid), params.gid);
+                        local Achievements = MySQL.select("allachv.*, ifnull(award_count, 0) from ? allachv left join (select achv_id as award_id, count(*) as award_count from awarded_achv group by achv_id) awards on awards.award_id=allachv.achv_id", GIDTable("achievements", params.gid), params.gid);
 
                         ThumbnailRequest = {};
                         for i = 1, #Achievements do
@@ -164,7 +157,7 @@ local OnlineResult  = MySQL.select("* from player_ingame where gid=? order by id
                                     "<%- LapisHTML.escape(Achievements[i].description):gsub("\n", "<br>") %>"<br>
                                     ID: <code><%= Achievements[i].achv_id %></code><br>
                                     <%= Achievements[i].reward %> reward points<br>
-                                    Awarded <%= Achievements[i]["count(awards.id)"] %> times
+                                    Awarded <%= SensibleTimes(Achievements[i]["ifnull(award_count, 0)"]) %>
                                 </p>
                             </li>
                             <%
@@ -212,54 +205,8 @@ local OnlineResult  = MySQL.select("* from player_ingame where gid=? order by id
             </div>
         </div>
     </div>
-    <% render('utilRenders.modal', {
-            ModalID = "achv";
-            ModalHeader = "Create a New Achievement";
-            Fields = {
-                {
-                    Name = "name";
-                    ExtraAttrs = [[maxlength="255" required]];
-                    LabelContent = "Name";
-                };
-                {
-                    Name = "description";
-                    TagName = "textarea";
-                    Classes = {"materialize-textarea"};
-                    ExtraAttrs = "required";
-                    LabelContent = "Description";
-                };
-                {
-                    Name = "reward";
-                    Type = "number";
-                    ExtraAttrs = [[min="5" step="5" max="1000" required]];
-                    LabelContent = "Reward Points";
-                };
-                {
-                    Name = "icon";
-                    DivClasses = {"s11"};
-                    ExtraAttrs = [[pattern="http://www\.roblox\.com/[A-Za-z0-9\-]-item\?id=\d+" data-error="Enter a Roblox decal URL" placeholder="http://www.roblox.com/A-item?id=231496692"]];
-                    AfterDiv = [[<img class="prefix circle col s1" src="https://cdn.rawgit.com/Templarian/MaterialDesign/master/icons/svg/help.svg" id="achv_icon_display">]];
-                    LabelContent = "Icon";
-                };
-                {
-                    Name = "id";
-                    ExtraAttrs = [[style="font-family: monospace" maxlength="255" required]];
-                    LabelContent = "ID";
-                }
-            };
-            Buttons = {
-                {
-                    Content = "Create";
-                    ExtraClasses = {"btn-flat", "blue-text"};
-                };
-                {
-                    Content = "Cancel";
-                    ExtraClasses = {"red-text", "btn-flat", "modal-close"};
-                };
-            };
-        });
-    %>
-        <script>
+    <% render('modals.achievement', {GID = params.gid, CSRFToken = CSRFToken}); %>
+        <!--script>
             $(document).ready(function(){
                 // the "href" attribute of .modal-trigger must specify the modal ID that wants to be triggered
                 $('.modal-trigger').leanModal();
@@ -276,7 +223,7 @@ local OnlineResult  = MySQL.select("* from player_ingame where gid=? order by id
                     }
                     else {
                         achv_icon.addClass("valid");
-                        $.getJSON("/item-thumbnails-proxy?params=" + JSON.stringify([{assetId: parseInt(id[1])}]), function(result) {
+                        $.getJSON("//valkyrie.crescentcode.net/item-thumbnails-proxy?params=" + JSON.stringify([{assetId: parseInt(id[1])}]), function(result) {
                             if (!result[0])
                                 achv_icon.addClass("invalid");
                             else
@@ -299,6 +246,9 @@ local OnlineResult  = MySQL.select("* from player_ingame where gid=? order by id
                     });
                 });
             });
+        </script-->
+        <script>
+            $('.modal-trigger').leanModal();
         </script>
     </div><% end %>
 </div>

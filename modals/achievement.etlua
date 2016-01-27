@@ -1,0 +1,58 @@
+<% render('utilRenders.modal', {
+        Bare = Bare;
+        ModalID = "achv";
+        ModalHeader = "Create a New Achievement";
+        Action = "/game/" .. GID .. "/achievements/\" + $(\"#achv_id\").val() +\"";
+        Type = "PUT";
+        ExtraForm = ([[
+        <input type="hidden" value="%s" name="csrf_token" id="csrf_token">
+        ]]):format(CSRFToken);
+        Fields = {
+            {
+                Name = "name";
+                ExtraAttrs = [[maxlength="255" required]];
+                LabelContent = "Name";
+                Validation = [[
+                    return "HAHAHAHA NO!";
+                ]];
+                DivClasses = {"s12", "m6"};
+            };
+            {
+                Name = "id";
+                ExtraAttrs = [[style="font-family: monospace" maxlength="255" required]];
+                LabelContent = "ID";
+                DivClasses = {"s12", "m6"};
+            };
+            {
+                Name = "description";
+                TagName = "textarea";
+                Classes = {"materialize-textarea"};
+                LabelContent = "Description";
+            };
+            {
+                Name = "reward";
+                Type = "number";
+                ExtraAttrs = [[min="5" step="5" max="1000" required]];
+                LabelContent = "Reward Points";
+            };
+            {
+                Name = "icon";
+                DivClasses = {"s11"};
+                ExtraAttrs = [[pattern="http://www\.roblox\.com/[A-Za-z0-9\-]+-item\?id=\d+" data-error="Enter a Roblox decal URL" placeholder="http://www.roblox.com/A-item?id=231496692"]];
+                AfterDiv = [[<img class="prefix circle col s1" src="https://cdn.rawgit.com/Templarian/MaterialDesign/master/icons/svg/help.svg" id="achv_icon_display">]];
+                LabelContent = "Icon";
+            };
+        };
+        Buttons = {
+            {
+                Content = "Create";
+                ExtraClasses = {"btn-flat", "blue-text"};
+                ExtraAttrs = "type=\"submit\"";
+            };
+            {
+                Content = "Cancel";
+                ExtraClasses = {"red-text", "btn-flat", "modal-close"};
+            };
+        };
+    });
+%>

@@ -19,7 +19,16 @@ local mysql_schm  = require "lapis.db.schema";
 local http        = require "lapis.nginx.http";
 local util        = require "lapis.util";
 local json        = require "cjson";
+local meta        = library "meta";
 local BuildRequest, HTTPRequestSSL, HTTPRequest, StripHeaders, Login, DataRequest, RunPostBack, FindPostState, HTTPGet = unpack(library("httputil"));
+
+local function HasParams(Params, Required, Invalid)
+    for i = 1, #Required do
+        if not Params[Required] or #Params[Required] < 1 then
+            Invalid[Required] = "This field is required";
+        end
+    end
+end
 
 app:enable"etlua"
 app.layout = require("views.head");
@@ -419,6 +428,8 @@ end);
 
 app:match("game", "/game/:gid", respond_to{
     GET = function(self)
+        self.CSRFToken = CSRF.generate_token(self, self.session.user);
+        self.invalid = {};
         return {render = true};
     end,
     PUT = function(self)
@@ -493,8 +504,93 @@ app:match("game", "/game/:gid", respond_to{
         return "<script>window.location.replace('/game/" .. self.params.gid .. "');</script>";
     end
 });
-app:match("achievement", "/game/:gid/achievements/:achvid", respond_to{
-    -- TODO
+
+local LapisHTML = require "lapis.html";
+
+app:match("achievement", "/game/:achv_gid/achievements/:achv_id", respond_to{
+    GET = function(self)
+        -- TODO
+    end;
+    PUT = function(self)
+        if self.session.user == nil then
+            return {rendirect_to = self:url_for "login"};
+        end
+        self.CSRFToken = LapisHTML.escape(self.params.csrf_token); -- Watch out for XSS!
+        self.invalid = {};
+
+        if not CSRF.validate_token(self, self.session.user) then
+            self.invalid.all = "Error: Invalid CSRF Token! (This message should never be displayed on a browser. If it has, contant gskw)";
+        end
+
+        if mysql.select("count(*) from game_ids where gid=? and owner=(select id from users where username=?)", self.params.achv_gid, self.session.user) == "0" then
+            self.invalid.all = "You do not own the game you're trying to create an achievement for";
+        end
+
+        HasParams(self.params, {"achv_name", "achv_id", "achv_reward", "achv_icon", "achv_gid"}, self.invalid);
+
+        if #self.params.achv_name > 255 then
+            self.invalid.achv_name = "The name is too long";
+        end
+        if #self.params.achv_id > 255 then
+            self.invalid.achv_name = "The ID is too long";
+        end
+        if tonumber(self.params.achv_reward) < 5 or tonumber(self.params.achv_reward) > 1000 or tonumber(self.params.achv_reward) % 5 ~= 0 then
+            self.invalid.achv_reward = "Rewards range 5-1000 points and must be multiplies of 5";
+        end
+
+        local ID = 1818;
+        if not self.invalid.achv_icon then
+            if not self.params.achv_icon:match "http://www%.roblox%.com/[A-Za-z0-9%-]-item%?id=%d+" then
+                self.invalid.achv_icon = "Enter a Roblox decal URL";
+            else
+                local DecalID = self.params.achv_icon:match "%?id=(%d+)";
+                local Result, Status, Headers = http.simple{
+                    url = "http://assetgame.roblox.com/asset/?id=" .. DecalID, 
+                    headers = {
+                    ["Accept-Encoding"] = "gzip, deflate, sdch" -- Any other values will break it, idk why
+                    }};
+
+                if Status == 409 then
+                    self.invalid.achv_icon = "Unable to access asset. Is it copylocked?";
+                elseif Status == 302 and Headers.Location:match("Error") then
+                    self.invalid.achv_icon = "An error has occured! Please contact gskw.";
+                    print(Result);
+                    table.foreach(Headers, print);
+                else
+                    local InstanceData = http.simple(Headers.Location);
+                    ID = InstanceData:match "%?id=(%d+)";
+                end
+            end
+        end
+
+        if mysql.select("count(*) from ? where achv_id=?", gid_table("achievements", self.params.achv_gid), self.params.achv_id)[1]["count(*)"] == "1" then
+            self.invalid.achv_id = "A achievement with this ID already exists!";
+        end
+
+        local UsedReward = meta.getMeta("usedReward", self.params.achv_gid);
+        if UsedReward + self.params.achv_reward > 1000 then
+            self.invalid.achv_reward = "You only have " .. (1000 - UsedReward) .. " points left";
+        end
+
+        for Key, Value in next, self.params do
+            if self.invalid[Key] then
+                self.GID = self.params.achv_gid;
+                self.Bare = true;
+                return {render = require("modals.achievement"), layout = false};
+            end
+        end
+
+        mysql.insert(("achievements_%s"):format(self.params.achv_gid), {
+            achv_id     = self.params.achv_id;
+            description = self.params.achv_description;
+            name        = self.params.achv_name;
+            reward      = self.params.achv_reward;
+            icon        = ID;
+        });
+        meta.setMeta("usedReward", UsedReward + self.params.achv_reward, self.params.achv_gid);
+
+        return "<script>/* TODO */</script>";
+    end;
 });
 
 app:match("logout", "/logout", function(self)
