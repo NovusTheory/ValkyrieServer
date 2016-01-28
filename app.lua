@@ -554,7 +554,6 @@ app:match("achievement", "/game/:achv_gid/achievements/:achv_id", respond_to{
                     self.invalid.achv_icon = "Unable to access asset. Is it copylocked?";
                 elseif Status == 302 and Headers.Location:match("Error") then
                     self.invalid.achv_icon = "An error has occured! Please contact gskw.";
-                    print(Result);
                     table.foreach(Headers, print);
                 else
                     local InstanceData = http.simple(Headers.Location);
