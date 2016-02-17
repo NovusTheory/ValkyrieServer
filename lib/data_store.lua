@@ -63,7 +63,7 @@ function module.saveData(gid, key, value)
   file:write(value);
   meta.setMeta("usedSpace", usedspc - netchange, gid);
 
-  return encoder.encode({success = true; error = ""});
+  return ({success = true; error = ""});
 end
 
 function module.loadData(gid, key)
@@ -76,14 +76,14 @@ function module.loadData(gid, key)
     yield_error(err);
   end
 
-  return encoder.encode({success = true; error = ""; result = file:read("*all")});
+  return ({success = true; error = ""; result = file:read("*all")});
 end
 
 function module.getSpace(gid)
   local usedspc = meta.getMeta("usedSpace", gid);
   local limit   = 1024 * 1024 * 10 - usedspc;
 
-  return encoder.encode({success = true; error = ""; result = {{"10 MiB"; properDataRep(limit); properDataRep(usedspc)}, {1024 * 1024 * 10, limit, tonumber(usedspc)}}});
+  return ({success = true; error = ""; result = {{"10 MiB"; properDataRep(limit); properDataRep(usedspc)}, {1024 * 1024 * 10, limit, tonumber(usedspc)}}});
 end
 
 local function getDirectoryRecursively(tbl, path, ignore)
@@ -108,7 +108,7 @@ function module.listKeys(gid)
     yield_error("Nice try, you dirty injector! (Gid can't contain a .)");
   end
 
-  return encoder.encode({success = true; error = ""; result = getDirectoryRecursively({}, ("ds/%s"):format(gid), ("ds/%s/?"):format(gid))});
+  return ({success = true; error = ""; result = getDirectoryRecursively({}, ("ds/%s"):format(gid), ("ds/%s/?"):format(gid))});
 end
 
 return module;

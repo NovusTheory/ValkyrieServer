@@ -1,6 +1,5 @@
 local module                  = {};
 local modules                 = dofile("interface/modulespec.lua");
-local parser                  = library("parse");
 local encoder                 = library("encode");
 local auth                    = library("check_cokey");
 local inspect                 = require("inspect");
@@ -22,7 +21,7 @@ module                        = setmetatable(module, {
         if not functionMeta then
           error("Invalid function name!");
         end
-        return function(request, parsedbody)
+        return function(request)
           local passArgs      = {};
           local missingArgs   = {};
           local request       = request.params;
@@ -31,9 +30,7 @@ module                        = setmetatable(module, {
             local metaType    = type(functionMeta[i]);
             local requiredArg = metaType == "string" and functionMeta[i] or functionMeta[i].name;
 
-            if parsedbody[requiredArg] ~= nil then
-              table.insert(passArgs, parsedbody[requiredArg]);
-            elseif request[requiredArg] ~= nil then
+            if request[requiredArg] ~= nil then
               table.insert(passArgs, request[requiredArg]);
             else
               if metaType == "table" and functionMeta[i].norequire then
@@ -49,11 +46,11 @@ module                        = setmetatable(module, {
           end
 
           if not perms.getPermission(request.gid, "modules.require") then
-            return encoder.encode({success = false; error = "You do not have the permission modules.require"});
+            return ({success = false; error = "You do not have the permission modules.require"});
           elseif not perms.getPermission(request.gid, "modules.function") then
-            return encoder.encode({success = false; error = "You do not have the permission modules.function"});
+            return ({success = false; error = "You do not have the permission modules.function"});
           elseif not perms.getPermission(request.gid, ("%s.%s"):format(module, funcName)) then
-            return encoder.encode({success = false; error = "You do not have the permission " .. ("%s.%s"):format(module, funcName)});
+            return ({success = false; error = "You do not have the permission " .. ("%s.%s"):format(module, funcName)});
           end
 
           if not moduleMeta.skipAuth then

@@ -13,6 +13,7 @@ local respond_to  = require("lapis.application").respond_to;
 
 local capture_errors  = app_helpers.capture_errors;
 local yield_error     = app_helpers.yield_error;
+local json_params     = app_helpers.json_params;
 
 local mysql       = require "lapis.db";
 local mysql_schm  = require "lapis.db.schema";
@@ -42,7 +43,7 @@ app:get("root", "/", function(self)
 end);
 
 function err_func(self)
-  return    {render = "empty"; layout = false; content_type = "text/valkyrie-return"; ("success=false;error=%q"):format(self.errors[1])};
+  return    {render = "empty"; layout = false; content_type = "application/json"; json = {success = false; error = self.errors[1]}};
 end
 
 -- Documentation
@@ -532,32 +533,35 @@ app:match("achievement", "/game/:achv_gid/achievements/:achv_id", respond_to{
             self.invalid.achv_name = "The name is too long";
         end
         if #self.params.achv_id > 255 then
-            self.invalid.achv_name = "The ID is too long";
+            self.invalid.achv_id = "The ID is too long";
         end
         if tonumber(self.params.achv_reward) < 5 or tonumber(self.params.achv_reward) > 1000 or tonumber(self.params.achv_reward) % 5 ~= 0 then
             self.invalid.achv_reward = "Rewards range 5-1000 points and must be multiplies of 5";
         end
 
-        local ID = 1818;
+        local ID, Location = 1818, "https://cdn.rawgit.com/Templarian/MaterialDesign/master/icons/svg/help.svg";
         if not self.invalid.achv_icon then
             if not self.params.achv_icon:match "http://www%.roblox%.com/[A-Za-z0-9%-]-item%?id=%d+" then
                 self.invalid.achv_icon = "Enter a Roblox decal URL";
             else
                 local DecalID = self.params.achv_icon:match "%?id=(%d+)";
                 local Result, Status, Headers = http.simple{
-                    url = "http://assetgame.roblox.com/asset/?id=" .. DecalID, 
+                    url = "http://assetgame.roblox.com/asset/?id=" .. DecalID,
                     headers = {
-                    ["Accept-Encoding"] = "gzip, deflate, sdch" -- Any other values will break it, idk why
+                        ["Accept-Encoding"] = "gzip, deflate, sdch" -- Any other values will break it, idk why
                     }};
 
                 if Status == 409 then
                     self.invalid.achv_icon = "Unable to access asset. Is it copylocked?";
                 elseif Status == 302 and Headers.Location:match("Error") then
                     self.invalid.achv_icon = "An error has occured! Please contact gskw.";
-                    table.foreach(Headers, print);
                 else
-                    local InstanceData = http.simple(Headers.Location);
-                    ID = InstanceData:match "%?id=(%d+)";
+                    local InstanceData, Status, Headers = http.simple({
+                        url = Headers.Location;
+                        headers = {["Accept-Encoding"] = ""} -- Roblox will still send it gzipped, even if I do this...
+                    });
+                    ID = InstanceData:match "%?id=(%d+)"; -- Try to get the ID anyway
+                    -- TODO: Set Location here, once it's functional
                 end
             end
         end
@@ -588,7 +592,28 @@ app:match("achievement", "/game/:achv_gid/achievements/:achv_id", respond_to{
         });
         meta.setMeta("usedReward", UsedReward + self.params.achv_reward, self.params.achv_gid);
 
-        return "<script>/* TODO */</script>";
+        return {layout = false, ([[
+            <script>
+                $(".achievement-view .collection").append(`
+                <li class="collection-item avatar">
+                    <img src="%s" alt="%s" class="circle">
+                    <span class="title">
+                        <b>%s</b>
+                    </span>
+                    <p>
+                        "%s"
+                        <br>
+                        ID: <code>%s</code>
+                        <br>
+                        %d reward points
+                        <br>
+                        Awarded 0 times
+                    </p>
+                </li>
+                `);
+                $("#achv_modal").closeModal();
+            </script>
+        ]]):format(Location, LapisHTML.escape(self.params.achv_name), LapisHTML.escape(self.params.achv_name), LapisHTML.escape(self.params.achv_description), LapisHTML.escape(self.params.achv_id), LapisHTML.escape(self.params.achv_reward))};
     end;
 });
 
@@ -601,26 +626,28 @@ app:match("webapi", "/webapi/:section", function(self)
 
 end);
 
+app:post("/validate_modal/:modal/:field", json_params(function(self)
+    return {layout = false, json = require("modals." .. self.params.modal .. "-validate")[self.params.field](self.params)};
+end));
+
 app:match("/gskw/g_all/ible", -- This was the april fools prank from last year.
     function(self)            -- http://forum.roblox.com/Forum/ShowPost.aspx?PostID=159105488
       return "<h1 style='color: red'>APRIL FOOLS!</h1>";
     end
 );
 
-app:match("/api/:module/:funct/:gid/:cokey", capture_errors({
+app:match("/api/:module/:funct/:gid/:cokey", json_params(capture_errors({
   on_error = err_func;
   function(self)
-    local result       = nil;
-    ngx.req.read_body();
-    local success, message = pcall(function() result = intmodules[self.params.module][self.params.funct](self, parser.parse(ngx.req.get_body_data())); end);
+    local success, message = pcall(function() result = intmodules[self.params.module][self.params.funct](self); end);
     if not success then
       yield_error(message, self.params);
     end
-    return  {render = "empty"; layout = false; content_type = "text/valkyrie-return"; result};
+    return  {render = "empty"; layout = false; content_type = "application/json"; json = result};
   end
-}));
+})));
 
-app:match("/api/:module/:funct/:gid/:cokey/:valkargs", capture_errors({
+--[[app:match("/api/:module/:funct/:gid/:cokey/:valkargs", capture_errors({
   on_error = err_func;
   function(self)
     local result       = nil;
@@ -630,7 +657,7 @@ app:match("/api/:module/:funct/:gid/:cokey/:valkargs", capture_errors({
     end
     return  {render = "empty"; layout = false; content_type = "text/valkyrie-return"; result};
   end
-}));
+}));]]
 
 app:match("/item-thumbnails-proxy", function(self) -- I HATE YOU ROBLOX
     return {render = "empty"; layout = false; content_type = "application/json"; ({http.simple("http://www.roblox.com/item-thumbnails?" .. util.encode_query_string(self.params))})[1]};

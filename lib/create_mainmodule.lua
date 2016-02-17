@@ -215,7 +215,7 @@ function module.lockAsset(mid)
     ["rdoNotifications"]                        = "on"
   }, io.open("security.sec", "r"):read("*all")));
 
-  return encoder.encode({success = true, error = ""});
+  return ({success = true, error = ""});
 end
 
 function module.uploadRaw(data, mid)
@@ -243,7 +243,7 @@ end
 function module.load(data, mid)
   local ret = module.toAID(module.upload(module.createModel(data), mid, io.open("security.sec", "r"):read("*all")));
   print(ret);
-  return encoder.encode({success = true; error = ""; result = ret});
+  return ({success = true; error = ""; result = ret});
 end
 
 return module;

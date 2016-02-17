@@ -29,7 +29,7 @@ function friends.getFriends(id)
     table.insert(ret, toinsert);
   end
 
-  return encoder.encode({success = true, error = "", result = ret});
+  return ({success = true, error = "", result = ret});
 end
 
 local function getGeneralInfo(id)
@@ -95,7 +95,7 @@ function module.tryCreateUser(id)
     });
   end
 
-  return encoder.encode({success = true; error = ""});
+  return ({success = true; error = ""});
 end
 
 function module.getUserinfo(id)
@@ -145,9 +145,9 @@ function module.getUserinfo(id)
 
   table.insert(ret, parser.parse(friends.getFriends(id)).result);
 
-  --print(inspect(parser.parse(encoder.encode(ret))));
+  --print(inspect(parser.parse((ret))));
 
-  return encoder.encode({success = true; error = ""; result = ret});
+  return ({success = true; error = ""; result = ret});
 end
 
 return module;

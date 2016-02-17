@@ -15,12 +15,12 @@ function module.addMessage(user, message, gid)
     gid         = gid
   });
 
-  return encoder.encode({success = true, error = ""});
+  return ({success = true, error = ""});
 end
 
 function module.checkMessages(since, fresh, gidfilter)
   if fresh then
-    return encoder.encode({success = true, error = "", result = math.floor(socket.gettime())});
+    return ({success = true, error = "", result = math.floor(socket.gettime())});
   end
 
   local result  = mysql.select("message, sent, user from messages where sent > ? and gid=?", since, gidfilter);
@@ -29,7 +29,7 @@ function module.checkMessages(since, fresh, gidfilter)
     table.insert(ret, result[i]);
   end
 
-  return encoder.encode({success = true, error = "", result = ret});
+  return ({success = true, error = "", result = ret});
 end
 
 return module;
