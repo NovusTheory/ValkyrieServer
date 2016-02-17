@@ -221,27 +221,19 @@ local OnlineResult  = MySQL.select("* from player_ingame where gid=? order by id
                         <input id="achv_name" name="achv_name" type="text" class="validate" maxlength="255" required>
                         <label for="achv_name">Name</label>
                     </div>
-                </div>
-                <div class="row">
                     <div class="input-field col s12">
                         <textarea id="achv_description" name="achv_description" class="materialize-textarea validate" required></textarea>
                         <label for="achv_description">Description</label>
                     </div>
-                </div>
-                <div class="row">
                     <div class="input-field col s12">
                         <input id="achv_reward" name="achv_reward" type="number" min="5" step="5" max="1000" class="validate" required>
                         <label for="achv_reward">Reward points</label>
                     </div>
-                </div>
-                <div class="row">
                     <div class="input-field col s11">
                         <input id="achv_icon" name="achv_icon" type="text" required pattern="http://www\.roblox\.com/[A-Za-z0-9\-]-item\?id=\d+" placeholder="http://www.roblox.com/A-item?id=231496692" data-error="Enter a Roblox decal URL">
                         <label for="achv_icon">Icon</label>
                     </div>
                     <img class="prefix circle col s1" src="https://cdn.rawgit.com/Templarian/MaterialDesign/master/icons/svg/help.svg" id="achv_icon_display">
-                </div>
-                <div class="row">
                     <div class="input-field col s12">
                         <input style="font-family: monospace" id="achv_id" name="achv_id" type="text" class="validate" maxlength="255" required>
                         <label for="achv_id">ID</label>
@@ -283,7 +275,7 @@ local OnlineResult  = MySQL.select("* from player_ingame where gid=? order by id
                     }
                     else {
                         achv_icon.addClass("valid");
-                        $.getJSON("//valkyrie.crescentcode.net/item-thumbnails-proxy?params=" + JSON.stringify([{assetId: parseInt(id[1])}]), function(result) {
+                        $.getJSON("/item-thumbnails-proxy?params=" + JSON.stringify([{assetId: parseInt(id[1])}]), function(result) {
                             if (!result[0])
                                 achv_icon.addClass("invalid");
                             else
@@ -298,7 +290,7 @@ local OnlineResult  = MySQL.select("* from player_ingame where gid=? order by id
                 $("#achv_create").click(function() {
                     $("#achv_spinner").addClass("active");
                     $.ajax({
-                        url: "//valkyrie.crescentcode.net/game/test/achievements/" + $("#achv_id").val(),
+                        url: "/game/test/achievements/" + $("#achv_id").val(),
                         type: 'PUT',
                         success: function(data) {
                             // TODO

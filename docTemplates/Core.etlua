@@ -9,11 +9,11 @@
 </p>
 <br>
 <div class="collection">
-	<a href="//valkyrie.crescentcode.net/docs/Core/Valkyrie_Core" class="collection-item">Valkyrie Core</a>
-	<a href="//valkyrie.crescentcode.net/docs/Core/Components" class="collection-item">Components</a>
-	<a href="//valkyrie.crescentcode.net/docs/Core/Libraries" class="collection-item">Libraries</a>
-	<a href="//valkyrie.crescentcode.net/docs/Core/Settings" class="collection-item">Settings</a>
-	<a href="//valkyrie.crescentcode.net/docs/Core/BaseLib" class="collection-item">BaseLib</a>
+	<a href="/docs/Core/Valkyrie_Core" class="collection-item">Valkyrie Core</a>
+	<a href="/docs/Core/Components" class="collection-item">Components</a>
+	<a href="/docs/Core/Libraries" class="collection-item">Libraries</a>
+	<a href="/docs/Core/Settings" class="collection-item">Settings</a>
+	<a href="/docs/Core/BaseLib" class="collection-item">BaseLib</a>
 </div>
 <!--
 vim: set syntax=html

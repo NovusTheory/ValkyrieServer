@@ -5,33 +5,33 @@
 	objects used to expose APIs for the Valkyrie internals.
 	<br>
 	All components are able to be directly accessed by
-	<a href="//valkyrie.crescentcode.net/docs/Core/Valkyrie_Core#GetComponent">
+	<a href="/docs/Core/Valkyrie_Core#GetComponent">
 		Valkyrie.GetComponent
 	</a>
 </p>
 <br>
 <div class="collection">
-	<a href="//valkyrie.crescentcode.net/docs/Components/Achievement" class="collection-item">Achievement <em class="right grey-text text-lighten-1">Server Only</em></a>
-	<a href="//valkyrie.crescentcode.net/docs/Components/AppbarModule" class="collection-item">AppbarModule <em class="right grey-text text-lighten-1">Client Only</em></a>
-	<a href="//valkyrie.crescentcode.net/docs/Components/Colour" class="collection-item">Colour</a>
-	<a href="//valkyrie.crescentcode.net/docs/Components/DataTypes" class="collection-item">DataTypes</a>
-	<a href="//valkyrie.crescentcode.net/docs/Components/Extractizer" class="collection-item">Extractizer</a>
-	<a href="//valkyrie.crescentcode.net/docs/Components/Fonts" class="collection-item">Fonts <em class="right grey-text text-lighten-1">Client Only</em></a>
-	<a href="//valkyrie.crescentcode.net/docs/Components/IntentService" class="collection-item">IntentService</a>
-	<a href="//valkyrie.crescentcode.net/docs/Components/Logger" class="collection-item">Logger</a>
-	<a href="//valkyrie.crescentcode.net/docs/Components/Overlay" class="collection-item">Overlay <em class="right grey-text text-lighten-1">Client Only</em></a>
-	<a href="//valkyrie.crescentcode.net/docs/Components/References" class="collection-item">References</a>
-	<a href="//valkyrie.crescentcode.net/docs/Components/RemoteCommunication" class="collection-item">RemoteCommunication <em class="right grey-text text-lighten-1">Server Only</em></a>
-	<a href="//valkyrie.crescentcode.net/docs/Components/RequestEncode" class="collection-item">RequestEncode <em class="right grey-text text-lighten-1">Server Only</em></a>
-	<a href="//valkyrie.crescentcode.net/docs/Components/RequestDecode" class="collection-item">RequestDecode <em class="right grey-text text-lighten-1">Server Only</em></a>
-	<a href="//valkyrie.crescentcode.net/docs/Components/SchedulerService" class="collection-item">SchedulerService</a>
-	<a href="//valkyrie.crescentcode.net/docs/Components/SidebarModule" class="collection-item">SidebarModule <em class="right grey-text text-lighten-1">Client Only</em></a>
-	<a href="//valkyrie.crescentcode.net/docs/Components/Tweens" class="collection-item">Tweens</a>
-	<a href="//valkyrie.crescentcode.net/docs/Components/Util" class="collection-item">Util</a>
-	<a href="//valkyrie.crescentcode.net/docs/Components/ValkyrieAdmin" class="collection-item">ValkyrieAdmin <em class="right grey-text text-lighten-1">Server Only</em></a>
-	<a href="//valkyrie.crescentcode.net/docs/Components/ValkyrieEvents" class="collection-item">ValkyrieEvents</a>
-	<a href="//valkyrie.crescentcode.net/docs/Components/ValkyrieInput" class="collection-item">ValkyrieInput <em class="right grey-text text-lighten-1">Client Only</em></a>
-	<a href="//valkyrie.crescentcode.net/docs/Components/ValkyriePermissions" class="collection-item">ValkyriePermissions <em class="right grey-text text-lighten-1">Server Only</em></a>
+	<a href="/docs/Components/Achievement" class="collection-item">Achievement <em class="right grey-text text-lighten-1">Server Only</em></a>
+	<a href="/docs/Components/AppbarModule" class="collection-item">AppbarModule <em class="right grey-text text-lighten-1">Client Only</em></a>
+	<a href="/docs/Components/Colour" class="collection-item">Colour</a>
+	<a href="/docs/Components/DataTypes" class="collection-item">DataTypes</a>
+	<a href="/docs/Components/Extractizer" class="collection-item">Extractizer</a>
+	<a href="/docs/Components/Fonts" class="collection-item">Fonts <em class="right grey-text text-lighten-1">Client Only</em></a>
+	<a href="/docs/Components/IntentService" class="collection-item">IntentService</a>
+	<a href="/docs/Components/Logger" class="collection-item">Logger</a>
+	<a href="/docs/Components/Overlay" class="collection-item">Overlay <em class="right grey-text text-lighten-1">Client Only</em></a>
+	<a href="/docs/Components/References" class="collection-item">References</a>
+	<a href="/docs/Components/RemoteCommunication" class="collection-item">RemoteCommunication <em class="right grey-text text-lighten-1">Server Only</em></a>
+	<a href="/docs/Components/RequestEncode" class="collection-item">RequestEncode <em class="right grey-text text-lighten-1">Server Only</em></a>
+	<a href="/docs/Components/RequestDecode" class="collection-item">RequestDecode <em class="right grey-text text-lighten-1">Server Only</em></a>
+	<a href="/docs/Components/SchedulerService" class="collection-item">SchedulerService</a>
+	<a href="/docs/Components/SidebarModule" class="collection-item">SidebarModule <em class="right grey-text text-lighten-1">Client Only</em></a>
+	<a href="/docs/Components/Tweens" class="collection-item">Tweens</a>
+	<a href="/docs/Components/Util" class="collection-item">Util</a>
+	<a href="/docs/Components/ValkyrieAdmin" class="collection-item">ValkyrieAdmin <em class="right grey-text text-lighten-1">Server Only</em></a>
+	<a href="/docs/Components/ValkyrieEvents" class="collection-item">ValkyrieEvents</a>
+	<a href="/docs/Components/ValkyrieInput" class="collection-item">ValkyrieInput <em class="right grey-text text-lighten-1">Client Only</em></a>
+	<a href="/docs/Components/ValkyriePermissions" class="collection-item">ValkyriePermissions <em class="right grey-text text-lighten-1">Server Only</em></a>
 </div>
 <!--
 vim: set syntax=html

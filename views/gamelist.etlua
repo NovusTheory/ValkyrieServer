@@ -13,13 +13,13 @@ local OwnedGIDs = MySQL.select("* from game_ids where owner=(select id from user
                 <div class="card-content">
                     <div class="card-title valign-wrapper">
                         <h4>My Games</h4>
-                        <a class="btn-floating btn-medium waves-effect waves-light blue right valign modal-trigger<%= #OwnedGIDs == 5 and " disabled" or "" %>" href="//valkyrie.crescentcode.net/game/new" style="margin-left: auto"<%- #OwnedGIDs == 5 and " title=\"You already own 5 games!\"" or "" %>><i class="material-icons">add</i></a>
+                        <a class="btn-floating btn-medium waves-effect waves-light blue right valign modal-trigger<%= #OwnedGIDs == 5 and " disabled" or "" %>" href="/game/new" style="margin-left: auto"<%- #OwnedGIDs == 5 and " title=\"You already own 5 games!\"" or "" %>><i class="material-icons">add</i></a>
                     </div>
                     <div class="collection">
                         <%
                         for i = 1, #OwnedGIDs do
                         %>
-                        <a class="collection-item" href="//valkyrie.crescentcode.net/game/<%= OwnedGIDs[i].gid %>"><%= MetaManager.getMeta("name", OwnedGIDs[i].gid) %> (<code><%= OwnedGIDs[i].gid %></code>)</a>
+                        <a class="collection-item" href="/game/<%= OwnedGIDs[i].gid %>"><%= MetaManager.getMeta("name", OwnedGIDs[i].gid) %> (<code><%= OwnedGIDs[i].gid %></code>)</a>
                         <%
                         end
                         if #OwnedGIDs == 0 then

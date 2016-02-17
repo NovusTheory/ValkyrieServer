@@ -88,7 +88,7 @@ end
         $("#game_create").click(function() {
             $("#game_spinner").addClass("active");
             $.ajax({
-                url: "//valkyrie.crescentcode.net/game/" + ($("#gid").val() ? $("#gid").val() : "fail"),
+                url: "/game/" + ($("#gid").val() ? $("#gid").val() : "fail"),
                 type: 'PUT',
                 data: $("form").serialize(),
                 success: function(data) {

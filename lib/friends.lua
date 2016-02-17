@@ -20,7 +20,7 @@ function module.getFriends(id)
     table.insert(ret, toinsert);
   end
 
-  return encoder.encode({success = true, error = "", result = ret});
+  return ({success = true, error = "", result = ret});
 end
 
 function module.setOnlineGame(id, gid, name)
@@ -49,7 +49,7 @@ function module.setOnlineGame(id, gid, name)
     player           = id;
   });
 
-  return encoder.encode({success = true, error = ""});
+  return ({success = true, error = ""});
 end
 
 function module.goOffline(id, time_ingame)
@@ -63,7 +63,7 @@ function module.goOffline(id, time_ingame)
     player           = id;
   });
 
-  return encoder.encode({success = true, error = ""})
+  return ({success = true, error = ""})
 end
 
 return module;

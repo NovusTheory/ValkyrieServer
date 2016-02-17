@@ -28,7 +28,7 @@
 				How to use Valkyrie and its features
 			</div>
 		</div>
-		<a href="//valkyrie.crescentcode.net/docs/Core"><span class="clickspan"></span></a>
+		<a href="/docs/Core"><span class="clickspan"></span></a>
 	</div>
 	<div class="col s12 m6 l3" style="position:relative">
 		<!-- Components -->
@@ -41,7 +41,7 @@
 				Documentation for all of the core components for Valkyrie.
 			</div>
 		</div>
-		<a href="//valkyrie.crescentcode.net/docs/Components"><span class="clickspan"></span></a>
+		<a href="/docs/Components"><span class="clickspan"></span></a>
 	</div>
 	<div class="col s12 m6 l3" style="position:relative">
 		<!-- Libraries -->
@@ -55,7 +55,7 @@
 				Valkyrie
 			</div>
 		</div>
-		<a href="//valkyrie.crescentcode.net/docs/Libraries"><span class="clickspan"></span></a>
+		<a href="/docs/Libraries"><span class="clickspan"></span></a>
 	</div>
 	<div class="col s12 m6 l3" style="position:relative">
 		<!-- Features -->
@@ -68,7 +68,7 @@
 				A comprehensive guide to all of Valkyrie's other features.
 			</div>
 		</div>
-		<a href="//valkyrie.crescentcode.net/docs/Features"><span class="clickspan"></span></a>
+		<a href="/docs/Features"><span class="clickspan"></span></a>
 	</div>
 </div>
 <!--

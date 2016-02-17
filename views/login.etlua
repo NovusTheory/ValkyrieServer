@@ -65,7 +65,7 @@
                     Log In
                     <i class="material-icons right">send</i>
                 </button>
-                <a href="//valkyrie.crescentcode.net/signup" style="margin-left:2em" class="indigo-text">Sign Up</a>
+                <a href="/signup" style="margin-left:2em" class="indigo-text">Sign Up</a>
                 <div class="preloader-wrapper small" style="margin: auto; position: absolute; top:0;left:0;right:0;bottom:0" id="login_spinner">
                     <div class="spinner-layer spinner-green-only">
                         <div class="circle-clipper left">
@@ -94,7 +94,7 @@
         };
         $("#login_button").click(function() {
                 $("#login_spinner").addClass("active");
-                $.post("//valkyrie.crescentcode.net/login", $("form").serialize(), function(data) {
+                $.post("/login", $("form").serialize(), function(data) {
                     $("main").html(data);
                 });
             return false;
