@@ -21,6 +21,10 @@ local util        = require "lapis.util";
 local json        = require "cjson";
 local BuildRequest, HTTPRequestSSL, HTTPRequest, StripHeaders, Login, DataRequest, RunPostBack, FindPostState, HTTPGet = unpack(library("httputil"));
 
+local cachefunc = function(url, x, self)
+  return (self.session.user or "") .. url;
+end;
+
 app:enable"etlua"
 app.layout = require("views.head");
 
@@ -37,29 +41,32 @@ function err_func(self)
 end
 
 -- Documentation
-app:match("docs", "/docs", --[[cache.cached{]]function(self)
+app:match("docs", "/docs", cache.cached{function(self)
   self.title = "Valkyrie Docs";
   return {render = "docs"};
-end--[[,
+end,
 dict_name = "docs_cache";
-exptime = 20;
-}]]);
+exptime = 24*60*60;
+cache_key = cachefunc;
+});
 
-app:match("docscat", "/docs/:subtype", --[[cache.cached{]]function(self)
+app:match("docscat", "/docs/:subtype", cache.cached{function(self)
   self.title = "Valkyrie Docs";
   return {render = "docs"};
-end--[[,
+end,
 dict_name = "docs_cache";
-exptime = 20;
-}]]);
+exptime = 60*60;
+cache_key = cachefunc;
+});
 
-app:match("docsobj", "/docs/:subtype/:name", --[[cache.cached{]]function(self)
+app:match("docsobj", "/docs/:subtype/:name", cache.cached{function(self)
   self.title = "Valkyrie Docs";
   return {render = "docs"};
-end--[[,
+end,
 dict_name = "docs_cache";
-exptime = 20;
-}]]);
+exptime = 60;
+cache_key = cachefunc;
+});
 
 app:match("getValkyrie", "/get", function(self)
   self.title = "Get Valkyrie";
@@ -444,7 +451,8 @@ app:match("game", "/game/:gid", respond_to{
 
         if mysql.select("count(*) from game_ids where gid=?", self.params.gid)[1]["count(*)"] == "1" then
             self.invalid.gid = "This GID is already in use!";
-            return {render = "newgame"};
+	    self.bare = true;
+            return {layout = false; render = "newgame"};
         end
 
         if mysql.select("count(*) from game_ids where owner=(select id from users where username=?)", self.session.user)[1]["count(*)"] == "5" then
@@ -489,7 +497,7 @@ app:match("game", "/game/:gid", respond_to{
         make_meta("usedReward", 0);
         make_meta("usedSpace", 0);
         make_meta("name", self.params.game_name);
-        
+
         return "<script>window.location.replace('/game/" .. self.params.gid .. "');</script>";
     end
 });

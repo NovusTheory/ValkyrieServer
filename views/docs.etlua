@@ -2,14 +2,18 @@
 
 <div class="container" style="background-color:#ffffff">
 <%
+	local suc;
 	if params.subtype then
 		if params.name then
-			render("docTemplates."..params.subtype.."."..params.name);
+			suc = pcall(render,"docTemplates."..params.subtype.."."..params.name);
 		else
-			render("docTemplates."..params.subtype);
+			suc = pcall(render,"docTemplates."..params.subtype);
 		end;
 	else
-		render("docUtils.DocHome");
+		suc = pcall(render,"docUtils.DocHome");
+	end;
+	if not suc then
+		render("docUtils.Doc404");
 	end;
 %>
 </div>

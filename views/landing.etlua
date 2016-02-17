@@ -85,7 +85,7 @@ Features:
         <h2>Vanilla</h2>
         <pre><code class="lua" style="white-space: pre-wrap; word-wrap: break-word; overflow: hidden">
 -- Long hslToRgb, rgbToHsl and easing functions here...
-local Frame = Instance.new("Frame", <wbr/>Instance.new("ScreenGui"), <wbr/>game:GetService("Players").LocalPlayer.PlayerGui);
+local Frame = Instance.new("Frame", <wbr/>Instance.new("ScreenGui", game:GetService("Players").LocalPlayer.PlayerGui))<wbr/>;
 
 Frame.Size = <wbr/>UDim2.new(0, 200, 0, 100);
 Frame.Position = <wbr/>UDim2.new(0, -200, 0, -100);

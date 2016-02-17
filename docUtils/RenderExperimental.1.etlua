@@ -1,0 +1,234 @@
+<!-- Experimental renderer for Documentation. -->
+<link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/fantasque-sans-mono" type="text/css"/>
+<style>
+	.subtex {
+		font-size:48px;
+		align-content:center;
+		vertical-align:middle;
+		display:inline-flex;
+		margin-right:8px;
+		line-height:1;
+		margin-bottom:12px;
+	}
+	.popout {
+		margin-bottom:48px;
+	}
+	pre {
+		tab-size: 4;
+		font-family:"FantasqueSansMonoRegular";
+	}
+</style>
+<h1><%= Title %></h1>
+<p class="flow-text">
+	<%= Body %>
+</p>
+<% if Properties then %>
+<ul class="collapsible popout" data-collapsible="accordion">
+	<span class="cyan-text text-lighten-1 subtex"> <i class="material-icons subtex">create</i> Properties </span>
+	<% for i=1,#Properties do
+		local v = Properties[i] %>
+		<li name="<%= v.Name %>">
+			<div class="collapsible-header" id="<%= v.Name %>"><%= v.Name %>
+			<% if v.Meta then %> <em class="right grey-text text-lighten-1"><%= v.Meta %></em> <% end %>
+			</div>
+			<div class="collapsible-body">
+				<p class="flow-text grey-text text-lighten-1">
+					Valid types: <span class="green-text"><%= v.Type %></span>
+					<br>
+					Default value: <span class="<%= type(v.Default) == 'string' and 'amber' or 'purple' %>-text"><%= v.Default %></span>
+				</p>
+				<p class="flow-text">
+					<%= v.Body %>
+				</p>
+			</div>
+		</li>
+	<% end %>
+</ul>
+<% end %>
+<% if Methods then %>
+<ul class="collapsible popout" data-collapsible="accordion">
+	<span class="cyan-text text-lighten-1 subtex"> <i class="material-icons subtex">code</i> Methods </span>
+<%
+	local RenderFunction,RenderTable,RenderPlain,RenderAlt;
+	RenderPlain = function(arg)
+		if (arg.Type or arg.type) == 'function' then
+			return string.gsub("<span class=\"green-text text-darken-2\">function</span> "
+			.. ((arg.Nullable or arg.Required == false) and "?" or "")
+			.. arg.Name
+			.. RenderFunction(arg.Meta or arg), '\n', '\n\t');
+		elseif arg.Default and (arg.Type or arg.type) == 'table' then
+			return string.gsub("<span class=\"green-text text-darken-2\">table</span> "
+			.. ((arg.Nullable or arg.Required == false) and "?" or "")
+			.. arg.Name
+			.. " = "
+			.. RenderTable(arg.Default), '\n', '\n\t');
+		else
+			local DefaultColor;
+			local def = arg.Default;
+			if def then
+				if def:match("^[\"'].+[\"']") or def:match("^[+-]?%d+%.?%d*$") then
+					DefaultColor = "indigo";
+				elseif def == 'true' or def == 'false' then
+					DefaultColor = "text-lighten-2 purple";
+				elseif def == 'nil' then
+					DefaultColor = "text-lighten-1 red";
+				else
+					DefaultColor = "teal";
+				end;
+			end;
+			return "<span class=\"green-text text-darken-2\">"
+			.. (arg.Type or arg.type)
+			.. "</span><span class=\"green-text\">"
+			.. (arg.OfType and "&lt;"..arg.OfType.."&gt; " or " ")
+			.. "</span>"
+			.. ((arg.Nullable or arg.Required == false) and "?" or "")
+			.. arg.Name
+			.. (def and " = <span class=\""..DefaultColor.."-text\">" .. arg.Default .. "</span>"  or "")
+		end;
+	end;
+	RenderAlt = function(arg) -- For returns, mostly. No defaults.
+		if (arg.Type or arg.type) == 'function' then
+			return string.gsub("<span class=\"green-text text-darken-2\">function</span> "
+			.. ((arg.Nullable or arg.Required == false) and "?" or "")
+			.. arg.Name
+			.. RenderFunction(arg.Meta), '\n', '\n\t');
+		elseif (arg.Type or arg.type) == 'table' then
+			return string.gsub("<span class=\"green-text text-darken-2\">table</span> "
+			.. RenderTable(arg.Meta or arg)
+			.. ((arg.Nullable or arg.Required == false) and " ?" or " ")
+			.. arg.Name, '\n', '\n\t');
+		else
+			return "<span class=\"green-text text-darken-2\">"
+			.. (arg.Type or arg.type)
+			.. "</span><span class=\"green-text\">"
+			.. (arg.OfType and "&lt;"..arg.OfType.."&gt; " or " ")
+			.. "</span>"
+			.. ((arg.Nullable or arg.Required == false) and "?" or "")
+			.. arg.Name
+		end;
+	end;
+	RenderFunction = function(meta)
+		local args = meta.Args or meta.Arguments or meta.Params or meta.Parameters;
+		local buffer = {};
+		if #args ~= 0 then
+			buffer[1] = "(\n\t";
+			for i=1,#args do
+				buffer[i*2] = RenderPlain(args[i])
+				buffer[i*2+1] = i == #args and "" or ",\n\t";
+			end;
+			buffer[#buffer+1] = "\n)";
+		else
+			buffer[1] = "(\n)"
+		end;
+		buffer[#buffer+1] = " -&gt; ";
+		if meta.Cases or meta.Conditions then
+			local cases = meta.Cases;
+			for i=1,#cases do
+				local case = cases[i];
+				buffer[#buffer+1] = "| ? ";
+				buffer[#buffer+1] = case.Condition:gsub("<","&lt;"):gsub(">","&gt;");
+				local Returns = case.Returns
+				if Returns and #Returns ~= 0 then
+					buffer[#buffer+1] = " =&gt; ["
+					for i=1,#Returns do
+						local ret = Returns[i];
+						buffer[#buffer+1] = RenderAlt(ret);
+						if i ~= #Returns then
+							buffer[#buffer+1] = ", ";
+						end;
+					end;
+					buffer[#buffer+1] = "]"
+				else
+					buffer[#buffer+1] = " =&gt; <span class=\"red-text text-lighten-1\">nil</span>"
+				end
+				if i ~= #cases then
+					buffer[#buffer+1] = "\n     ";
+				end;
+			end;
+		else
+			local Returns = meta.Returns;
+			if Returns and #Returns ~= 0 then
+				buffer[#buffer+1] = "["
+				for i=1,#Returns do
+					local ret = Returns[i];
+					buffer[#buffer+1] = RenderAlt(ret):gsub("(\n\t*)","%1  ");
+					if i ~= #Returns then
+						buffer[#buffer+1] = ",\n\t  ";
+					end;
+				end;
+				buffer[#buffer+1] = "]"
+			else
+				buffer[#buffer+1] = "<span class=\"red-text text-lighten-1\">nil</span>"
+			end
+		end;
+		return table.concat(buffer,'');
+	end;
+	RenderTable = function(tbl)
+		local buffer = {};
+		buffer[1] = "{\n\t"
+		local hold = tbl.__variadic;
+		tbl.__variadic = nil;
+		for k,v in next,tbl do
+			v.Name = k;
+			buffer[#buffer+1] = RenderPlain(v);
+			if hold or next(tbl,k) then
+				buffer[#buffer+1] = ",\n\t"
+			else
+				buffer[#buffer+1] = "\n}"
+			end
+		end;
+		if hold then
+			hold.Name = "...";
+			buffer[#buffer+1] = RenderPlain(hold);
+			buffer[#buffer+1] = "\n}";
+		end
+		return table.concat(buffer,'');
+	end;
+	for i=1,#Methods do
+		local rr = Methods[i];
+%>
+<li name="<%= rr.Name %>">
+			<div class="collapsible-header" id="<%= rr.Name %>"><%= rr.Name %>
+			<% if rr.Meta then %> <em class="right grey-text text-lighten-1"><%= rr.Meta %></em> <% end %>
+			</div>
+			<div class="collapsible-body">
+				<pre>
+		function <%= rr.Name %><%-RenderFunction(rr):gsub("\n","\n\t\t")%>
+				</pre>
+				<p class="flow-text">
+					<%= rr.Body %>
+				</p>
+			</div>
+		</li>
+	<% end %>
+<% end %>
+<% if Settings then %>
+<ul class="collapsible popout" data-collapsible="accordion">
+	<span class="cyan-text text-lighten-1 subtex"> <i class="material-icons subtex">settings</i> Settings </span>
+	<p class="flow-text grey-text text-lighten-1">
+		Settings.<%= Settings.Where %>
+	</p>
+	<% for i=1,#Settings do
+		local v = Settings[i] %>
+		<li name="<%= v.Name %>">
+			<div class="collapsible-header" id="<%= v.Name %>"><%= v.Name %>
+			<% if v.Meta then %> <em class="right grey-text text-lighten-1"><%= v.Meta %></em> <% end %>
+			</div>
+			<div class="collapsible-body">
+				<p class="flow-text grey-text text-lighten-1">
+					Valid types: <span class="green-text"><%= v.Type %></span>
+					<br>
+					Default value: <span class="<%= type(v.Default) == 'string' and 'amber' or 'purple' %>-text"><%= v.Default %></span>
+				</p>
+				<p class="flow-text">
+					<%= v.Body %>
+				</p>
+			</div>
+		</li>
+	<% end %>
+</ul>
+<% end %>
+
+<script>
+	document.getElementById(document.location.hash.substr(1)).className += " active";
+</script>

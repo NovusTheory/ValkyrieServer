@@ -17,6 +17,9 @@ nav {
   font-weight: normal;
   font-style: normal;
 }
+.greenhover:hover {
+	color:#388E3C;
+}
 </style>
 <div class="navbar-fixed">
 <nav class="z-depth-0 hover">
@@ -30,7 +33,7 @@ nav {
 				<li class="nosession"><a href="//valkyrie.crescentcode.net/login">Log In</a></li>
 			<% end %>
             <% if SignedIn then %>
-                <li><a href="//valkyrie.crescentcode.net/user/<%= session.user %>/games">Manage Games</a></li>
+                <li><a href="//valkyrie.crescentcode.net/user/<%= session.user %>/games">Develop</a></li>
                 <li><a href="//valkyrie.crescentcode.net/logout">Log Out</a></li>
             <% end %>
 		</ul>
@@ -42,7 +45,7 @@ nav {
 				<li class="nosession"><a href="//valkyrie.crescentcode.net/login">Log In</a></li>
 			<% end %>
             <% if SignedIn then %>
-                <li><a href="//valkyrie.crescentcode.net/user/<%= session.user %>/games">Manage Games</a></li>
+                <li><a href="//valkyrie.crescentcode.net/user/<%= session.user %>/games" class="greenhover"><i class="material-icons left">gamepad</i>Develop</a></li>
                 <li><a href="//valkyrie.crescentcode.net/logout">Log Out</a></li>
             <% end %>
 		</ul>

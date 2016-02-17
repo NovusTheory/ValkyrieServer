@@ -66,7 +66,6 @@
 			to use them.
 			<br> <br>
 			</section>
-			<div>
 				<h4>
 					How do I use it?
 				</h4>
@@ -74,7 +73,6 @@
 				<code class="z-depth-1">require(stable)</code>
 				and authenticate it for your game. -->
 				We don't have a stable build yet, but you can use the beta.
-			</div>
 		</div>
 	</div>
 	<div id="beta" class="col s12">
@@ -118,7 +116,6 @@
 			</a>
 			<br> <br>
 			</section>
-			<div>
 				<h4>
 					How do I use it?
 				</h4>
@@ -129,7 +126,6 @@
 				<br>
 				<br>
 				Be aware that some components may not work in your game yet.
-			</div>
 		</div>
 	</div>
 	<div id="dev" class="col s12">
@@ -182,7 +178,6 @@
 			Valkyrie or extend Valkyrie.
 			<br> <br>
 			</section>
-			<div>
 				<h4>
 					How do I use it?
 				</h4>
@@ -192,7 +187,6 @@
 				<br>
 				<br>
 				Be aware that some functions may not work.
-			</div>
 			<section>
 				<h5>Looking to test things sooner?</h5>
 				If you want to test out changes before they hit the Developer
@@ -229,14 +223,14 @@
 	<section style="clear:both">
 	<div class="container flow-text">
 	<section>
-		<h5>How do I authenticate Valkyrie?</h5>
+		<h4>How do I authenticate Valkyrie?</h4>
 		After requiring in the Valkyrie loader for the build you plan on using,
 		call it with your GameId and Valkyrie Key as parameters.
 		<br>
 		Example: <code class="z-depth-1">require(ValkyrieBuildId)("TestGame", "TestKey123")</code>
 	</section>
 	<section>
-		<h5>How can I use Valkyrie like a normal module?</h5>
+		<h4>How can I use Valkyrie like a normal module?</h4>
 		Just put your authentication code into a ModuleScript and make it return
 		Valkyrie after it has been authenticated.
 	</section>
