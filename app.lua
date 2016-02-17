@@ -13,6 +13,7 @@ local respond_to  = require("lapis.application").respond_to;
 
 local capture_errors  = app_helpers.capture_errors;
 local yield_error     = app_helpers.yield_error;
+local json_params     = app_helpers.json_params;
 
 local mysql       = require "lapis.db";
 local mysql_schm  = require "lapis.db.schema";
@@ -33,7 +34,7 @@ app:get("root", "/", function(self)
 end);
 
 function err_func(self)
-  return    {render = "empty"; layout = false; content_type = "text/valkyrie-return"; ("success=false;error=%q"):format(self.errors[1])};
+  return    {render = "empty"; layout = false; content_type = "application/json"; json = {success = false; error = self.errors[1]}};
 end
 
 -- Documentation
@@ -506,26 +507,28 @@ app:match("webapi", "/webapi/:section", function(self)
 
 end);
 
+app:post("/validate_modal/:modal/:field", json_params(function(self)
+    return {layout = false, json = require("modals." .. self.params.modal .. "-validate")[self.params.field](self.params)};
+end));
+
 app:match("/gskw/g_all/ible", -- This was the april fools prank from last year.
     function(self)            -- http://forum.roblox.com/Forum/ShowPost.aspx?PostID=159105488
       return "<h1 style='color: red'>APRIL FOOLS!</h1>";
     end
 );
 
-app:match("/api/:module/:funct/:gid/:cokey", capture_errors({
+app:match("/api/:module/:funct/:gid/:cokey", json_params(capture_errors({
   on_error = err_func;
   function(self)
-    local result       = nil;
-    ngx.req.read_body();
-    local success, message = pcall(function() result = intmodules[self.params.module][self.params.funct](self, parser.parse(ngx.req.get_body_data())); end);
+    local success, message = pcall(function() result = intmodules[self.params.module][self.params.funct](self); end);
     if not success then
       yield_error(message, self.params);
     end
-    return  {render = "empty"; layout = false; content_type = "text/valkyrie-return"; result};
+    return  {render = "empty"; layout = false; content_type = "application/json"; json = result};
   end
-}));
+})));
 
-app:match("/api/:module/:funct/:gid/:cokey/:valkargs", capture_errors({
+--[[app:match("/api/:module/:funct/:gid/:cokey/:valkargs", capture_errors({
   on_error = err_func;
   function(self)
     local result       = nil;
@@ -535,7 +538,7 @@ app:match("/api/:module/:funct/:gid/:cokey/:valkargs", capture_errors({
     end
     return  {render = "empty"; layout = false; content_type = "text/valkyrie-return"; result};
   end
-}));
+}));]]
 
 app:match("/item-thumbnails-proxy", function(self) -- I HATE YOU ROBLOX
     return {render = "empty"; layout = false; content_type = "application/json"; ({http.simple("http://www.roblox.com/item-thumbnails?" .. util.encode_query_string(self.params))})[1]};

@@ -17,7 +17,7 @@ function module.check(gid, cokey, uid)
     yield_error("Invalid UID-CoKey-GID combination!");
   end
 
-  return encoder.encode({success = true, error = ""});
+  return ({success = true, error = ""});
 end
 
 function module.check_nouid(gid, cokey)

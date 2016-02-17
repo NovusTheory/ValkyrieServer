@@ -16,15 +16,15 @@ function module.createBan(gid, player, reason)
     reason        = reason;
   });
 
-  return encoder.encode({success = true; error = ""});
+  return ({success = true; error = ""});
 end
 
 function module.isBanned(player)
   local exists_result = mysql.select("* from bans where player=?", player);
   if #exists_result > 0 then
-    return encoder.encode({success = true; error = ""; result = {true, exists_result[1].reason, exists_result[1].from_gid}});
+    return ({success = true; error = ""; result = {true, exists_result[1].reason, exists_result[1].from_gid}});
   end
-  return encoder.encode({success = true; error = ""; result = {false}});
+  return ({success = true; error = ""; result = {false}});
 end
 
 return module;

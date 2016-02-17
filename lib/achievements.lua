@@ -34,7 +34,7 @@ function module.create(gid, id, desc, name, reward, icon)
         icon              = icon
     });
 
-  return encoder.encode({success = true, error = ""});
+  return ({success = true, error = ""});
 end
 
 function module.award(gid, pid, aid)
@@ -54,7 +54,7 @@ function module.award(gid, pid, aid)
       player              = pid
   });
 
-  return encoder.encode({success = true, error = ""});
+  return ({success = true, error = ""});
 end
 
 local function escape_filter(name, filter)
@@ -93,7 +93,7 @@ function module.list(gid, othgid, filter)
     row         = result:fetch({}, "a");
 end]]
 
-  return encoder.encode({
+  return ({
     success = true,
     error   = "",
     result  = ret
@@ -104,7 +104,7 @@ function module.getReward(gid)
   local usedreward  = metamanager.getMeta("usedreward", gid);
   local limit       = 1000 - usedreward;
 
-  return encoder.encode({success = true; error = ""; result = {1000, limit, tonumber(usedreward)}});
+  return ({success = true; error = ""; result = {1000, limit, tonumber(usedreward)}});
 end
 
 return module;
