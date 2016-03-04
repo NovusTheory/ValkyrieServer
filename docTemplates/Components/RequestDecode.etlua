@@ -1,0 +1,8 @@
+<link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/fantasque-sans-mono" type="text/css"/>
+<link rel="stylesheet" media="screen" href="/static/styles/DocCSS.css" type="text/css"/>
+<h1>RequestDecode</h1>
+<p class="flow-text">
+	As of Valkyrie being moved to JSON, this returns a function to proxy
+	<code>HttpService.JSONDecode</code> and simply returns a Lua object of the
+	JSON object given to it.
+</p>

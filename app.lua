@@ -2,8 +2,8 @@ local lapis       = require("lapis");
 local app         = lapis.Application();
 local cache       = require("lapis.cache");
 
-function library(name) return dofile("lib/" .. name .. ".lua"); end;
-local intmodules  = dofile("interface/modules.lua");
+function library(name) return require("valkyrie_server.lib." .. name); end
+local intmodules  = require "valkyrie_server.interface.modules";
 local permstest   = library("permissions");
 local parser      = library("parse");
 local creator     = library("create_mainmodule");
@@ -71,6 +71,11 @@ cache_key = cachefunc;
 
 app:match("getValkyrie", "/get", function(self)
   self.title = "Get Valkyrie";
+  return {render=true};
+end);
+
+app:match("friends", "/friends", function(self)
+  self.title = "Friends";
   return {render=true};
 end);
 

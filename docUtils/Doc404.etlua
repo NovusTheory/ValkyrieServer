@@ -1,7 +1,5 @@
-<div class="container">
-	<h1>Whoops.</h1>
-	<section class="flow-text">
-		Looks like this page doesn't exist yet. If you need it, feel free to bug
-		eLunate or a writer to get this page up.
-	</section>
-</div>
+<h1>Whoops.</h1>
+<section class="flow-text">
+	Looks like this page doesn't exist yet or <i>Somebody</i> broke something. If
+	you need it, feel free to bug eLunate or a writer to get this page up.
+</section>

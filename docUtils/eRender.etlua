@@ -1,23 +1,6 @@
 <!-- Experimental renderer for Documentation. -->
 <link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/fantasque-sans-mono" type="text/css"/>
-<style>
-	.subtex {
-		font-size:48px;
-		align-content:center;
-		vertical-align:middle;
-		display:inline-flex;
-		margin-right:8px;
-		line-height:1;
-		margin-bottom:12px;
-	}
-	.popout {
-		margin-bottom:48px;
-	}
-	pre {
-		tab-size: 4;
-		font-family:"FantasqueSansMonoRegular";
-	}
-</style>
+<link rel="stylesheet" media="screen" href="/static/styles/DocCSS.css" type="text/css"/>
 <h1><%= Title %></h1>
 <p class="flow-text">
 	<%= Body %>
@@ -38,7 +21,13 @@
 					Default value: <span class="<%= type(v.Default) == 'string' and 'amber' or 'purple' %>-text"><%= v.Default %></span>
 				</p>
 				<p class="flow-text">
-					<%= v.Body %>
+					<%-
+					v.Body
+					:gsub('<','&lt;')
+					:gsub('>','&gt;')
+					:gsub('\n[\t ]*\n','<br><br>')
+					:gsub('`([^`]+)`','<code>%1</code>')
+					%>
 				</p>
 			</div>
 		</li>
@@ -52,12 +41,12 @@
 	local RenderFunction,RenderTable,RenderPlain,RenderAlt;
 	RenderPlain = function(arg)
 		if (arg.Type or arg.type) == 'function' then
-			return string.gsub("<span class=\"green-text text-darken-2\">function</span> "
+			return string.gsub("<span class=\"green-text\">function</span> "
 			.. ((arg.Nullable or arg.Required == false) and "?" or "")
 			.. arg.Name
 			.. RenderFunction(arg.Meta or arg), '\n', '\n\t');
 		elseif arg.Default and (arg.Type or arg.type) == 'table' then
-			return string.gsub("<span class=\"green-text text-darken-2\">table</span> "
+			return string.gsub("<span class=\"green-text\">table</span> "
 			.. ((arg.Nullable or arg.Required == false) and "?" or "")
 			.. arg.Name
 			.. " = "
@@ -76,7 +65,7 @@
 					DefaultColor = "teal";
 				end;
 			end;
-			return "<span class=\"green-text text-darken-2\">"
+			return "<span class=\"green-text\">"
 			.. (arg.Type or arg.type)
 			.. "</span><span class=\"green-text\">"
 			.. (arg.OfType and "&lt;"..arg.OfType.."&gt; " or " ")
@@ -88,17 +77,17 @@
 	end;
 	RenderAlt = function(arg) -- For returns, mostly. No defaults.
 		if (arg.Type or arg.type) == 'function' then
-			return string.gsub("<span class=\"green-text text-darken-2\">function</span> "
+			return string.gsub("<span class=\"green-text\">function</span> "
 			.. ((arg.Nullable or arg.Required == false) and "?" or "")
 			.. arg.Name
-			.. RenderFunction(arg.Meta), '\n', '\n\t');
+			.. RenderFunction(arg.Meta or {}), '\n', '\n\t');
 		elseif (arg.Type or arg.type) == 'table' then
-			return string.gsub("<span class=\"green-text text-darken-2\">table</span> "
-			.. RenderTable(arg.Meta or arg)
+			return string.gsub("<span class=\"green-text\">table</span> "
+			.. (arg.Meta and RenderTable(arg.Meta) or "")
 			.. ((arg.Nullable or arg.Required == false) and " ?" or " ")
 			.. arg.Name, '\n', '\n\t');
 		else
-			return "<span class=\"green-text text-darken-2\">"
+			return "<span class=\"green-text\">"
 			.. (arg.Type or arg.type)
 			.. "</span><span class=\"green-text\">"
 			.. (arg.OfType and "&lt;"..arg.OfType.."&gt; " or " ")
@@ -196,8 +185,19 @@
 		function <%= rr.Name %><%-RenderFunction(rr):gsub("\n","\n\t\t")%>
 				</pre>
 				<p class="flow-text">
-					<%= rr.Body %>
+					<%-
+					rr.Body
+					:gsub('<','&lt;')
+					:gsub('>','&gt;')
+					:gsub('\n[\t ]*\n','<br><br>')
+					:gsub('`([^`]+)`','<code>%1</code>')
+					%>
 				</p>
+				<% if rr.Aliases or rr.Alias then %>
+					<p class="grey-text">
+						<i>Aliases: <%= rr.Aliases or rr.Alias %></i>
+					</p>
+				<% end %>
 			</div>
 		</li>
 	<% end %>
@@ -221,7 +221,68 @@
 					Default value: <span class="<%= type(v.Default) == 'string' and 'amber' or 'purple' %>-text"><%= v.Default %></span>
 				</p>
 				<p class="flow-text">
-					<%= v.Body %>
+					<%-
+					v.Body
+					:gsub('<','&lt;')
+					:gsub('>','&gt;')
+					:gsub('\n[\t ]*\n','<br><br>')
+					:gsub('`([^`]+)`','<code>%1</code>')
+					%>
+				</p>
+			</div>
+		</li>
+	<% end %>
+</ul>
+<% end %>
+<% if Globals then %>
+<ul class="collapsible popout" data-collapsible="accordion">
+	<span class="cyan-text text-lighten-1 subtex"> <i class="material-icons subtex">globalsiconherepls</i> Globals </span>
+	<% for i=1,#Globals do
+		local v = Globals[i] %>
+		<li name="<%= v.Name %>">
+			<div class="collapsible-header" id="<%= v.Name %>"><%= v.Name %>
+			<% if v.Meta then %> <em class="right grey-text text-lighten-1"><%= v.Meta %></em> <% end %>
+			</div>
+			<div class="collapsible-body">
+				<pre>
+		<%- RenderAlt(v.Value):gsub('\n','\n\t\t') %>
+				</pre>
+				<p class="flow-text">
+					<%-
+					v.Body
+					:gsub('<','&lt;')
+					:gsub('>','&gt;')
+					:gsub('\n[\t ]*\n','<br><br>')
+					:gsub('`([^`]+)`','<code>%1</code>')
+					%>
+				</p>
+			</div>
+		</li>
+	<% end %>
+</ul>
+<% end %>
+<% if Intents then %>
+<ul class="collapsible popout" data-collapsible="accordion">
+	<span class="cyan-text text-lighten-1 subtex"> <i class="material-icons subtex">intentsiconherepls</i> Intents </span>
+	<% for i=1,#Intents do
+		local v = Intents[i] %>
+		<li name="<%= v.Name %>">
+			<div class="collapsible-header" id="<%= v.Name %>"><%= v.Name %>
+			<% if v.Meta then %> <em class="right grey-text text-lighten-1"><%= v.Meta %></em> <% end %>
+			</div>
+			<div class="collapsible-body">
+				<p class="flow-text">
+					<% if v.From then %>Fired by: <code><%= v.From %></code><br><% end %>
+					<% if v.For then %>Used by: <code><%= v.By %></code><% end %>
+				</p>
+				<p class="flow-text">
+					<%-
+					v.Body
+					:gsub('<','&lt;')
+					:gsub('>','&gt;')
+					:gsub('\n[\t ]*\n','<br><br>')
+					:gsub('`([^`]+)`','<code>%1</code>')
+					%>
 				</p>
 			</div>
 		</li>

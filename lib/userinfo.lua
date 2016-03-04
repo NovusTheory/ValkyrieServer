@@ -1,7 +1,6 @@
 local module                = {};
 local mysql                 = require"lapis.db";
 local encoder               = library("encode");
-local parser                = library("parse");
 local app_helpers           = require"lapis.application";
 local inspect               = require"inspect";
 local http                  = require("socket.http");
@@ -51,8 +50,10 @@ local function fixDate(date, diff)
   date                      = date:gsub("(%d-)a", function(a) return " " .. tostring(tonumber(a) - 1970) .. "a"; end);
   date                      = date:gsub("(%d-)([md]) ", function(a, b) return tostring(tonumber(a) - 1) .. b .. " "; end);
   --date                    = date:gsub("(%d-)h", function(a) return tostring(tonumber(a) - 2) .. "h"; end);
-
-  date                      = date:gsub(" 0*%l*", "");
+  date                      = date:gsub("(%d-)(%a+)", "%1%2 ");
+  date                      = date:gsub(" 0+%a+", "");
+  date                      = date:gsub(" 0+", "");
+  date                      = date:gsub("^ ", ""):gsub(" $", "");
   if date:sub(1, 1) == " " then
     return date:sub(2);
   end
@@ -106,7 +107,6 @@ function module.getUserinfo(id)
   table.insert(ret, getGeneralInfo(id));
   table.insert(ret, getDBGeneralInfo(id));
 
-  -- FIXME: Broken by the game overview
   local exists_result       = mysql.select("table_name from information_schema.tables where table_name=?", ("player_achv_%d"):format(id));
   if #exists_result > 0 then
     local achvs_result      = mysql.select("* from ?", gid_table("player_achv", id));
@@ -143,7 +143,7 @@ function module.getUserinfo(id)
     table.insert(ret, 0);  -- total reward
   end
 
-  table.insert(ret, parser.parse(friends.getFriends(id)).result);
+  table.insert(ret, (friends.getFriends(id)).result);
 
   --print(inspect(parser.parse((ret))));
 

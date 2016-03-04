@@ -1,5 +1,5 @@
 local module                  = {};
-local modules                 = dofile("interface/modulespec.lua");
+local modules                 = require "valkyrie_server.interface.modulespec";
 local encoder                 = library("encode");
 local auth                    = library("check_cokey");
 local inspect                 = require("inspect");

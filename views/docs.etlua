@@ -9,11 +9,25 @@
 		else
 			suc = pcall(render,"docTemplates."..params.subtype);
 		end;
+		if suc then
+	%>
+	<p class="grey-text text-lighten-2">
+		Page generated at <%local time = os.time()%>
+		<%=string.format("%.2d:%.2d:%.2d", time/3600%24, (time/60)%60, time%60)%>
+	</p>
+	<%
+	end
 	else
 		suc = pcall(render,"docUtils.DocHome");
 	end;
 	if not suc then
 		render("docUtils.Doc404");
+		%>
+		<p class="grey-text text-lighten-2">
+			Page generated at <%local time = os.time()%>
+			<%=string.format("%.2d:%.2d:%.2d", time/3600%24, (time/60)%60, time%60)%>
+		</p>
+	<%
 	end;
 %>
 </div>

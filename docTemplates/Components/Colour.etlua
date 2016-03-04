@@ -1,0 +1,342 @@
+<!--
+I wish making things like this was so much easier.
+-->
+<link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/fantasque-sans-mono" type="text/css"/>
+<link rel="stylesheet" media="screen" href="/static/styles/DocCSS.css" type="text/css"/>
+<style type="text/css">
+	.row.colorlist >.col > div {
+		padding:15px;
+		font-weight:500;
+	}
+	.row {
+		margin-top:2em;
+	}
+	.wwhite {
+		color: rgba(255, 255, 255, 0.901961);
+	}
+	.col {
+		margin-bottom:1.5em;
+	}
+</style>
+
+<h1>Colour</h1>
+<p class="flow-text">
+	Colour is a simple module designed to make sure that you can access the
+	<a href="https://www.google.com/design/spec/style/color.html">Material Colour Palette</a>
+	any time you're scripting. Most scripters don't have an amazing colour sense
+	or a magical mixer in their head, so the Colour library solves this by giving
+	a large amount of colours with an easy way to identify them.
+</p>
+<h4>How do I use it?</h4>
+<p class="flow-text">
+	You can use it by <code>require</code>'ing it in, checking
+	the colour you want and using <code>Colour.ColourName[<span class="deep-purple-text text-lighten-1">100</span>]</code>
+	<i>(as an example)</i>. You'd replace <span class="deep-purple-text text-lighten-1">100</span>
+	with the appropriate shade code.
+</p>
+<p class="flow-text">
+	<code>Colour.ColourName</code> defaults to
+	<code>Colour.ColourName[<span class="deep-purple-text text-lighten-1">500</span>]</code>
+	when loaded alongside <a href="/docs/Libraries/DesignLib">DesignLib</a>
+</p>
+<div class="row colorlist">
+	<div class="col s12 m6 l4">
+		<h3>Red</h3>
+		<div class="red lighten-5 right-align">[50]</div>
+		<div class="red lighten-4 right-align">[100]</div>
+		<div class="red lighten-3 right-align">[200]</div>
+		<div class="red lighten-2 right-align">[300]</div>
+		<div class="red lighten-1 right-align wwhite">[400]</div>
+		<div class="red right-align wwhite">[500]</div>
+		<div class="red darken-1 right-align wwhite">[600]</div>
+		<div class="red darken-2 right-align wwhite">[700]</div>
+		<div class="red darken-3 right-align wwhite">[800]</div>
+		<div class="red darken-4 right-align wwhite">[900]</div>
+		<div class="red accent-1 right-align">.A100</div>
+		<div class="red accent-2 right-align wwhite">.A200</div>
+		<div class="red accent-3 right-align wwhite">.A400</div>
+		<div class="red accent-4 right-align wwhite">.A700</div>
+	</div>
+
+	<div class="col s12 m6 l4">
+		<h3>Pink</h3>
+		<div class="pink lighten-5 right-align">[50]</div>
+		<div class="pink lighten-4 right-align">[100]</div>
+		<div class="pink lighten-3 right-align">[200]</div>
+		<div class="pink lighten-2 right-align wwhite">[300]</div>
+		<div class="pink lighten-1 right-align wwhite">[400]</div>
+		<div class="pink right-align wwhite">[500]</div>
+		<div class="pink darken-1 right-align wwhite">[600]</div>
+		<div class="pink darken-2 right-align wwhite">[700]</div>
+		<div class="pink darken-3 right-align wwhite">[800]</div>
+		<div class="pink darken-4 right-align wwhite">[900]</div>
+		<div class="pink accent-1 right-align">.A100</div>
+		<div class="pink accent-2 right-align wwhite">.A200</div>
+		<div class="pink accent-3 right-align wwhite">.A400</div>
+		<div class="pink accent-4 right-align wwhite">.A700</div>
+	</div>
+	<div class="col s12 m6 l4">
+		<h3>Purple</h3>
+		<div class="purple lighten-5 right-align">[50]</div>
+		<div class="purple lighten-4 right-align">[100]</div>
+		<div class="purple lighten-3 right-align">[200]</div>
+		<div class="purple lighten-2 right-align wwhite">[300]</div>
+		<div class="purple lighten-1 right-align wwhite">[400]</div>
+		<div class="purple right-align wwhite">[500]</div>
+		<div class="purple darken-1 right-align wwhite">[600]</div>
+		<div class="purple darken-2 right-align wwhite">[700]</div>
+		<div class="purple darken-3 right-align wwhite">[800]</div>
+		<div class="purple darken-4 right-align wwhite">[900]</div>
+		<div class="purple accent-1 right-align">.A100</div>
+		<div class="purple accent-2 right-align wwhite">.A200</div>
+		<div class="purple accent-3 right-align wwhite">.A400</div>
+		<div class="purple accent-4 right-align wwhite">.A700</div>
+	</div>
+	<div class="col s12 m6 l4">
+		<h3>DeepPurple</h3>
+		<div class="deep-purple lighten-5 right-align">[50]</div>
+		<div class="deep-purple lighten-4 right-align">[100]</div>
+		<div class="deep-purple lighten-3 right-align">[200]</div>
+		<div class="deep-purple lighten-2 right-align wwhite">[300]</div>
+		<div class="deep-purple lighten-1 right-align wwhite">[400]</div>
+		<div class="deep-purple right-align wwhite">[500]</div>
+		<div class="deep-purple darken-1 right-align wwhite">[600]</div>
+		<div class="deep-purple darken-2 right-align wwhite">[700]</div>
+		<div class="deep-purple darken-3 right-align wwhite">[800]</div>
+		<div class="deep-purple darken-4 right-align wwhite">[900]</div>
+		<div class="deep-purple accent-1 right-align">.A100</div>
+		<div class="deep-purple accent-2 right-align wwhite">.A200</div>
+		<div class="deep-purple accent-3 right-align wwhite">.A400</div>
+		<div class="deep-purple accent-4 right-align wwhite">.A700</div>
+	</div>
+	<div class="col s12 m6 l4">
+		<h3>Indigo</h3>
+		<div class="indigo lighten-5 right-align">[50]</div>
+		<div class="indigo lighten-4 right-align">[100]</div>
+		<div class="indigo lighten-3 right-align">[200]</div>
+		<div class="indigo lighten-2 right-align wwhite">[300]</div>
+		<div class="indigo lighten-1 right-align wwhite">[400]</div>
+		<div class="indigo right-align wwhite">[500]</div>
+		<div class="indigo darken-1 right-align wwhite">[600]</div>
+		<div class="indigo darken-2 right-align wwhite">[700]</div>
+		<div class="indigo darken-3 right-align wwhite">[800]</div>
+		<div class="indigo darken-4 right-align wwhite">[900]</div>
+		<div class="indigo accent-1 right-align">.A100</div>
+		<div class="indigo accent-2 right-align wwhite">.A200</div>
+		<div class="indigo accent-3 right-align wwhite">.A400</div>
+		<div class="indigo accent-4 right-align wwhite">.A700</div>
+	</div>
+	<div class="col s12 m6 l4">
+		<h3>Blue</h3>
+		<div class="blue lighten-5 right-align">[50]</div>
+		<div class="blue lighten-4 right-align">[100]</div>
+		<div class="blue lighten-3 right-align">[200]</div>
+		<div class="blue lighten-2 right-align">[300]</div>
+		<div class="blue lighten-1 right-align">[400]</div>
+		<div class="blue right-align wwhite">[500]</div>
+		<div class="blue darken-1 right-align wwhite">[600]</div>
+		<div class="blue darken-2 right-align wwhite">[700]</div>
+		<div class="blue darken-3 right-align wwhite">[800]</div>
+		<div class="blue darken-4 right-align wwhite">[900]</div>
+		<div class="blue accent-1 right-align">.A100</div>
+		<div class="blue accent-2 right-align wwhite">.A200</div>
+		<div class="blue accent-3 right-align wwhite">.A400</div>
+		<div class="blue accent-4 right-align wwhite">.A700</div>
+	</div>
+	<div class="col s12 m6 l4">
+		<h3>LightBlue</h3>
+		<div class="light-blue lighten-5 right-align">[50]</div>
+		<div class="light-blue lighten-4 right-align">[100]</div>
+		<div class="light-blue lighten-3 right-align">[200]</div>
+		<div class="light-blue lighten-2 right-align">[300]</div>
+		<div class="light-blue lighten-1 right-align">[400]</div>
+		<div class="light-blue right-align">[500]</div>
+		<div class="light-blue darken-1 right-align wwhite">[600]</div>
+		<div class="light-blue darken-2 right-align wwhite">[700]</div>
+		<div class="light-blue darken-3 right-align wwhite">[800]</div>
+		<div class="light-blue darken-4 right-align wwhite">[900]</div>
+		<div class="light-blue accent-1 right-align">.A100</div>
+		<div class="light-blue accent-2 right-align">.A200</div>
+		<div class="light-blue accent-3 right-align">.A400</div>
+		<div class="light-blue accent-4 right-align wwhite">.A700</div>
+	</div>
+	<div class="col s12 m6 l4">
+		<h3>Cyan</h3>
+		<div class="cyan lighten-5 right-align">[50]</div>
+		<div class="cyan lighten-4 right-align">[100]</div>
+		<div class="cyan lighten-3 right-align">[200]</div>
+		<div class="cyan lighten-2 right-align">[300]</div>
+		<div class="cyan lighten-1 right-align">[400]</div>
+		<div class="cyan right-align">[500]</div>
+		<div class="cyan darken-1 right-align">[600]</div>
+		<div class="cyan darken-2 right-align wwhite">[700]</div>
+		<div class="cyan darken-3 right-align wwhite">[800]</div>
+		<div class="cyan darken-4 right-align wwhite">[900]</div>
+		<div class="cyan accent-1 right-align">.A100</div>
+		<div class="cyan accent-2 right-align">.A200</div>
+		<div class="cyan accent-3 right-align">.A400</div>
+		<div class="cyan accent-4 right-align">.A700</div>
+	</div>
+	<div class="col s12 m6 l4">
+		<h3>Teal</h3>
+		<div class="teal lighten-5 right-align">[50]</div>
+		<div class="teal lighten-4 right-align">[100]</div>
+		<div class="teal lighten-3 right-align">[200]</div>
+		<div class="teal lighten-2 right-align">[300]</div>
+		<div class="teal lighten-1 right-align">[400]</div>
+		<div class="teal right-align wwhite">[500]</div>
+		<div class="teal darken-1 right-align wwhite">[600]</div>
+		<div class="teal darken-2 right-align wwhite">[700]</div>
+		<div class="teal darken-3 right-align wwhite">[800]</div>
+		<div class="teal darken-4 right-align wwhite">[900]</div>
+		<div class="teal accent-1 right-align">.A100</div>
+		<div class="teal accent-2 right-align">.A200</div>
+		<div class="teal accent-3 right-align">.A400</div>
+		<div class="teal accent-4 right-align">.A700</div>
+	</div>
+	<div class="col s12 m6 l4">
+		<h3>Green</h3>
+		<div class="green lighten-5 right-align">[50]</div>
+		<div class="green lighten-4 right-align">[100]</div>
+		<div class="green lighten-3 right-align">[200]</div>
+		<div class="green lighten-2 right-align">[300]</div>
+		<div class="green lighten-1 right-align">[400]</div>
+		<div class="green right-align">[500]</div>
+		<div class="green darken-1 right-align wwhite">[600]</div>
+		<div class="green darken-2 right-align wwhite">[700]</div>
+		<div class="green darken-3 right-align wwhite">[800]</div>
+		<div class="green darken-4 right-align wwhite">[900]</div>
+		<div class="green accent-1 right-align">.A100</div>
+		<div class="green accent-2 right-align">.A200</div>
+		<div class="green accent-3 right-align">.A400</div>
+		<div class="green accent-4 right-align">.A700</div>
+	</div>
+	<div class="col s12 m6 l4">
+		<h3>LightGreen</h3>
+		<div class="light-green lighten-5 right-align">[50]</div>
+		<div class="light-green lighten-4 right-align">[100]</div>
+		<div class="light-green lighten-3 right-align">[200]</div>
+		<div class="light-green lighten-2 right-align">[300]</div>
+		<div class="light-green lighten-1 right-align">[400]</div>
+		<div class="light-green right-align">[500]</div>
+		<div class="light-green darken-1 right-align">[600]</div>
+		<div class="light-green darken-2 right-align wwhite">[700]</div>
+		<div class="light-green darken-3 right-align wwhite">[800]</div>
+		<div class="light-green darken-4 right-align wwhite">[900]</div>
+		<div class="light-green accent-1 right-align">.A100</div>
+		<div class="light-green accent-2 right-align">.A200</div>
+		<div class="light-green accent-3 right-align">.A400</div>
+		<div class="light-green accent-4 right-align">.A700</div>
+	</div>
+	<div class="col s12 m6 l4">
+		<h3>Lime</h3>
+		<div class="lime lighten-5 right-align">[50]</div>
+		<div class="lime lighten-4 right-align">[100]</div>
+		<div class="lime lighten-3 right-align">[200]</div>
+		<div class="lime lighten-2 right-align">[300]</div>
+		<div class="lime lighten-1 right-align">[400]</div>
+		<div class="lime right-align">[500]</div>
+		<div class="lime darken-1 right-align">[600]</div>
+		<div class="lime darken-2 right-align">[700]</div>
+		<div class="lime darken-3 right-align">[800]</div>
+		<div class="lime darken-4 right-align wwhite">[900]</div>
+		<div class="lime accent-1 right-align">.A100</div>
+		<div class="lime accent-2 right-align">.A200</div>
+		<div class="lime accent-3 right-align">.A400</div>
+		<div class="lime accent-4 right-align">.A700</div>
+	</div>
+	<div class="col s12 m6 l4">
+		<h3>Yellow</h3>
+		<div class="yellow lighten-5 right-align">[50]</div>
+		<div class="yellow lighten-4 right-align">[100]</div>
+		<div class="yellow lighten-3 right-align">[200]</div>
+		<div class="yellow lighten-2 right-align">[300]</div>
+		<div class="yellow lighten-1 right-align">[400]</div>
+		<div class="yellow right-align">[500]</div>
+		<div class="yellow darken-1 right-align">[600]</div>
+		<div class="yellow darken-2 right-align">[700]</div>
+		<div class="yellow darken-3 right-align">[800]</div>
+		<div class="yellow darken-4 right-align">[900]</div>
+		<div class="yellow accent-1 right-align">.A100</div>
+		<div class="yellow accent-2 right-align">.A200</div>
+		<div class="yellow accent-3 right-align">.A400</div>
+		<div class="yellow accent-4 right-align">.A700</div>
+	</div>
+	<div class="col s12 m6 l4">
+		<h3>Amber</h3>
+		<div class="amber lighten-5 right-align">[50]</div>
+		<div class="amber lighten-4 right-align">[100]</div>
+		<div class="amber lighten-3 right-align">[200]</div>
+		<div class="amber lighten-2 right-align">[300]</div>
+		<div class="amber lighten-1 right-align">[400]</div>
+		<div class="amber right-align">[500]</div>
+		<div class="amber darken-1 right-align">[600]</div>
+		<div class="amber darken-2 right-align">[700]</div>
+		<div class="amber darken-3 right-align">[800]</div>
+		<div class="amber darken-4 right-align">[900]</div>
+		<div class="amber accent-1 right-align">.A100</div>
+		<div class="amber accent-2 right-align">.A200</div>
+		<div class="amber accent-3 right-align">.A400</div>
+		<div class="amber accent-4 right-align">.A700</div>
+	</div>
+	<div class="col s12 m6 l4">
+		<h3>Orange</h3>
+		<div class="orange lighten-5 right-align">[50]</div>
+		<div class="orange lighten-4 right-align">[100]</div>
+		<div class="orange lighten-3 right-align">[200]</div>
+		<div class="orange lighten-2 right-align">[300]</div>
+		<div class="orange lighten-1 right-align">[400]</div>
+		<div class="orange right-align">[500]</div>
+		<div class="orange darken-1 right-align">[600]</div>
+		<div class="orange darken-2 right-align">[700]</div>
+		<div class="orange darken-3 right-align wwhite">[800]</div>
+		<div class="orange darken-4 right-align wwhite">[900]</div>
+		<div class="orange accent-1 right-align">.A100</div>
+		<div class="orange accent-2 right-align">.A200</div>
+		<div class="orange accent-3 right-align">.A400</div>
+		<div class="orange accent-4 right-align">.A700</div>
+	</div>
+	<div class="col s12 m6 l4">
+		<h3>DeepOrange</h3>
+		<div class="deep-orange lighten-5 right-align">[50]</div>
+		<div class="deep-orange lighten-4 right-align">[100]</div>
+		<div class="deep-orange lighten-3 right-align">[200]</div>
+		<div class="deep-orange lighten-2 right-align">[300]</div>
+		<div class="deep-orange lighten-1 right-align">[400]</div>
+		<div class="deep-orange right-align wwhite">[500]</div>
+		<div class="deep-orange darken-1 right-align wwhite">[600]</div>
+		<div class="deep-orange darken-2 right-align wwhite">[700]</div>
+		<div class="deep-orange darken-3 right-align wwhite">[800]</div>
+		<div class="deep-orange darken-4 right-align wwhite">[900]</div>
+		<div class="deep-orange accent-1 right-align">.A100</div>
+		<div class="deep-orange accent-2 right-align">.A200</div>
+		<div class="deep-orange accent-3 right-align wwhite">.A400</div>
+		<div class="deep-orange accent-4 right-align wwhite">.A700</div>
+	</div>
+	<div class="col s12 m6 l4">
+		<h3>Brown</h3>
+		<div class="brown lighten-5 right-align">[50]</div>
+		<div class="brown lighten-4 right-align">[100]</div>
+		<div class="brown lighten-3 right-align">[200]</div>
+		<div class="brown lighten-2 right-align wwhite">[300]</div>
+		<div class="brown lighten-1 right-align wwhite">[400]</div>
+		<div class="brown right-align wwhite">[500]</div>
+		<div class="brown darken-1 right-align wwhite">[600]</div>
+		<div class="brown darken-2 right-align wwhite">[700]</div>
+		<div class="brown darken-3 right-align wwhite">[800]</div>
+		<div class="brown darken-4 right-align wwhite">[900]</div>
+	</div>
+	<div class="col s12 m6 l4">
+		<h3>Grey</h3>
+		<div class="grey lighten-5 right-align">[50]</div>
+		<div class="grey lighten-4 right-align">[100]</div>
+		<div class="grey lighten-3 right-align">[200]</div>
+		<div class="grey lighten-2 right-align">[300]</div>
+		<div class="grey lighten-1 right-align">[400]</div>
+		<div class="grey right-align">[500]</div>
+		<div class="grey darken-1 right-align wwhite">[600]</div>
+		<div class="grey darken-2 right-align wwhite">[700]</div>
+		<div class="grey darken-3 right-align wwhite">[800]</div>
+		<div class="grey darken-4 right-align wwhite">[900]</div>
+	</div>
+</div>

@@ -70,6 +70,7 @@ end
             Create
             <i class="material-icons right">send</i>
         </button>
+        <a class="waves-effect waves-light btn-flat modal-trigger right" href="#help"><i class="material-icons grey-text text-lighten-1">help</i></a>
         <div class="preloader-wrapper small" style="margin: auto; position: absolute; top:0;left:0;right:0;bottom:0" id="game_spinner">
             <div class="spinner-layer spinner-green-only">
                 <div class="circle-clipper left">
@@ -97,8 +98,40 @@ end
             });
             return false;
         });
-</script>
+    </script>
 </div>
+<div id="help" class="modal">
+    <div class="modal-content">
+        <h3>What?</h3>
+        <h4>Game Name</h4>
+        <p>
+            The name of the game that Players will see when Valkyrie refers to
+            the game.
+        </p>
+        <h4>Game ID</h4>
+        <p>
+            The unique identifier for the game. You'll need this to connect your
+            game on Roblox with the Valkyrie servers, alongside your Auth Key
+        </p>
+        <h4>Access key</h4>
+        <p>
+            A secret password for the game. You'll need to make sure that you're
+            the only one that knows this password, because anyone with it can
+            make malicious requests to the Valkyrie servers without your permission.
+            This can include requests resulting in your game being banned from
+            the Valkyrie servers.
+        </p>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Got it!</a>
+    </div>
+</div>
+<script>
+$(document).ready(function(){
+    // the "href" attribute of .modal-trigger must specify the modal ID that wants to be triggered
+    $('.modal-trigger').leanModal();
+  });
+</script>
 <% if not bare then %>
 </main>
 <% end %>
