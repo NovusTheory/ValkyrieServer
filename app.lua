@@ -2,8 +2,8 @@ local lapis       = require("lapis");
 local app         = lapis.Application();
 local cache       = require("lapis.cache");
 
-function library(name) return require("valkyrie_server.lib." .. name); end
-local intmodules  = require "valkyrie_server.interface.modules";
+function library(name) return require("lib." .. name); end
+local intmodules  = require "interface.modules";
 local permstest   = library("permissions");
 local parser      = library("parse");
 local creator     = library("create_mainmodule");

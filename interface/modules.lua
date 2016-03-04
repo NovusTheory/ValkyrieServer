@@ -1,5 +1,5 @@
 local module                  = {};
-local modules                 = require "valkyrie_server.interface.modulespec";
+local modules                 = require "interface.modulespec";
 local encoder                 = library("encode");
 local auth                    = library("check_cokey");
 local inspect                 = require("inspect");
