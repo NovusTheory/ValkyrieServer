@@ -1,136 +1,146 @@
-local modules       = {
-  achievements      = {
-    libName         = "achievements";
-    functions       = {
-      create        = {
-        "gid";
-        "id";
-        "description";
-        "name";
-        "reward";
-        "icon";
+local Modules       = {
+  Achievements      = {
+    LibName         = "achievements";
+    Functions       = {
+      Create        = {
+        "GID";
+        "ID";
+        "Description";
+        "Name";
+        "Reward";
+        "Icon";
       };
-      award         = {
-        "gid";
-        "playerid";
-        "id";
+      Award         = {
+        "GID";
+        "PlayerID";
+        "ID";
       };
-      list          = {
-        "gid";
-        "gameid";
-        "filter";
+      List          = {
+        "GID";
+        "GameID";
+        "Filter";
       };
-      getReward     = {
-        "gid";
-      };
-    };
-  };
-
-  auth              = {
-    skipAuth        = true;
-    libName         = "check_cokey";
-    functions       = {
-      check         = {
-        "gid";
-        "cokey";
-        "uid";
+      GetReward     = {
+        "GID";
       };
     };
   };
 
-  loadstring        = {
-    libName         = "create_mainmodule";
-    functions       = {
-      load          = {
-        "source";
-        {norequire = true; name = "id"; default = 0};
-      };
-      lockAsset     = {
-        "id";
-      };
-    };
-  };
-
-  messages          = {
-    libName         = "message_manager";
-    functions       = {
-      addMessage    = {
-        "user";
-        "message";
-        "gid";
-      };
-      checkMessages = {
-        "since";
-        {norequire = true; name = "fresh"; default = false};
-        "gidfilter";
+  Auth              = {
+    SkipAuth        = true;
+    LibName         = "check_cokey";
+    Functions       = {
+      Check         = {
+        "GID";
+        "CoKey";
+        "UID";
       };
     };
   };
 
-  playerinfo        = {
-    libName         = "userinfo";
-    functions       = {
-      getUserinfo   = {
-        "id";
+  Loadstring        = {
+    LibName         = "create_mainmodule";
+    Functions       = {
+      Load          = {
+        "Source";
+        {NoRequire = true; Name = "ID"; Default = 0};
       };
-      tryCreateUser = {
-        "id";
-      };
-    };
-  };
-
-  friends           = {
-    libName         = "friends";
-    functions       = {
-      getFriends    = {
-        "id";
-      };
-      setOnlineGame = {
-        "id";
-        "game";
-        "name";
-      };
-      goOffline     = {
-        "id";
-        "time_ingame";
+      LockAsset     = {
+        "ID";
       };
     };
   };
 
-  datastore         = {
-    libName         = "data_store";
-    functions       = {
-      saveData      = {
-        "gid";
-        "key";
-        "value";
+  Messages          = {
+    LibName         = "message_manager";
+    Functions       = {
+      AddMessage    = {
+        "User";
+        "Message";
+        "GID";
       };
-      loadData      = {
-        "gid";
-        "key";
-      };
-      getSpace      = {
-        "gid";
-      };
-      listKeys      = {
-        "gid";
+      CheckMessages = {
+        "Since";
+        {NoRequire = true; Name = "Fresh"; Default = false};
+        "GIDFilter";
       };
     };
   };
 
-  bans              = {
-    libName         = "bans";
-    functions       = {
-      createBan     = {
-        "gid";
-        "player";
-        "reason";
+  PlayerInfo        = {
+    LibName         = "userinfo";
+    Functions       = {
+      GetUserInfo   = {
+        "ID";
       };
-      isBanned      = {
-        "player";
+      TryCreateUser = {
+        "ID";
+      };
+    };
+  };
+
+  Friends           = {
+    LibName         = "friends";
+    Functions       = {
+      GetFriends    = {
+        "ID";
+      };
+      SetOnlineGame = {
+        "ID";
+        "Game";
+        "Name";
+      };
+      GoOffline     = {
+        "ID";
+        "TimeInGame";
+      };
+    };
+  };
+
+  Datastore         = {
+    LibName         = "data_store";
+    Functions       = {
+      SaveData      = {
+        "GID";
+        "Key";
+        "Value";
+      };
+      LoadData      = {
+        "GID";
+        "Key";
+      };
+      GetSpace      = {
+        "GID";
+      };
+      ListKeys      = {
+        "GID";
+      };
+    };
+  };
+
+  Bans              = {
+    LibName         = "bans";
+    Functions       = {
+      CreateGlobalBan     = {
+        "GID";
+        "Player";
+        "Reason";
+      };
+      IsBanned      = {
+        "Player";
+        "GID";
+      };
+      CreateLocalBan = {
+        "GID";
+        "Player";
+        "Reason";
+      };
+      RemoveLocalBan = {
+        "GID";
+        "Player";
       };
     };
   };
 };
 
-return modules;
+return Modules;
