@@ -97,7 +97,7 @@ local Modules       = {
     };
   };
 
-  Datastore         = {
+  DataStore         = {
     LibName         = "data_store";
     Functions       = {
       SaveData      = {
@@ -125,6 +125,8 @@ local Modules       = {
         "GID";
         "Player";
         "Reason";
+        "Meta";
+        "Secret";
       };
       IsBanned      = {
         "Player";
