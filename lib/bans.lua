@@ -1,28 +1,28 @@
-local module      = {};
-local mysql       = require "lapis.db";
-local encoder     = library("encode");
+local Module      = {};
+local MySQL       = require "lapis.db";
+local Encoder     = library("encode");
 
-local yield_error = require"lapis.application".yield_error;
+local YieldError = require"lapis.application".yield_error;
 
-function module.CreateBan(gid, player, reason)
-  local exists_result = mysql.select("id from bans where player=?", player);
-  if #exists_result > 0 then
-    yield_error("That user is already banned!");
+function Module.CreateBan(GID, Player, Reason)
+  local BanExists = mysql.select("id from bans where player=?", Player);
+  if #BanExists > 0 then
+    YieldError("That user is already banned!");
   end
 
-  mysql.insert("bans", {
-    player	  = player;
-    from_gid      = gid;
-    reason        = reason;
+  MySQL.insert("bans", {
+    player	  = Player;
+    from_gid      = GID;
+    reason        = Reason;
   });
 
   return ({success = true; error = ""});
 end
 
-function module.IsBanned(player)
-  local exists_result = mysql.select("* from bans where player=?", player);
-  if #exists_result > 0 then
-    return ({success = true; error = ""; result = {true, exists_result[1].reason, exists_result[1].from_gid}});
+function Module.IsBanned(Player)
+  local BanExists = mysql.select("* from bans where player=?", Player);
+  if #BanExists > 0 then
+    return ({success = true; error = ""; result = {true, BanExists[1].reason, BanExists[1].from_gid}});
   end
   return ({success = true; error = ""; result = {false}});
 end
