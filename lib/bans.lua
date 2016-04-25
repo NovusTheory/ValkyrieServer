@@ -27,4 +27,4 @@ function Module.IsBanned(Player)
   return ({success = true; error = ""; result = {false}});
 end
 
-return module;
+return Module;
