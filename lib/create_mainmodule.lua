@@ -129,27 +129,6 @@ local function postReq(url, fields, extrahead)
   return rep;
 end
 
-local function postReqNoSSL(url, fields, extrahead, usegzip)
-  print(url, fields, extrahead);
-  local req = "POST " .. url .. " HTTP/1.1\n";
-  req = req .. "Host: www.roblox.com\n";
-  req = req .. "Accept: */*\n";
-  req = req .. "Connection: close\n";
-  req = req .. "Content-Length: " .. fields:len() .. "\n";
-  req = req .. "User-Agent: Roblox/WinINet\n";
-  req = req .. extrahead .. "\n";
-  req = req .. fields;
-
-  local sock  = sockets.tcp();
-  sock:connect("www.roblox.com", 80);
-  sock:send(req);
-  print("\27[33mRequest:\27[0m\n", req);
-  local rep = sock:receive("*a");
-  print("\27[33mReturn:\27[0m\n", rep);
-  sock:close();
-  return rep;
-end
-
 local function aspPostBack(url, currstate, evttarget, formvals, security, force)
   local viewstate   = currstate:match("id=\"__VIEWSTATE\" value=\"(.-)\"");
   local vsgenerator = currstate:match("id=\"__VIEWSTATEGENERATOR\" value=\"(.-)\"");
@@ -165,7 +144,7 @@ local function aspPostBack(url, currstate, evttarget, formvals, security, force)
   local encoded     = lapisutl.encode_query_string(urlargs);
   print(encoded);
 
-  local ret         = postReqNoSSL(url, encoded, "Content-Type: application/x-www-form-urlencoded\nCookie: " .. security .. "\n");
+  local ret         = postReq(url, encoded, "Content-Type: application/x-www-form-urlencoded\nCookie: " .. security .. "\n");
   if ret:match("/Login/Default.aspx") then
     if force then
       yield_error("ROBLOX LOGIN FAILED! Please contact gskw. Remember to include the time this happened at.");
@@ -195,7 +174,7 @@ function module.login(user, pw)
 end
 
 local function getPostArgs(url, security)
-  local result    = postReqNoSSL(url, "", "Cookie: " .. (security or io.open("security.sec", "r"):read("*all")) .. "\n");
+  local result    = postReq(url, "", "Cookie: " .. (security or io.open("security.sec", "r"):read("*all")) .. "\n");
   if result:match("/Login/Default.aspx") then
     result        = getPostArgs(url, module.login(config.robloxun, config.robloxpw));
   end
@@ -204,8 +183,8 @@ local function getPostArgs(url, security)
 end
 
 function module.lockAsset(mid)
-  local result    = getPostArgs("http://www.roblox.com/My/Item.aspx?ID=" .. mid);
-  print("POSTBACKOUT", aspPostBack("http://www.roblox.com/My/Item.aspx?ID=" .. mid, stripHeaders(result), "ctl00$cphRoblox$SubmitButtonBottom", {
+  local result    = getPostArgs("https://www.roblox.com/My/Item.aspx?ID=" .. mid);
+  print("POSTBACKOUT", aspPostBack("https://www.roblox.com/My/Item.aspx?ID=" .. mid, stripHeaders(result), "ctl00$cphRoblox$SubmitButtonBottom", {
     ["ctl00$cphRoblox$NameTextBox"]             = "loadstring",
     ["ctl00$cphRoblox$DescriptionTextBox"]      = "a",
     ["ctl00$cphRoblox$EnableCommentsCheckBox"]  = "on",
@@ -223,7 +202,7 @@ function module.uploadRaw(data, mid)
 end
 
 function module.upload(data, mid, security, force)
-  local result = postReqNoSSL("/Data/Upload.ashx?assetid=" .. mid .. "&type=Model&name=loadstring&description=a&genreTypeId=1&ispublic=True&allowComments=True",
+  local result = postReq("/Data/Upload.ashx?assetid=" .. mid .. "&type=Model&name=loadstring&description=a&genreTypeId=1&ispublic=True&allowComments=True",
     data, "Cookie: " .. security .. "\nContent-Type: text/xml\n");
   if result:match("/RobloxDefaultErrorPage") then
     if force then
@@ -236,7 +215,7 @@ function module.upload(data, mid, security, force)
 end
 
 function module.toAID(AVID)
-  local result = postReqNoSSL("https://www.roblox.com/redirect-item?avid=" .. AVID, "", "");
+  local result = postReq("https://www.roblox.com/redirect-item?avid=" .. AVID, "", "");
   return tonumber(result:match("Location: /.-id=(%d*)"));
 end
 
