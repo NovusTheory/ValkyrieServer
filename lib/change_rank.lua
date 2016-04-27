@@ -80,7 +80,7 @@ function module.changeRank_easy(gameid, gid, rnkid, uid)
     password = config.robloxpw;
   end
 
-  local rolesets  = json.decode(postReq(("http://www.roblox.com/api/groups/%d/RoleSets"):format(gid), "", ""));
+  local rolesets  = json.decode(postReq(("https://www.roblox.com/api/groups/%d/RoleSets"):format(gid), "", ""));
 
   local rsid = 0;
   for index, role in next, rolesets do
