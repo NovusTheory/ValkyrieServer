@@ -140,7 +140,7 @@ app:match("signup1", "/signup/1", respond_to{
         invalid.username = "There is no such user on Roblox";
       elseif mysql.select("count(*) from users where username=?", self.params.username)[1]["count(*)"] ~= "0" then
         invalid.username = "This username is already in use";
-      elseif ({http.simple("http://api.roblox.com/users/get-by-username?username=" .. self.params.username)})[1] == '{"success":false,"errorMessage":"User not found"}' then
+      elseif ({http.simple("https://api.roblox.com/users/get-by-username?username=" .. self.params.username)})[1] == '{"success":false,"errorMessage":"User not found"}' then
         invalid.username = "There is no such user on Roblox";
       end
     end
@@ -168,7 +168,7 @@ app:get('features','/features',function(self)
 end);
 
 local function checkCanMessage(id, cookie, force)
-  local html = HTTPGet("http://www.roblox.com/users/" .. id .. "/profile", "Cookie: " .. cookie .. "\n");
+  local html = HTTPGet("https://www.roblox.com/users/" .. id .. "/profile", "Cookie: " .. cookie .. "\n");
   if html:match 'data%-userid="0"' then
     if force then
       error "ROBLOX LOGIN FAILED! Please tell gskw. Remember to include the time this happened at.";
@@ -290,7 +290,7 @@ local function htmlunentities(str)
 end
 
 local function checkSentMessage(id, token, cookie, force)
-  local result = HTTPGet("http://www.roblox.com/messages/api/get-messages?messageTab=0&pageNumber=0&pageSize=20", "Cookie: " .. cookie .. "\n");
+  local result = HTTPGet("https://www.roblox.com/messages/api/get-messages?messageTab=0&pageNumber=0&pageSize=20", "Cookie: " .. cookie .. "\n");
   print(result);
   if result:match("^HTTP/1.1 302 Found\r\nCache%-Control: private\r\nContent%-Type: text/html; charset=utf%-8\r\nLocation:") then
     if force then
@@ -337,7 +337,7 @@ app:match("signup2", "/signup/2", respond_to{
         invalid.username = "There is no such user on Roblox";
       elseif mysql.select("count(*) from users where username=?", self.params.username)[1]["count(*)"] ~= "0" then
         invalid.username = "This username is already in use";
-      elseif ({http.simple("http://api.roblox.com/users/get-by-username?username=" .. self.params.username)})[1] == '{"success":false,"errorMessage":"User not found"}' then
+      elseif ({http.simple("https://api.roblox.com/users/get-by-username?username=" .. self.params.username)})[1] == '{"success":false,"errorMessage":"User not found"}' then
         invalid.username = "There is no such user on Roblox";
       end
     end
@@ -357,7 +357,7 @@ app:match("signup2", "/signup/2", respond_to{
 
 
     -- New code starts here
-    local userid = ({http.simple("http://api.roblox.com/users/get-by-username?username=" .. self.params.username)})[1]:match('{"Id":(%d+)');
+    local userid = ({http.simple("https://api.roblox.com/users/get-by-username?username=" .. self.params.username)})[1]:match('{"Id":(%d+)');
     local canMessage = checkCanMessage(userid, io.open "security.sec":read "*a");
     if not canMessage then
       self._error = "Your privacy settings are configured wrong! Please double-check them!";
@@ -554,7 +554,7 @@ app:match("/api/:module/:funct/:gid/:cokey", json_params(capture_errors({
 }));]]
 
 app:match("/item-thumbnails-proxy", function(self) -- I HATE YOU ROBLOX
-    return {render = "empty"; layout = false; content_type = "application/json"; ({http.simple("http://www.roblox.com/item-thumbnails?" .. util.encode_query_string(self.params))})[1]};
+    return {render = "empty"; layout = false; content_type = "application/json"; ({http.simple("https://www.roblox.com/item-thumbnails?" .. util.encode_query_string(self.params))})[1]};
 end);
 
 return app;
