@@ -18,7 +18,7 @@ end
 local function HTTPRequestSSL(URL, FormData, ExtraHeaders, Method)
 	local Socket = Sockets.tcp();
 	Socket:connect("www.roblox.com", 443);
-	Socket = SSLWrapper.wrap(Socket, {mode = "client", protocol = "tlsv1"});
+	Socket = SSLWrapper.wrap(Socket, {mode = "client", protocol = "tlsv1_2"});
 	Socket:dohandshake();
 	Socket:send(BuildRequest(URL, FormData, ExtraHeaders, nil, Method));
 	local Response = Socket:receive("*a");
@@ -31,7 +31,7 @@ local HTTPRequest = HTTPRequestSSL;
 local function HTTPGet(URL, ExtraHead)
     local Socket = Sockets.tcp();
     Socket:connect("www.roblox.com", 443);
-	Socket = SSLWrapper.wrap(Socket, {mode = "client", protocol = "tlsv1"});
+	Socket = SSLWrapper.wrap(Socket, {mode = "client", protocol = "tlsv1_2"});
 	Socket:dohandshake();
     Socket:send(BuildRequest(URL, "", ExtraHead):gsub("POST", "GET")); -- lol
     local Response = Socket:receive("*a");
@@ -42,7 +42,7 @@ end
 local function DataRequest(URL, FormData, ExtraHeaders)
 	local Socket = Sockets.tcp();
 	Socket:connect("data.roblox.com", 443);
-	Socket = SSLWrapper.wrap(Socket, {mode = "client", protocol = "tlsv1"});
+	Socket = SSLWrapper.wrap(Socket, {mode = "client", protocol = "tlsv1_2"});
 	Socket:dohandshake();
 	Socket:send(BuildRequest(URL, FormData, ExtraHeaders, "data.roblox.com"));
 	local Response = Socket:receive("*a");
