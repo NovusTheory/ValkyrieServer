@@ -30,27 +30,6 @@ local function postReq(url, fields, extrahead)
   return rep;
 end
 
-local function postReqNoSSL(url, fields, extrahead, usegzip)
-  local req = "POST " .. url .. " HTTP/1.1\n";
-  req = req .. "Host: www.roblox.com\n";
-  req = req .. "Accept: */*\n";
-  req = req .. "Connection: close\n";
-  req = req .. "Content-Length: " .. fields:len() .. "\n";
-  req = req .. "User-Agent: Roblox/WinINet\n";
-  req = req .. extrahead .. "\n";
-  req = req .. fields;
-
-  local sock  = sockets.tcp();
-  sock:connect("www.roblox.com", 80);
-  sock:send(req);
-  print("\27[33mRequest:\27[0m\n", req);
-  local rep = sock:receive("*a");
-  print("\27[33mReturn:\27[0m\n", rep);
-  print(rep, "LEN = ", rep:len());
-  sock:close();
-  return rep;
-end
-
 local function stripHeaders(str)
   local index = str:find("\r\n\r\n");
   return str:sub(index + 4);
@@ -68,7 +47,7 @@ function module.login(user, pw)
 end
 
 function module.changeRank(un, pw, gid, rsid, uid, force, csrfforce)
-  local result    = postReqNoSSL("/groups/api/change-member-rank?groupId=" .. gid .. "&newRoleSetID=" .. rsid .. "&targetUserID=" .. uid,
+  local result    = postReq("/groups/api/change-member-rank?groupId=" .. gid .. "&newRoleSetID=" .. rsid .. "&targetUserID=" .. uid,
   "",
   "Cookie: " .. io.open(("security_%s.sec"):format(un), "r"):read("*all") .. "\nX-CSRF-TOKEN: " .. io.open("csrf.csrf", "r"):read("*all"));
   if result:match("GuestData") then
@@ -101,7 +80,7 @@ function module.changeRank_easy(gameid, gid, rnkid, uid)
     password = config.robloxpw;
   end
 
-  local rolesets  = json.decode(postReqNoSSL(("http://www.roblox.com/api/groups/%d/RoleSets"):format(gid), "", ""));
+  local rolesets  = json.decode(postReq(("http://www.roblox.com/api/groups/%d/RoleSets"):format(gid), "", ""));
 
   local rsid = 0;
   for index, role in next, rolesets do
