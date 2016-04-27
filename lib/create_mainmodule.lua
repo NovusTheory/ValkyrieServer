@@ -120,7 +120,7 @@ local function postReq(url, fields, extrahead)
 
   local sock  = sockets.tcp();
   sock:connect("www.roblox.com", 443);
-  sock        = ssl.wrap(sock, {mode = "client", protocol = "tlsv1"});
+  sock        = ssl.wrap(sock, {mode = "client", protocol = "tlsv1_2"});
   sock:dohandshake();
   sock:send(req);
   local rep = sock:receive("*a");
