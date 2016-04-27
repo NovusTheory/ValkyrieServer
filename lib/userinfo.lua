@@ -15,7 +15,7 @@ local yield_error           = app_helpers.yield_error;
 function friends.getFriends(id)
   local ret           = {};
   local ingamep_ret   = mysql.select("gid, player from player_ingame");
-  local friends       = http.request(("http://api.roblox.com/users/%d/friends"):format(id));
+  local friends       = http.request(("https://api.roblox.com/users/%d/friends"):format(id));
   friends             = json.decode(friends);
   local ingameplayers = {};
   for i = 1, #ingamep_ret do
@@ -34,7 +34,7 @@ end
 local function getGeneralInfo(id)
   local ret                 = {};
   local ingamep_ret         = mysql.select("gid, player from player_ingame where player=?", id);
-  local otherinfo           = http.request(("http://api.roblox.com/users/%d"):format(id));
+  local otherinfo           = http.request(("https://api.roblox.com/users/%d"):format(id));
   otherinfo                 = json.decode(otherinfo);
   local online              = #ingamep_ret > 0;
   local gamename            = nil;
