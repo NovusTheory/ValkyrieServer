@@ -41,34 +41,6 @@ function err_func(self)
   return    {render = "empty"; layout = false; content_type = "application/json"; json = {success = false; error = self.errors[1]}};
 end
 
--- Documentation
-app:match("docs", "/docs", cache.cached{function(self)
-  self.title = "Valkyrie Docs";
-  return {render = "docs"};
-end,
-dict_name = "docs_cache";
-exptime = 24*60*60;
-cache_key = cachefunc;
-});
-
-app:match("docscat", "/docs/:subtype", cache.cached{function(self)
-  self.title = "Valkyrie Docs";
-  return {render = "docs"};
-end,
-dict_name = "docs_cache";
-exptime = 60*60;
-cache_key = cachefunc;
-});
-
-app:match("docsobj", "/docs/:subtype/:name", cache.cached{function(self)
-  self.title = "Valkyrie Docs";
-  return {render = "docs"};
-end,
-dict_name = "docs_cache";
-exptime = 60;
-cache_key = cachefunc;
-});
-
 app:match("getValkyrie", "/get", function(self)
   self.title = "Get Valkyrie";
   return {render=true};
