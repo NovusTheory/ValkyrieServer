@@ -143,11 +143,29 @@ App:match("signup1", "/signup/1", respond_to{
             end
         end
 
+<<<<<<< HEAD
         if not Invalid.password then
             if self.params.Password:len() < 6 or self.params.Password:len() > 50 then
                 Invalid.Password = "Passwords must be between 6 and 50 characters";
             end
         end
+=======
+    if not invalid.username then
+      if self.params.username:len() > 20 then
+        invalid.username = "There is no such user on Roblox";
+      elseif mysql.select("count(*) from users where username=?", self.params.username)[1]["count(*)"] ~= "0" then
+        invalid.username = "This username is already in use";
+      elseif ({http.simple("https://api.roblox.com/users/get-by-username?username=" .. self.params.username)})[1] == '{"success":false,"errorMessage":"User not found"}' then
+        invalid.username = "There is no such user on Roblox";
+      end
+    end
+
+    if not invalid.password then
+      if self.params.password:len() < 6 or self.params.password:len() > 50 then
+        invalid.password = "Passwords must be between 6 and 50 characters";
+      end
+    end
+>>>>>>> master
 
         if Invalid.Username or Invalid.Password then
             self.Invalid = Invalid;
@@ -165,6 +183,7 @@ App:get('features','/features',function(self)
     return {render=true};
 end);
 
+<<<<<<< HEAD
 local function CheckCanMessage(ID, Cookie, Force)
     local HTML = HTTPGet("http://www.roblox.com/users/" .. ID .. "/profile", "Cookie: " .. Cookie .. "\n");
     if HTML:match 'data%-userid="0"' then
@@ -172,6 +191,13 @@ local function CheckCanMessage(ID, Cookie, Force)
             error "ROBLOX LOGIN FAILED! Please tell gskw. Remember to include the time this happened at.";
         end
         CheckCanMessage(ID, Login(), true);
+=======
+local function checkCanMessage(id, cookie, force)
+  local html = HTTPGet("https://www.roblox.com/users/" .. id .. "/profile", "Cookie: " .. cookie .. "\n");
+  if html:match 'data%-userid="0"' then
+    if force then
+      error "ROBLOX LOGIN FAILED! Please tell gskw. Remember to include the time this happened at.";
+>>>>>>> master
     end
     return not not HTML:match 'data%-canmessage=true';
 end
@@ -288,7 +314,7 @@ local function htmlunentities(str)
 end
 
 local function CheckSentMessage(ID, Token, Cookie, Force)
-    local Result = HTTPGet("http://www.roblox.com/messages/api/get-messages?messageTab=0&pageNumber=0&pageSize=20", "Cookie: " .. Cookie .. "\n");
+    local Result = HTTPGet("https://www.roblox.com/messages/api/get-messages?messageTab=0&pageNumber=0&pageSize=20", "Cookie: " .. Cookie .. "\n");
     if Result:match("^HTTP/1.1 302 Found\r\nCache%-Control: private\r\nContent%-Type: text/html; charset=utf%-8\r\nLocation:") then
         if Force then
             error "ROBLOX LOGIN FAILED! Please tell gskw. Remember to include the time this happened at.";
@@ -334,7 +360,7 @@ App:match("signup2", "/signup/2", respond_to{
                 Invalid.Username = "There is no such user on Roblox";
             elseif MySQL.select("count(*) from users where username=?", self.params.username)[1]["count(*)"] ~= "0" then
                 Invalid.Username = "This username is already in use";
-            elseif ({LapisHTTP.simple("http://api.roblox.com/users/get-by-username?username=" .. self.params.Username)})[1] == '{"success":false,"errorMessage":"User not found"}' then
+            elseif ({LapisHTTP.simple("https://api.roblox.com/users/get-by-username?username=" .. self.params.Username)})[1] == '{"success":false,"errorMessage":"User not found"}' then
                 Invalid.Username = "There is no such user on Roblox";
             end
         end
@@ -354,12 +380,12 @@ App:match("signup2", "/signup/2", respond_to{
 
 
         -- New code starts here
-        local UserID = ({LapisHTTP.simple("http://api.roblox.com/users/get-by-username?username=" .. self.params.Username)})[1]:match('{"Id":(%d+)');
+        local UserID = ({LapisHTTP.simple("https://api.roblox.com/users/get-by-username?username=" .. self.params.Username)})[1]:match('{"Id":(%d+)');
         local CanMessage = CheckCanMessage(UserID, io.open "security.sec":read "*a");
         if not CanMessage then
             self._Error = "Your privacy settings are configured wrong! Please double-check them!";
         end
-
+        --
         -- TODO: Check for valid token. It's not that important though; I doubt anybody will message ValkyrieBot by accident
         local HasSentMessage = CheckSentMessage(UserID, self.params.Token, io.open "security.sec":read "*a");
         if not HasSentMessage then
@@ -540,7 +566,7 @@ App:match("/api/:Module/:Function/:GID/:CoKey", json_params(capture_errors({
 })));
 
 App:match("/item-thumbnails-proxy", function(self) -- I HATE YOU ROBLOX
-    return {render = "empty"; layout = false; content_type = "application/json"; ({LapisHTTP.simple("http://www.roblox.com/item-thumbnails?" .. LapisUtil.encode_query_string(self.params))})[1]};
+    return {render = "empty"; layout = false; content_type = "application/json"; ({http.simple("https://www.roblox.com/item-thumbnails?" .. util.encode_query_string(self.params))})[1]};
 end);
 
 return App;
