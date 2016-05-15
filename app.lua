@@ -138,34 +138,16 @@ App:match("signup1", "/signup/1", respond_to{
                 Invalid.Username = "There is no such user on Roblox";
             elseif MySQL.select("count(*) from users where username=?", self.params.Username)[1]["count(*)"] ~= "0" then
                 Invalid.Username = "This username is already in use";
-            elseif ({LapisHTTP.simple("http://api.roblox.com/users/get-by-username?username=" .. self.params.Username)})[1] == '{"success":false,"errorMessage":"User not found"}' then
+            elseif ({LapisHTTP.simple("https://api.roblox.com/users/get-by-username?username=" .. self.params.Username)})[1] == '{"success":false,"errorMessage":"User not found"}' then
                 Invalid.Username = "There is no such user on Roblox";
             end
         end
 
-<<<<<<< HEAD
         if not Invalid.password then
             if self.params.Password:len() < 6 or self.params.Password:len() > 50 then
                 Invalid.Password = "Passwords must be between 6 and 50 characters";
             end
         end
-=======
-    if not invalid.username then
-      if self.params.username:len() > 20 then
-        invalid.username = "There is no such user on Roblox";
-      elseif mysql.select("count(*) from users where username=?", self.params.username)[1]["count(*)"] ~= "0" then
-        invalid.username = "This username is already in use";
-      elseif ({http.simple("https://api.roblox.com/users/get-by-username?username=" .. self.params.username)})[1] == '{"success":false,"errorMessage":"User not found"}' then
-        invalid.username = "There is no such user on Roblox";
-      end
-    end
-
-    if not invalid.password then
-      if self.params.password:len() < 6 or self.params.password:len() > 50 then
-        invalid.password = "Passwords must be between 6 and 50 characters";
-      end
-    end
->>>>>>> master
 
         if Invalid.Username or Invalid.Password then
             self.Invalid = Invalid;
@@ -183,21 +165,13 @@ App:get('features','/features',function(self)
     return {render=true};
 end);
 
-<<<<<<< HEAD
 local function CheckCanMessage(ID, Cookie, Force)
-    local HTML = HTTPGet("http://www.roblox.com/users/" .. ID .. "/profile", "Cookie: " .. Cookie .. "\n");
+    local HTML = HTTPGet("https://www.roblox.com/users/" .. ID .. "/profile", "Cookie: " .. Cookie .. "\n");
     if HTML:match 'data%-userid="0"' then
         if Force then
             error "ROBLOX LOGIN FAILED! Please tell gskw. Remember to include the time this happened at.";
         end
         CheckCanMessage(ID, Login(), true);
-=======
-local function checkCanMessage(id, cookie, force)
-  local html = HTTPGet("https://www.roblox.com/users/" .. id .. "/profile", "Cookie: " .. cookie .. "\n");
-  if html:match 'data%-userid="0"' then
-    if force then
-      error "ROBLOX LOGIN FAILED! Please tell gskw. Remember to include the time this happened at.";
->>>>>>> master
     end
     return not not HTML:match 'data%-canmessage=true';
 end
