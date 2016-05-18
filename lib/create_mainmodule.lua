@@ -4,7 +4,7 @@ if not jit then
   error("LuaJIT not installed!");
 end
 local LZ4       = dofile("lib/lz4.lua");
-local BitLib    = require"BitLib";
+local BitLib    = require"bit32";
 local Config    = require("lapis.config").get();
 
 function NumberToHex(IN)
@@ -30,11 +30,11 @@ local function ToLittleEndian(int)
 end
 
 function Module.EncodeProperty(PropertyName, PropertyType, PropertyData)
-  local Return = "\0\0\0\0"; -- Always zeroes since it's the only instance
-            .. ToLittleEndian(PropertyName:len());
-            .. PropertyName;
-            .. string.char(PropertyType);
-            .. PropertyData;
+  local Return = "\0\0\0\0" -- Always zeroes since it's the only instance
+            .. ToLittleEndian(PropertyName:len())
+            .. PropertyName
+            .. string.char(PropertyType)
+            .. PropertyData
 
   local UncompressedSize = Return:len();
   Return, Error = LZ4.compress(Return);
@@ -50,12 +50,12 @@ function Module.EncodeProperty(PropertyName, PropertyType, PropertyData)
 end
 
 function Module.EncodeInstance(InstanceName)
-  local Return = "\0\0\0\0";
-              .. ToLittleEndian(InstanceName:len());
-              .. instName;
-              .. "\0"; -- No additional data
-              .. "\1\0\0\0"; -- One instance
-              .. "\0\0\0\0"; -- Always zeroes since it's the only instance
+  local Return = "\0\0\0\0"
+              .. ToLittleEndian(InstanceName:len())
+              .. instName
+              .. "\0" -- No additional data
+              .. "\1\0\0\0" -- One instance
+              .. "\0\0\0\0" -- Always zeroes since it's the only instance
   local UncompressedSize = Return:len();
   Return, Error = LZ4.compress(Return);
   if Error then
@@ -70,10 +70,10 @@ function Module.EncodeInstance(InstanceName)
 end
 
 function Module.EncodeParent(Number, ReferentArray, ParentArray)
-  local Return = "\0";
-              .. ToLittleEndian(Number);
-              .. ReferentArray;
-              .. ParentArray;
+  local Return = "\0"
+              .. ToLittleEndian(Number)
+              .. ReferentArray
+              .. ParentArray
 
   local UncompressedSize = Return:len();
   Return, Error = LZ4.compress(Return);
@@ -89,14 +89,14 @@ function Module.EncodeParent(Number, ReferentArray, ParentArray)
 end
 
 function Module.CreateModel(Source)
-  local ModelData = "<roblox!\137\255\13\10\26\10\0\0"; -- Header
-                 .. "\1\0\0\0\1\0\0\0"; -- One instance total, one unique
-                 .. "\0\0\0\0\0\0\0\0"; -- Padding
-                 .. Module.EncodeInstance("ModuleScript");
-                 .. Module.EncodeProperty("LinkedSource", 1, "\0\0\0\0");
-                 .. Module.EncodeProperty("Name", 1, "\n\0\0\0MainModule"); -- \n\0\0\0 == 10 in LE == ("MainModule"):len()
-                 .. Module.EncodeProperty("Source", 1, ToLittleEndian(Source:len()) .. Source);
-                 .. Module.EncodeParent(1, "\0\0\0\0", "\0\0\0\1");
+  local ModelData = "<roblox!\137\255\13\10\26\10\0\0" -- Header
+                 .. "\1\0\0\0\1\0\0\0" -- One instance total, one unique
+                 .. "\0\0\0\0\0\0\0\0" -- Padding
+                 .. Module.EncodeInstance("ModuleScript")
+                 .. Module.EncodeProperty("LinkedSource", 1, "\0\0\0\0")
+                 .. Module.EncodeProperty("Name", 1, "\n\0\0\0MainModule") -- \n\0\0\0 == 10 in LE == ("MainModule"):len()
+                 .. Module.EncodeProperty("Source", 1, ToLittleEndian(Source:len()) .. Source)
+                 .. Module.EncodeParent(1, "\0\0\0\0", "\0\0\0\1")
                  .. "END\0\0\0\0\0\9\0\0\0\0\0\0\0</roblox>";
 
   return ModelData;
@@ -108,14 +108,14 @@ local Encoder   = Library("encode");
 local LapisUtil = require("lapis.util");
 
 local function PostRequest(URL, Fields, ExtraHeaders)
-  local Request =  "POST " .. URL .. " HTTP/1.1\n";
-                .. "Host: www.roblox.com\n";
-                .. "Accept: */*\n";
-                .. "Connection: close\n";
-                .. "Content-Length: " .. Fields:len() .. "\n";
-                .. "Accept-Encoding: gzip\n";
-                .. "User-Agent: Roblox/WinINet\n";
-                .. ExtraHeaders .. "\n";
+  local Request =  "POST " .. URL .. " HTTP/1.1\n"
+                .. "Host: www.roblox.com\n"
+                .. "Accept: */*\n"
+                .. "Connection: close\n"
+                .. "Content-Length: " .. Fields:len() .. "\n"
+                .. "Accept-Encoding: gzip\n"
+                .. "User-Agent: Roblox/WinINet\n"
+                .. ExtraHeaders .. "\n"
                 .. Fields;
 
   local Socket  = Sockets.tcp();
