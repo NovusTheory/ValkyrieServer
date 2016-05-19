@@ -1,114 +1,112 @@
-local module      = {};
-local encoder     = library("encode");
-local meta        = library("meta");
-local yield_error = require"lapis.application".yield_error;
-local lfs         = require("lfs");
+local Module      = {};
+local Meta        = Library("meta");
+local YieldError = require"lapis.application".yield_error;
+local LFS         = require("lfs");
 
-local function round(x)
+local function Round(x)
   return math.ceil(x - .4);
 end
 
-local function setInaccurate(str, unit, bytes)
-  local num       = tonumber(str:sub(1, str:find(" ") - 1));
-  if round(num) * 1024 ^ unit ~= round(bytes) then
-    return "~" .. str;
+local function SetInaccurate(Representation, Unit, Bytes)
+  local Number    = tonumber(Representation:sub(1, Representation:find(" ") - 1));
+  if Round(Number) * 1024 ^ Unit ~= Round(Bytes) then
+    return "~" .. Representation;
   end
-  return str;
+  return Representation;
 end
 
-local function properDataRep(bytes)
-  if bytes / 1024 ^ 3 >= 1 then -- Should never be the case
-    return setInaccurate(("%.3f GiB"):format(bytes / 1024 ^ 3), 3, bytes);
-  elseif bytes / 1024 ^ 2 >= 1 then
-    return setInaccurate(("%.3f MiB"):format(bytes / 1024 ^ 2), 2, bytes);
-  elseif bytes / 1024 >= 1 then
-    return setInaccurate(("%.3f KiB"):format(bytes / 1024), 1, bytes);
+local function ProperDataRepresentation(Bytes)
+  if Bytes / 1024 ^ 3 >= 1 then -- Should never be the case
+    return SetInaccurate(("%.3f GiB"):format(Bytes / 1024 ^ 3), 3, Bytes);
+  elseif Bytes / 1024 ^ 2 >= 1 then
+    return SetInaccurate(("%.3f MiB"):format(Bytes / 1024 ^ 2), 2, Bytes);
+  elseif Bytes / 1024 >= 1 then
+    return SetInaccurate(("%.3f KiB"):format(Bytes / 1024), 1, Bytes);
   else
-    return ("%d B"):format(bytes);
+    return ("%d B"):format(Bytes);
   end
 end
 
-local function safeMkdir(name)
-  name                = name:gsub("'", "\\'");
-  local value = os.execute("mkdir -p '" .. name .. "'");
-  if value ~= 0 then
-    yield_error("mkdir failed with code " .. value);
+local function SafeMKDir(Name)
+  Name                = Name:gsub("'", "\\'");
+  local Value = os.execute("mkdir -p '" .. Name .. "'");
+  if Value ~= 0 then
+    YieldError("mkdir failed with code " .. Value);
   end
 end
 
-function module.saveData(gid, key, value)
-  local usedspc = meta.getMeta("usedSpace", gid);
-  local limit   = 1024 * 1024 * 10 - usedspc; -- Give them 10 MiB of space
+function Module.SaveData(GID, Key, Value)
+  local UsedSpace = Meta.GetMeta("usedSpace", GID);
+  local Limit   = 1024 * 1024 * 10 - UsedSpace; -- Give them 10 MiB of space
 
-  if gid:find("%.") or key:find("%.") then
-    yield_error("Nice try, you dirty injector! (GID or key can't contain a .)");
+  if GID:find("%.") or Key:find("%.") then
+    YieldError("Nice try, you dirty injector! (GID or key can't contain a .)");
   end
 
-  local oldfile     = io.open(("ds/%s/%s.ds"):format(gid, key), "r");
-  local oldfilesize = 0;
-  if oldfile then
-    oldfilesize = oldfile:read("*all"):len();
+  local OldFile     = io.open(("ds/%s/%s.ds"):format(gid, Key), "r");
+  local OldFileSize = 0;
+  if OldFile then
+    OldFileSize = OldFile:read("*all"):len();
   end
-  local netchange   = oldfilesize - value:len();
+  local Change     = OldFileSize - Value:len();
 
-  if limit < usedspc - netchange then
-    yield_error("You're trying to use too much space! You only have " .. properDataRep(limit) .. " left!");
+  if Limit < UsedSpace - Change then
+    YieldError("You're trying to use too much space! You only have " .. ProperDataRepresentation(Limit) .. " left!");
   end
 
-  safeMkdir(("ds/%s/%s.ds"):format(gid, key):gsub("%w-%.ds", ""));
-  local file, err, num = io.open(("ds/%s/%s.ds"):format(gid, key), "w");
-  if not file then
-    yield_error(err);
+  SafeMKDir(("ds/%s/%s.ds"):format(GID, Key):gsub("%w-%.ds", ""));
+  local File, Error = io.open(("ds/%s/%s.ds"):format(GID, Key), "w");
+  if not File then
+    YieldError(Error);
   end
-  file:write(value);
-  meta.setMeta("usedSpace", usedspc - netchange, gid);
+  file:write(Value);
+  Meta.SetMeta("usedSpace", UsedSpace - Change, GID);
 
   return ({success = true; error = ""});
 end
 
-function module.loadData(gid, key)
-  if gid:find("%.") or key:find("%.") then
-    yield_error("Nice try, you dirty injector! (GID or key can't contain a .)");
+function Module.LoadData(GID, Key)
+  if GID:find("%.") or Key:find("%.") then
+    YieldError("Nice try, you dirty injector! (GID or key can't contain a .)");
   end
 
-  local file, err, num = io.open(("ds/%s/%s.ds"):format(gid, key), "r");
-  if not file then
-    yield_error(err);
+  local File, Error = io.open(("ds/%s/%s.ds"):format(GID, Key), "r");
+  if not File then
+    YieldError(Error);
   end
 
-  return ({success = true; error = ""; result = file:read("*all")});
+  return ({success = true; error = ""; result = File:read("*all")});
 end
 
-function module.getSpace(gid)
-  local usedspc = meta.getMeta("usedSpace", gid);
-  local limit   = 1024 * 1024 * 10 - usedspc;
+function Module.GetSpace(gid)
+  local UsedSpace = Meta.GetMeta("usedSpace", GID);
+  local Limit   = 1024 * 1024 * 10 - UsedSpace;
 
-  return ({success = true; error = ""; result = {{"10 MiB"; properDataRep(limit); properDataRep(usedspc)}, {1024 * 1024 * 10, limit, tonumber(usedspc)}}});
+  return ({success = true; error = ""; result = {{"10 MiB"; ProperDataRepresentation(Limit); ProperDataRepresentation(usedspc)}, {1024 * 1024 * 10, Limit, tonumber(UsedSpace)}}});
 end
 
-local function getDirectoryRecursively(tbl, path, ignore)
-  print(path);
-  for file in lfs.dir(path) do
-    if lfs.attributes(path .. "/" .. tostring(file), "mode") == "file" then
-      table.insert(tbl, ({
+local function GetDirectoryRecursively(Table, Path, Ignore)
+  for file in LFS.dir(Path) do
+    if LFS.attributes(Path .. "/" .. tostring(File), "mode") == "file" then
+      table.insert(Table, ({
           (
-            path .. tostring(file)
-          ):gsub(ignore, "", 1):gsub("%.ds", "")
+            Path .. tostring(File)
+          ):gsub(Ignore, "", 1):gsub("%.ds", "")
         })[1]);
-    elseif tostring(file) ~= ".." and tostring(file) ~= "." then
-      tbl = getDirectoryRecursively(tbl, (path:sub(path:len()) == "/" and path:sub(1, path:len() - 1) or path) .. "/" .. tostring(file) .. "/", ignore);
+    elseif tostring(File) ~= ".." and tostring(File) ~= "." then
+      Table = GetDirectoryRecursively(Table, (Path:sub(Path:len()) == "/" and Path:sub(1, Path:len() - 1) or Path) .. "/" .. tostring(File) .. "/", Ignore);
     end
   end
 
-  return tbl;
+  return Table;
 end
 
-function module.listKeys(gid)
-  if gid:find("%.") then
-    yield_error("Nice try, you dirty injector! (Gid can't contain a .)");
+function Module.ListKeys(GID)
+  if GID:find("%.") then
+    YieldError("Nice try, you dirty injector! (Gid can't contain a .)");
   end
 
-  return ({success = true; error = ""; result = getDirectoryRecursively({}, ("ds/%s"):format(gid), ("ds/%s/?"):format(gid))});
+  return ({success = true; error = ""; result = GetDirectoryRecursively({}, ("ds/%s"):format(GID), ("ds/%s/?"):format(GID))});
 end
 
-return module;
+return Module;
