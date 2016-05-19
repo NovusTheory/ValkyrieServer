@@ -28,7 +28,7 @@ App:enable"etlua"
 App.layout = require("views.head");
 
 App:before_filter(function(self)
-    self.SignedIn = self.Session.User;
+    self.SignedIn = self.session.User;
 end);
 
 App:get("root", "/", function(self)
