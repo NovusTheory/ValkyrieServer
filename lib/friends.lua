@@ -1,69 +1,68 @@
-local module          = {};
-local mysql           = require"lapis.db";
-local encoder         = library("encode");
-local app_helpers     = require"lapis.application";
-local http            = require("socket.http");
-local json            = require("cjson");
-local userinfo        = library("userinfo");
+local Module     = {};
+local MySQL      = require"lapis.db";
+local Encoder    = Library("encode");
+local AppHelpers = require"lapis.application";
+local HTTP       = require("socket.http");
+local JSON       = require("cjson");
+local UserInfo   = Library("userinfo");
+local Socket     = require("socket");
 
-local yield_error     = app_helpers.yield_error;
+local YieldError = AppHelpers.yield_error;
 
-function module.getFriends(id)
-  local ret           = {};
-  local ingamep_ret   = mysql.select("gid, player from player_ingame");
-  local friends       = http.request(("https://api.roblox.com/users/%d/friends"):format(id));
-  friends             = json.decode(friends);
+function Module.GetFriends(ID)
+  local Result        = {};
+  local IsInGame   = MySQL.select("gid, player from player_ingame");
+  local Friends       = HTTP.request(("https://api.roblox.com/users/%d/friends"):format(ID));
+  Friends             = JSON.decode(Friends);
 
-  for index, value in next, friends do
-    local toinsert    = {value.Id; value.Username; ingamep_ret[value.Id] and true or false};
-    table.insert(toinsert, ingamep_ret[value.Id]);
-    table.insert(ret, toinsert);
+  for Index, Value in next, Friends do
+    table.insert(Result, {value.Id; value.Username; IsInGame[value.Id] and true or false; IsInGame[value.Id]});
   end
 
-  return ({success = true, error = "", result = ret});
+  return ({success = true, error = "", result = Result});
 end
 
-function module.setOnlineGame(id, gid, name)
-  local exists_ret    = mysql.select("gid from player_ingame where player=?", id);
-  if #exists_ret < 1 then
-    mysql.insert("player_ingame", {
-      player          = id;
-      gid             = gid;
-      name            = name;
+function Module.SetOnlineGame(ID, GID, Name)
+  local DoesExist    = MySQL.select("gid from player_ingame where player=?", ID);
+  if #DoesExist < 1 then
+    MySQL.insert("player_ingame", {
+      player          = ID;
+      gid             = GID;
+      name            = Name;
     });
   else
-    mysql.update("player_ingame", {
-      player           = id;
-      gid              = gid;
-      name             = name;
+    MySQL.update("player_ingame", {
+      player           = ID;
+      gid              = GID;
+      name             = Name;
     }, {
-      player           = id;
+      player           = ID;
     });
   end
 
-  userinfo.tryCreateUser(id);
+  Userinfo.TryCreateUser(ID);
 
-  mysql.update("player_info", {
+  MySQL.update("player_info", {
     last_online      = 0;
   }, {
-    player           = id;
+    player           = ID;
   });
 
   return ({success = true, error = ""});
 end
 
-function module.goOffline(id, time_ingame)
-  mysql.delete("player_ingame", {
-    player           = id;
+function Module.GoOffline(ID, TimeIngame)
+  MySQL.delete("player_ingame", {
+    player           = ID;
   });
-  mysql.update("player_info", {
-    last_online      = math.floor(socket.gettime());
-    time_ingame      = mysql.raw(("time_ingame+%d"):format(time_ingame));
+  MySQL.update("player_info", {
+    last_online      = math.floor(Socket.gettime());
+    time_ingame      = MySQL.raw(("time_ingame+%d"):format(TimeIngame));
   }, {
-    player           = id;
+    player           = ID;
   });
 
   return ({success = true, error = ""})
 end
 
-return module;
+return Module;
