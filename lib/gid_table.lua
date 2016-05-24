@@ -1,5 +1,5 @@
-local mysql 		= require "lapis.db";
+local MySQL 		= require "lapis.db";
 
-return function(table, gid)
-	return mysql.raw(mysql.escape_identifier(table .. "_" .. gid));
+return function(Table, GID)
+	return MySQL.raw(MySQL.escape_identifier(Table .. "_" .. GID));
 end;
