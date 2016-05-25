@@ -1,0 +1,27 @@
+worker_processes ${{NUM_WORKERS}};
+error_log logs/error.log notice;
+daemon off;
+
+user root; # Change here
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    include mime.types;
+
+    lua_shared_dict page_cache 64m;
+    lua_shared_dict docs_cache 32m;
+
+    server {
+        # Set up SSL if you like
+        client_body_buffer_size 10m;
+        listen ${{PORT}};
+        server_name valkyrie.crescentcode.net; # Change here
+        lua_code_cache ${{CODE_CACHE}};
+        set SERVERPATH /root/dev/valkyrie_server; # Change here
+
+        include nginx.conf.inc;
+    }
+}
