@@ -10,8 +10,8 @@ Config("prod", {
 Config("dev", {
     plainport = 81;
     port = 444;
-    ciname = "ci.crescentcode.net";
-    servername = "valkyrie.crescentcode.net";
+    ciname = "cidev.crescentcode.net";
+    servername = "dev.crescentcode.net";
     ciport = 556;
     serverport = 555;
 });
