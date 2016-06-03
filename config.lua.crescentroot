@@ -6,6 +6,7 @@ Config("prod", {
     servername = "valkyrie.crescentcode.net";
     ciport = 456;
     serverport = 455;
+    docsport = 457;
 });
 Config("dev", {
     plainport = 81;
@@ -14,4 +15,5 @@ Config("dev", {
     servername = "dev.crescentcode.net";
     ciport = 556;
     serverport = 555;
+    docsport = 557;
 });
