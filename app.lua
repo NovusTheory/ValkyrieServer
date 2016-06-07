@@ -2,7 +2,7 @@ local lapis       = require("lapis");
 local app         = lapis.Application();
 local cache       = require("lapis.cache");
 
-function library(name) return require("lib." .. name); end
+function _G.library(name) return require("lib." .. name); end
 local intmodules  = require "interface.modules";
 local permstest   = library("permissions");
 local parser      = library("parse");
