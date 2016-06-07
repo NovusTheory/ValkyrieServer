@@ -228,6 +228,8 @@
 		call it with your GameId and Valkyrie Key as parameters.
 		<br>
 		Example: <code class="z-depth-1">require(ValkyrieBuildId)("TestGame", "TestKey123")</code>
+		<br>
+		More information <a href="https://docs.crescentcode.net/Valkyrie/Examples/GetStarted">on the docs</a>
 	</section>
 	<section>
 		<h4>How can I use Valkyrie like a normal module?</h4>
