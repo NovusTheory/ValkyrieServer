@@ -42,7 +42,7 @@ function module.setOnlineGame(id, gid, name)
   end
 
   local exists_ret2    = mysql.select("gid from player_sessions where player=? and gid=?", id, gid);
-  if #exists_ret < 2 then
+  if #exists_ret < 1 then
       mysql.insert("player_sessions", {
           player       = id;
           time_ingame  = 0;
