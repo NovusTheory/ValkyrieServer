@@ -41,6 +41,18 @@ function module.setOnlineGame(id, gid, name)
     });
   end
 
+  local exists_ret2    = mysql.select("gid from player_sessions where player=? and gid=?", id, gid);
+  if #exists_ret < 2 then
+      mysql.insert("player_sessions", {
+          player       = id;
+          time_ingame  = 0;
+          joined       = math.floor(socket.gettime());
+          last_online  = 0;
+          num_sessions = 0;
+          gid          = gid;
+      });
+  end
+
   userinfo.tryCreateUser(id);
 
   mysql.update("player_info", {
