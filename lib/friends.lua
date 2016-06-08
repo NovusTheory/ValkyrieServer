@@ -48,19 +48,34 @@ function module.setOnlineGame(id, gid, name)
   }, {
     player           = id;
   });
+  mysql.update("player_sessions", {
+    last_online      = 0;
+  }, {
+    player           = id;
+    gid              = gid;
+  });
 
   return ({success = true, error = ""});
 end
 
-function module.goOffline(id, time_ingame)
+function module.goOffline(gid, id, time_ingame)
   mysql.delete("player_ingame", {
     player           = id;
   });
   mysql.update("player_info", {
     last_online      = math.floor(socket.gettime());
     time_ingame      = mysql.raw(("time_ingame+%d"):format(time_ingame));
+    num_sessions     = mysql.raw("num_sessions+1");
   }, {
     player           = id;
+  });
+  mysql.update("player_sessions", {
+    last_onilne      = math.floor(socket.gettime());
+    time_ingame      = mysql.raw(("time_ingame+%d"):format(time_ingame));
+    num_sessions     = mysql.raw("num_sessions+1");
+  }, {
+    player           = id;
+    gid              = gid;
   });
 
   return ({success = true, error = ""})

@@ -91,6 +91,7 @@ local modules       = {
         "name";
       };
       goOffline     = {
+        "gid";
         "id";
         "time_ingame";
       };
