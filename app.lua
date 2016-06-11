@@ -20,6 +20,8 @@ local mysql_schm  = require "lapis.db.schema";
 local http        = require "lapis.nginx.http";
 local util        = require "lapis.util";
 local json        = require "cjson";
+local inspect     = require "inspect";
+local meta        = library "meta";
 local BuildRequest, HTTPRequestSSL, HTTPRequest, StripHeaders, Login, DataRequest, RunPostBack, FindPostState, HTTPGet = unpack(library("httputil"));
 
 local cachefunc = function(url, x, self)
@@ -382,10 +384,30 @@ app:match("/validate/:name", function(self) -- Check if username is valid for si
   return {render = "empty", layout = false, tostring(mysql.select("count(*) from users where username=?", self.params.name)[1]["count(*)"] == "0")};
 end);
 
-app:match("gamelist", "/user/:user/games", function(self)
+app:match("gamelist", "/user/:User/games", function(self)
     if not self.session.user then
         return {redirect_to = self:url_for "login"};
     end
+
+    local Games = mysql.select("gid from game_ids where owner=(select id from users where username=?)", self.params.User);
+    local Return = {};
+
+    for i = 1, #Games do
+        local Game = {};
+        Game.GID = Games[i].gid;
+
+        local PrimaryPlaceID = meta.getMeta("primary_place", Game.GID);
+        local OnlineUsers    = mysql.select("count(id) from player_ingame where gid=?", Game.GID)[1]["count(id)"];
+        Game.OnlinePlayers   = OnlineUsers;
+        Game.PlaceID         = PrimaryPlaceID;
+
+        Game.AverageSession  = mysql.select("avg(time_ingame/num_sessions) from player_sessions where gid=?", Game.GID)[1]["avg(time_ingame/num_sessions)"];
+
+        table.insert(Return, Game);
+    end
+
+    self.Games = Return;
+
     return {render = true};
 end);
 
