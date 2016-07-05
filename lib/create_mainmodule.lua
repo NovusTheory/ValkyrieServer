@@ -44,7 +44,7 @@ function Module.EncodeProperty(PropertyName, PropertyType, PropertyData)
 
   Return = Return:sub(9);
   local CompressedSize = Return:len();
-  Return = "PROP" .. ToLittleEndian(CompressedSize) .. toLittleEndian(UncompressedSize) .. "\0\0\0\0" .. Return;
+  Return = "PROP" .. ToLittleEndian(CompressedSize) .. ToLittleEndian(UncompressedSize) .. "\0\0\0\0" .. Return;
 
   return Return;
 end
@@ -52,7 +52,7 @@ end
 function Module.EncodeInstance(InstanceName)
   local Return = "\0\0\0\0"
               .. ToLittleEndian(InstanceName:len())
-              .. instName
+              .. InstanceName
               .. "\0" -- No additional data
               .. "\1\0\0\0" -- One instance
               .. "\0\0\0\0" -- Always zeroes since it's the only instance
@@ -64,7 +64,7 @@ function Module.EncodeInstance(InstanceName)
 
   Return = Return:sub(9);
   local CompressedSize = Return:len();
-  Return = "INST" .. toLittleEndian(CompressedSize) .. ToLittleEndian(UncompressedSize) .. "\0\0\0\0" .. Return;
+  Return = "INST" .. ToLittleEndian(CompressedSize) .. ToLittleEndian(UncompressedSize) .. "\0\0\0\0" .. Return;
 
   return Return;
 end
@@ -109,18 +109,19 @@ local LapisUtil = require("lapis.util");
 
 local function PostRequest(URL, Fields, ExtraHeaders)
   local Request =  "POST " .. URL .. " HTTP/1.1\n"
-                .. "Host: www.roblox.com\n"
+                .. "Host: data.roblox.com\n"
                 .. "Accept: */*\n"
                 .. "Connection: close\n"
                 .. "Content-Length: " .. Fields:len() .. "\n"
-                .. "Accept-Encoding: gzip\n"
+              --  .. "Accept-Encoding: gzip\n"
                 .. "User-Agent: Roblox/WinINet\n"
                 .. ExtraHeaders .. "\n"
                 .. Fields;
+                print(Reqyest);
 
   local Socket  = Sockets.tcp();
-  Socket:connect("www.roblox.com", 443);
-  Socket        = ssl.wrap(Socket, {mode = "client", protocol = "tlsv1_2"});
+  Socket:connect("data.roblox.com", 443);
+  Socket        = SSL.wrap(Socket, {mode = "client", protocol = "tlsv1_2"});
   Socket:dohandshake();
   Socket:send(Request);
   local Response = Socket:receive("*a");
@@ -197,11 +198,11 @@ end
 function Module.Upload(Data, ModelID, SessionCookie, Force)
   local Result = PostRequest("/Data/Upload.ashx?assetid=" .. ModelID .. "&type=Model&name=Valkyrie%20Server%20Upload&description=Loadstring%20model&genreTypeId=1&ispublic=True&allowComments=True",
     Data, "Cookie: " .. SessionCookie .. "\nContent-Type: text/xml\n");
-  if Result:match("/RobloxDefaultErrorPage") then
+  if Result:match("/request%-error") then
     if Force then
       YieldError("ROBLOX LOGIN FAILED! Please contact gskw. Remember to include the time this happened at.");
     end
-    return Module.Upload(Data, ModelID, Module.Login(Config.robloxun, config.password), true);
+    return Module.Upload(Data, ModelID, Module.Login(Config.robloxun, Config.robloxpw), true);
   end
   return StripHeaders(Result);
 end

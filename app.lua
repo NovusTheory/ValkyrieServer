@@ -530,6 +530,7 @@ end
 App:match("/api/:Module/:Function/:GID/:CoKey", json_params(capture_errors({
     on_error = ErrorFunction;
     function(self)
+        self.params.cokey = util.unescape(self.params.cokey);
         local Result;
         local Success, Message = pcall(function() Result = Modules[self.params.module][self.params.funct](self); end);
         if not Success then
