@@ -1,8 +1,7 @@
 local Module      = {};
 local MySQL       = require "lapis.db";
-local GIDTable    = library("gid_table");
-local Encoder     = library("encode");
-local MetaManager = library("meta");
+local MetaManager = Library("meta");
+local PlayerInfo  = Library("userinfo");
 local AppHelpers  = require"lapis.application";
 
 local YieldError  = app_helpers.yield_error;
@@ -12,7 +11,7 @@ function Module.Create(GID, ID, Description, Name, Reward, Icon)
     YieldError("The reward can't be less than 1!");
   end
 
-  local IsUnique       = MySQL.select("id from ? where achv_id=?", GIDTable("achievements", GID), ID);
+  local IsUnique       = MySQL.select("id from achievements where achv_id=? and gid=?", ID, GID); -- Achievements do not need to be unique across games
 
   if #IsUnique ~= 0 then
     YieldError("An achievement with that ID already exists!");
@@ -26,24 +25,25 @@ function Module.Create(GID, ID, Description, Name, Reward, Icon)
   end
   MetaManager.SetMeta("usedreward", UsedReward + Reward, GID);
 
-  MySQL.insert(("achievements_%s"):format(GID), {
+  MySQL.insert("achievements", {
         achv_id           = ID,
         description       = Description,
         name              = Name,
         reward            = Reward,
-        icon              = Icon
+        icon              = Icon,
+        gid               = GID
     });
 
   return {success = true, error = ""};
 end
 
 function Module.Award(GID, PlayerID, AchievementID)
-  local IsUnique = MySQL.select("id from ? where achv_id=?", GIDTable("achievements", GID), ID);
+  local IsUnique = MySQL.select("id from ? where achv_id=? and gid=?", ID, GID);
   if #IsUnique == 0 then
     YieldError("That achievement doesn't exist!");
   end
 
-  local IsAwarded       = mysql.select("id from awarded_achv where achv_id=? and player=? and gid=?", aid, pid, gid);
+  local IsAwarded       = mysql.select("id from awarded_achv where achv_id=? and player=? and gid=?", AchievementID, PlayerInfo.RobloxToInternal(PlayerID), GID);
   if #IsAwarded ~= 0 then
     YieldError("That achievement has already been awarded to the player");
   end
@@ -62,12 +62,7 @@ local function EscapeFilter(Name, Filter)
 end
 
 function Module.List(GID, TargetGID, Filter)
-  local TargetExists   = mysql.select("table_name from information_schema.tables where table_name=?", ("achievements_%s"):format(TargetGID));
-  if #TargetExists == 0 then
-    YieldError("That game doesn't exist");
-  end
-
-  local Query = "* from ? where 1=1 ";
+  local Query = "achievements from ? where GID=? ";
   if Filter[1] and Filter[2] and Filter[1] ~= "" then -- TODO: Convert to named keys
     if Filter[1] == ">" then
       Query = Query .. ("AND %s>=%d "):format("reward", Filter[2]);
@@ -85,20 +80,20 @@ function Module.List(GID, TargetGID, Filter)
     Query = Query .. EscapeFilter("description", Filter[5]);
   end
 
-  local Ret  = MySQL.select(Query, GIDTable("achievements", TargetGID));
+  local Ret  = MySQL.select(Query, GID);
 
-  return ({
-    success = true,
-    error   = "",
-    result  = Ret
-  });
+  return {
+      success = true,
+      error   = "",
+      result  = Ret
+  };
 end
 
 function Module.GetReward(gid)
   local UsedReward  = MetaManager.GetMeta("usedreward", GID);
   local Limit       = 1000 - UsedReward;
 
-  return ({success = true; error = ""; result = {1000, Limit, tonumber(UsedReward)}});
+  return {success = true; error = ""; result = {1000, Limit, tonumber(UsedReward)}};
 end
 
 return Module;
