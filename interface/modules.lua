@@ -1,6 +1,5 @@
 local Module                  = {};
 local Modules                 = require "interface.modulespec";
-local Encoder                 = Library("encode");
 local Auth                    = Library("check_cokey");
 local Inspect                 = require("inspect");
 local Perms                   = Library("permissions");
