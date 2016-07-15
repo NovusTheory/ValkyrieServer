@@ -150,4 +150,13 @@ function module.getUserinfo(id)
   return ({success = true; error = ""; result = ret});
 end
 
+function module.RobloxToInternal(RobloxID)
+    local Result = MySQL.select("id from player_info where robloxid=?", RobloxID);
+    if #Result < 1 then
+        YieldError("Player R#" .. RobloxID .. " does not exist!");
+    end
+
+    return Result[1].id;
+end.
+
 return module;
