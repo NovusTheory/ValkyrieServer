@@ -473,28 +473,25 @@ App:match("game", "/game/:GID", respond_to{
 
         ----- DEFAULT PERMISSIONS!
         io.open("permissions.perms", "a"):write(self.params.GID .. "\n+*.*\n:");
-        -- TODO: Implement SHA2 instead of MD5
         MySQL.insert("game_ids", {
-            GID = self.params.GID;
-            CoKey = MySQL.raw("md5(" .. MySQL.escape_literal(self.params.Key) .. ")");
-            Owner = MySQL.select("id from users where username=?", self.session.User)[1].id;
+            gid = self.params.GID;
+            cokey = MySQL.raw("sha2(" .. MySQL.escape_literal(self.params.Key) .. ", 256)");
+            owner = MySQL.select("id from users where username=?", self.session.User)[1].id;
+            uses_md5 = false;
         });
-        local function CreateLike(Base)
-            MySQL.query("create table ? like ?", MySQL.raw(MySQL.escape_identifier(Base .. "_" .. self.params.GID)), MySQL.raw(Base .. "_template"));
-        end
-        CreateLike("achievements");
-        CreateLike("meta");
-        CreateLike("trusted_users");
 
-        MySQL.insert(MySQL.raw(MySQL.escape_identifier("trusted_users_" .. self.params.GID)), {
-            connection_key = MySQL.raw("md5(" .. MySQL.escape_literal(self.params.Key) .. ")");
+        MySQL.insert("trusted_users", {
+            connection_key = MySQL.raw("sha2(" .. MySQL.escape_literal(self.params.Key) .. ", 256)");
+            uses_md5 = false;
             uid = MySQL.select("robloxid from users where username=?", self.session.User)[1].robloxid;
+            gid = self.params.GID;
         });
 
         local function MakeMeta(Key, Value)
-            MySQL.insert(MySQL.raw(MySQL.escape_identifier("meta_" .. self.params.GID)), {
+            MySQL.insert("meta", {
                 key = Key,
-                value = Value
+                value = Value,
+                gid = self.params.GID
             });
         end
         MakeMeta("usedReward", 0);
