@@ -7,6 +7,7 @@ local AppHelpers  = require"lapis.application";
 local YieldError  = app_helpers.yield_error;
 
 function Module.Create(GID, ID, Description, Name, Reward, Icon)
+    local GID = MySQL.select("id from game_ids where gid=?", GID)[1].id;
   if tonumber(Reward) < 1 then
     YieldError("The reward can't be less than 1!");
   end
@@ -38,6 +39,7 @@ function Module.Create(GID, ID, Description, Name, Reward, Icon)
 end
 
 function Module.Award(GID, PlayerID, AchievementID)
+    local GID = MySQL.select("id from game_ids where gid=?", GID)[1].id;
   local IsUnique = MySQL.select("id from ? where achv_id=? and gid=?", ID, GID);
   if #IsUnique == 0 then
     YieldError("That achievement doesn't exist!");
@@ -62,6 +64,7 @@ local function EscapeFilter(Name, Filter)
 end
 
 function Module.List(GID, TargetGID, Filter)
+    local GID = MySQL.select("id from game_ids where gid=?", GID)[1].id;
   local Query = "achievements from ? where GID=? ";
   if Filter[1] and Filter[2] and Filter[1] ~= "" then -- TODO: Convert to named keys
     if Filter[1] == ">" then
