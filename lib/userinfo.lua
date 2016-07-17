@@ -7,29 +7,10 @@ local http                  = require("socket.http");
 local socket                = require("socket");
 local json                  = require("cjson");
 local meta                  = library("meta");
-local friends               = {};
+local friends               = Library("friends");
 local gid_table             = library("gid_table");
 
 local yield_error           = app_helpers.yield_error;
-
-function friends.getFriends(id)
-  local ret           = {};
-  local ingamep_ret   = mysql.select("gid, player from player_ingame");
-  local friends       = http.request(("https://api.roblox.com/users/%d/friends"):format(id));
-  friends             = json.decode(friends);
-  local ingameplayers = {};
-  for i = 1, #ingamep_ret do
-    ingameplayers[tonumber(ingamep_ret[i].player)] = ingamep_ret[i].gid;
-  end
-
-  for index, value in next, friends do
-    local toinsert    = {value.Id; value.Username; ingameplayers[value.Id] and true or false};
-    table.insert(toinsert, ingameplayers[value.Id]);
-    table.insert(ret, toinsert);
-  end
-
-  return ({success = true, error = "", result = ret});
-end
 
 local function getGeneralInfo(id)
   local ret                 = {};
