@@ -71,13 +71,10 @@ function module.tryCreateUser(id)
   if #exists_ret < 1 then
     mysql.insert("player_info", {
       player                = id;
-      time_ingame           = 0;
-      joined                = math.floor(socket.gettime());
-      last_online           = 0;
     });
   end
 
-  return ({success = true; error = ""});
+  return {success = true; error = ""};
 end
 
 function module.getUserinfo(id)
