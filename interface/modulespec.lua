@@ -93,6 +93,7 @@ local Modules       = {
       GoOffline     = {
         "ID";
         "TimeInGame";
+        "GID";
       };
     };
   };
