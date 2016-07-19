@@ -1,35 +1,37 @@
-local module        = {};
-local mysql         = require"lapis.db";
-local app_helpers   = require"lapis.application";
-local gid_table     = require"lib.gid_table";
+local Module        = {};
+local MySQL         = require"lapis.db";
+local AppHelpers    = require"lapis.application";
+local GameUtils     = Library"game_utils";
 
-local yield_error   = app_helpers.yield_error;
+local YiedError     = AppHelpers.yield_error;
 
-function module.getMeta(key, gid)
-  local result      = mysql.select("value from ? where `key`=?", gid_table("meta", gid), key);
+function Module.GetMeta(Key, GID)
+  local Result      = MySQL.select("value from meta where `key`=? and gid=?", Key, GameUtils.GIDToInternal(GID));
 
-  if #result == 0 then
+  if #Result == 0 then
     error("Invalid meta key!");
   end
 
-  return result[1].value;
+  return Result[1].value;
 end
 
-function module.setMeta(key, value, gid)
-  local uniq_res    = mysql.select("value from ? where `key`=?", gid_table("meta", gid), key);
+function Module.SetMeta(Key, Value, GID)
+    local IsUnique    = MySQL.select("value from meta where `key`=? and gid=?", Key, GameUtils.GIDToInternal(GID));
 
-  if #uniq_res == 0 then
-    mysql.insert(("meta_%s"):format(gid), {
-      key           = key;
-      value         = value;
+  if #IsUnique == 0 then
+    MySQL.insert("meta", {
+      key           = Key;
+      value         = Value;
+      gid           = GID;
     });
   else
-    mysql.update(("meta_%s"):format(gid), {
-      value         = value;
+    MySQL.update("meta", {
+      value         = Value;
     }, {
-      key           = key;
+      key           = Key;
+      gid           = GID;
     });
   end
 end
 
-return module;
+return Module;
