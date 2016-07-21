@@ -13,11 +13,15 @@ function Module.GetFriends(ID)
   local Result        = {};
   local Friends       = HTTP.request(("https://api.roblox.com/users/%d/friends"):format(ID));
   local PlayerIDs     = {};
-  for i = 1, #Friends do
-      table.insert(PlayerIDs, value.Id);
-  end
-  local IsInGame   = MySQL.select("a.player as player, b.gid as gid from player_ingame a where a.player in (?) left join game_ids b where gid=a.gid", MySQL.raw(table.concat(PlayerIDs, ", ")));
   Friends             = JSON.decode(Friends);
+  for i = 1, #Friends do
+      table.insert(PlayerIDs, Friends[i].Id);
+  end
+  local IsInGame      = {};
+  local FriendsInGame = MySQL.select("select c.robloxid as player, b.gid as gid from player_ingame a left join game_ids b on b.id=a.gid left join player_info c on c.id=a.player where c.robloxid in (?);", MySQL.raw(table.concat(PlayerIDs, ", ")));
+  for i = 1, #FriendsInGame do
+      IsInGame[FriendsInGame[i].player] = FriendsInGame[i].gid;
+  end
 
   for Index, Value in next, Friends do
     table.insert(Result, {value.Id; value.Username; IsInGame[value.Id] and true or false; IsInGame[value.Id]});
@@ -29,7 +33,7 @@ end
 function Module.SetOnlineGame(ID, GID, Name)
   Userinfo.TryCreateUser(ID);
 
-  local DoesExist    = MySQL.select("gid from player_ingame where player=?", ID);
+  local DoesExist    = MySQL.select("gid from player_ingame where player=?", UserInfo.RobloxToInternal(ID));
   if #DoesExist < 1 then
     MySQL.insert("player_ingame", {
       player          = UserInfo.RobloxToInternal(ID);
