@@ -13,7 +13,7 @@ function Module.AddMessage(User, Message, GID)
     sent        = Time,
     user        = UserInfo.RobloxToInternal(User),
     message     = Message,
-    gid         = GID
+    gid         = GameUtil.GIDToInternal(GID)
   });
 
   return {success = true, error = ""};
@@ -24,7 +24,7 @@ function Module.CheckMessages(Since, Fresh, GIDFilter)
     return {success = true, error = "", result = math.floor(Socket.gettime())};
   end
 
-  local Result  = MySQL.select("message, sent, user from messages where sent > ? and gid=?", Since, GIDFilter);
+  local Result  = MySQL.select("a.message as message, a.sent as sent, b.robloxid as user from messages a left join player_info b on a.user=b.id where sent > ? and gid=?", Since, GameUtil.GIDToInternal(GIDFilter));
   local Return  = {math.floor(Socket.gettime())};
   for i = 1, #Result do
     table.insert(Return, Result[i]);
