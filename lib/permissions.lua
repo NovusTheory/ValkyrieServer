@@ -56,6 +56,24 @@ local AllPermissions = {
   };
 };
 
+local RuleSets = {
+  Basic = {
+    Allow = {
+      "Modules.*";
+      "Achievements.*";
+      "Auth.*";
+      "Message.*";
+      "PlayerInfo.*";
+      "Friends.*";
+      "DataStore.*";
+      "Bans.*";
+    };
+    Deny = {
+      "Loadstring.*";
+    }
+  }
+};
+
 local CurrentPermissions  = {Allow = {}, Deny = {}};
 
 -- Do not try to understand this function. It works, k?
@@ -113,6 +131,14 @@ function Module.ParsePermissions()
       InsertRecursively(CurrentPermissions.Allow, Line:sub(2), true);
     elseif Line:sub(1, 1) == "-" then
       InsertRecursively(CurrentPermissions.Deny, Line:sub(2), true);
+    elseif Line:sub(1, 1) == "!" then
+      local Rules = RuleSets[Line:sub(2)];
+      for _, Rule in next, Rules.Allow do
+          InsertRecursively(CurrentPermissions.Allow, Rule, true);
+      end
+      for _, Rule in next, Rules.Deny do
+          InsertRecursively(CurrentPermissions.Deny, Rule, true);
+      end
     end
     Line            = PermissionFile:read("*line");
   end
