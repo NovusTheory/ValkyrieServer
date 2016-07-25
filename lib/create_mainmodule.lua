@@ -104,7 +104,6 @@ end
 
 local Sockets   = require("socket");
 local SSL       = require("ssl");
-local Encoder   = Library("encode");
 local LapisUtil = require("lapis.util");
 
 local function PostRequest(URL, Fields, ExtraHeaders)
