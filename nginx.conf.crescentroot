@@ -11,6 +11,10 @@ events {
 http {
   include mime.types;
   client_body_buffer_size 10m;
+  open_file_cache max=1000 inactive=300s;
+  open_file_cache_valid 360s;
+  open_file_cache_min_uses 1;
+  open_file_cache_errors off;
 
   server { # Default redirect -> HTTPS
     listen ${{PLAINPORT}};
@@ -18,7 +22,7 @@ http {
   }
 
   server { # Docs server
-    listen ${{PORT}} ssl;
+    listen ${{PORT}} ssl http2;
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains";
     server_name docs.crescentcode.net;
     lua_code_cache ${{CODE_CACHE}};
@@ -44,7 +48,7 @@ http {
   }
 
   server { # CI server
-    listen ${{PORT}} ssl;
+    listen ${{PORT}} ssl http2;
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains";
     server_name ${{CINAME}};
     lua_code_cache ${{CODE_CACHE}};
@@ -70,7 +74,7 @@ http {
   }
 
   server { # Valkyrie Server
-    listen ${{PORT}} ssl;
+    listen ${{PORT}} ssl http2;
     server_name ${{SERVERNAME}};
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains";
     lua_code_cache ${{CODE_CACHE}};
@@ -103,7 +107,7 @@ http {
   }
 
   server { # CrescentCode HTTPS -> Dead
-    listen ${{PORT}} ssl;
+    listen ${{PORT}} ssl http2;
     server_name "" crescentcode.net;
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains";
     return 444;
@@ -120,7 +124,7 @@ http {
   }
 
   server { # Redirect dev -> :444
-    listen ${{PORT}};
+    listen ${{PORT}} ssl http2;
     ssl on;
     ssl_certificate /etc/letsencrypt/live/valkyrie.crescentcode.net/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/valkyrie.crescentcode.net/privkey.pem;
@@ -140,7 +144,7 @@ http {
   }
 
   server { # Redirect normal -> :443
-    listen ${{PORT}};
+    listen ${{PORT}} ssl http2;
     ssl on;
     ssl_certificate /etc/letsencrypt/live/valkyrie.crescentcode.net/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/valkyrie.crescentcode.net/privkey.pem;
