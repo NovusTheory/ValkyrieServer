@@ -6,7 +6,6 @@ function Library(name) return require("lib." .. name); end
 local Modules    = require "interface.modules";
 local Parser     = Library("parse");
 local Creator    = Library("create_mainmodule");
-local GIDTable   = Library("gid_table");
 local AppHelpers = require"lapis.application";
 
 local respond_to     = AppHelpers.respond_to;
