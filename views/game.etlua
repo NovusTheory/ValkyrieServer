@@ -1,4 +1,4 @@
-<% render('utilRenders.Nav',{SignedIn=session.user}) %>
+<% render('utilRenders.Nav',{SignedIn=session.User}) %>
 <style>
     .material-icons {
         display: inline-block;
@@ -61,15 +61,15 @@ local LapisUtil     = require "lapis.util";
 local LapisHTML     = require "lapis.html";
 local JSONLib       = require "cjson";
 local MetaManager   = require "lib.meta";
-local GIDTable      = require "lib.gid_table";
+local GameUtils     = require "lib.game_utils";
 
-local IsOwner       = MySQL.select("count(id) from game_ids where owner=(select id from users where username=?) and gid=?", session.user, params.gid)[1]["count(id)"] == "1";
+local IsOwner       = MySQL.select("count(1) from game_ids where owner=(select id from users where username=?) and gid=GID", session.user, GameUtils.GIDToInternal(params.GID))[1]["count(id)"] == "1";
 
-local OnlineResult  = MySQL.select("* from player_ingame where gid=? order by id desc", params.gid);
+local OnlineResult  = MySQL.select("b.robloxid as robloxid from player_ingame a left join player_info b on a.player=b.id where gid=? order by id desc", GameUtils.GIDToInternal(params.GID));
 %>
 
 <div class="container">
-    <h1><%= MetaManager.getMeta("name", params.gid) %></h1>
+    <h1><%= MetaManager.GetMeta("name", params.GID) %></h1>
     <div class="row">
         <div class="col s12">
             <div class="list-online card">
@@ -122,7 +122,7 @@ local OnlineResult  = MySQL.select("* from player_ingame where gid=? order by id
                     %>
                     <div class="row">
                         <div class="col s12 center">
-                            <a href="/game/<%= params.gid %>/players" class="btn waves-effect waves-light blue">See more</a>
+                            <a href="/game/<%= params.GID %>/players" class="btn waves-effect waves-light blue">See more</a>
                         </div>
                     </div>
                     <%
@@ -140,13 +140,13 @@ local OnlineResult  = MySQL.select("* from player_ingame where gid=? order by id
                     </div>
                     <ul class="collection">
                         <%
-                        local Achievements = MySQL.select("allachv.*, count(awards.id) from ? allachv left join awarded_achv awards on gid=?", GIDTable("achievements", params.gid), params.gid);
+                        local Achievements = MySQL.select("a.achv_id as achv_id, a.name as name, a.description as description, a.reward as reward, a.icon as icon, count(b.id) as awarded_times from achievements a left join awarded_achv b on b.achv_id=a.id where gid=? group by a.id", GameUtils(params.GID));
 
                         ThumbnailRequest = {};
                         for i = 1, #Achievements do
-                        if type(Achievements[i].id) ~= "userdata" then
-                        table.insert(ThumbnailRequest, {assetId = Achievements[i].icon});
-                        end
+                            if type(Achievements[i].id) ~= "userdata" then
+                                table.insert(ThumbnailRequest, {assetId = Achievements[i].icon});
+                            end
                         end
                         if #ThumbnailRequest > 0 then
                             ThumbnailURLs = JSONLib.decode(({LapisHTTP.simple("http://www.roblox.com/item-thumbnails?params=" .. JSONLib.encode(ThumbnailRequest))})[1]);
@@ -164,7 +164,7 @@ local OnlineResult  = MySQL.select("* from player_ingame where gid=? order by id
                                     "<%- LapisHTML.escape(Achievements[i].description):gsub("\n", "<br>") %>"<br>
                                     ID: <code><%= Achievements[i].achv_id %></code><br>
                                     <%= Achievements[i].reward %> reward points<br>
-                                    Awarded <%= Achievements[i]["count(awards.id)"] %> times
+                                    Awarded <%= Achievements[i].awarded_times %> times
                                 </p>
                             </li>
                             <%
@@ -192,7 +192,7 @@ local OnlineResult  = MySQL.select("* from player_ingame where gid=? order by id
                         </thead>
                         <tbody>
                             <%
-                            local Metadata = MySQL.select("* from ? order by `key` asc", GIDTable("meta", params.gid));
+                            local Metadata = MySQL.select("* from meta where gid=? order by `key` asc", GameUtils.GIDToInternal(params.GID));
                             for i = 1, #Metadata do
                             %>
                             <tr>
