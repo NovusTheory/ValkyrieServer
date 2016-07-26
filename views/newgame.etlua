@@ -1,5 +1,5 @@
-<% if not bare then %>
-<% render('utilRenders.Nav',{SignedIn=session.user}) %>
+<% if not Bare then %>
+<% render('utilRenders.Nav',{SignedIn=session.User}) %>
 <style>
     main {
         position: absolute;
@@ -28,17 +28,17 @@ local GIDError    = "";
 local KeyError    = "";
 local GameError   = "";
 
-if invalid.gid then
+if Invalid.GID then
 GIDClasses    = "invalid";
-GIDError      = invalid.gid;
+GIDError      = Invalid.gid;
 end
-if invalid.key then
+if Invalid.Key then
 KeyClasses    = "invalid";
-KeyError      = invalid.key;
+KeyError      = Invalid.key;
 end
-if invalid.game_name then
+if Invalid.GameName then
 GameClasses   = "invalid";
-GameError     = invalid.game_name;
+GameError     = Invalid.GameName;
 end
 %>
 <div class="card">
@@ -52,16 +52,16 @@ end
         </span>
         <div class="card-content row">
             <div class="input-field col s12">
-                <input id="game_name" name="game_name" type="text" placeholder="Game name" value="<%= params.game_name or "" %>" class="<%= GameClasses %>">
-                <label for="game_name" data-error="<%= GameError %>"></label>
+                <input id="GameName" name="GameName" type="text" placeholder="Game name" value="<%= params.GameName or "" %>" class="<%= GameClasses %>">
+                <label for="GameName" data-error="<%= GameError %>"></label>
             </div>
             <div class="input-field col s12 m6">
-                <input style="font-family: monospace" id="gid" name="gid" type="text" placeholder="Game ID" value="<%= params.gid or "" %>" class="<%= GIDClasses %>">
-                <label for="gid" data-error="<%= GIDError %>"></label>
+                <input style="font-family: monospace" id="GID" name="GID" type="text" placeholder="Game ID" value="<%= params.GID or "" %>" class="<%= GIDClasses %>">
+                <label for="GID" data-error="<%= GIDError %>"></label>
             </div>
             <div class="input-field col s12 m6">
-                <input id="key" name="key" type="password" placeholder="Access key" class="<%= KeyClasses %>">
-                <label for="key" data-error="<%= KeyError %>"></label>
+                <input id="Key" name="Key" type="password" placeholder="Access key" class="<%= KeyClasses %>">
+                <label for="Key" data-error="<%= KeyError %>"></label>
             </div>
         </div>
     </form>
@@ -89,7 +89,7 @@ end
         $("#game_create").click(function() {
             $("#game_spinner").addClass("active");
             $.ajax({
-                url: "/game/" + ($("#gid").val() ? $("#gid").val() : "fail"),
+                url: "/game/" + ($("#GID").val() ? $("#GID").val() : "fail"),
                 type: 'PUT',
                 data: $("form").serialize(),
                 success: function(data) {
@@ -132,6 +132,6 @@ $(document).ready(function(){
     $('.modal-trigger').leanModal();
   });
 </script>
-<% if not bare then %>
+<% if not Bare then %>
 </main>
 <% end %>
