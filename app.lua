@@ -89,7 +89,7 @@ App:match("login", "/login", respond_to{
         self.Invalid = {};
         self.Bare = true;
         if not self.params.Username or #self.params.Username < 1 then
-            self.Invalid.username = "Enter a username";
+            self.Invalid.Username = "Enter a username";
         end
         if not self.params.Password or #self.params.Password < 1 then
             self.Invalid.Password = "Enter a password";
