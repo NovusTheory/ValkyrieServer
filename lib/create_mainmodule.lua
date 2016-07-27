@@ -214,13 +214,8 @@ function module.upload(data, mid, security, force)
   return stripHeaders(result);
 end
 
-function module.toAID(AVID)
-  local result = postReq("https://www.roblox.com/redirect-item?avid=" .. AVID, "", "");
-  return tonumber(result:match("Location: /.-id=(%d*)"));
-end
-
 function module.load(data, mid)
-  local ret = module.toAID(module.upload(module.createModel(data), mid, io.open("security.sec", "r"):read("*all")));
+  local ret = module.upload(module.createModel(data), mid, io.open("security.sec", "r"):read("*all"));
   print(ret);
   return ({success = true; error = ""; result = ret});
 end

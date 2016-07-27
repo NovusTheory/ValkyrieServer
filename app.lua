@@ -3,6 +3,7 @@ local app         = lapis.Application();
 local cache       = require("lapis.cache");
 
 function _G.library(name) return require("lib." .. name); end
+function library(name) return require("lib." .. name); end
 local intmodules  = require "interface.modules";
 local permstest   = library("permissions");
 local parser      = library("parse");
@@ -386,6 +387,7 @@ app:match("gamelist", "/user/:user/games", function(self)
     if not self.session.user then
         return {redirect_to = self:url_for "login"};
     end
+    self.library = library;
     return {render = true};
 end);
 
@@ -397,6 +399,7 @@ app:match("newgame", "/game/new", function(self)
     end
     self.invalid = {};
     self.bare = false;
+    self.library = library;
     self.CSRFToken = CSRF.generate_token(self, self.session.user); -- Has to be done here for access to 'self'
     -- Or it might work in etlua with getfenv(), but I'm not sure
     return {render = true};

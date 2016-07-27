@@ -1,7 +1,7 @@
 local module        = {};
 local mysql         = require"lapis.db";
 local app_helpers   = require"lapis.application";
-local gid_table     = library"gid_table";
+local gid_table     = require"lib.gid_table";
 
 local yield_error   = app_helpers.yield_error;
 
