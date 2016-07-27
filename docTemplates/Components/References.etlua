@@ -1,5 +1,0 @@
-<h1>References</h1>
-<p class="flow-text">
-	References exists solely to be a single weak-key table which is suitable for
-	holding links to data which you won't need if its key is gc'd
-</p>

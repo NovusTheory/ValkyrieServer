@@ -1,0 +1,19 @@
+local Config = require "lapis.config";
+Config("prod", {
+    plainport = 80;
+    port = 443;
+    ciname = "ci.crescentcode.net";
+    servername = "valkyrie.crescentcode.net";
+    ciport = 456;
+    serverport = 455;
+    docsport = 457;
+});
+Config("dev", {
+    plainport = 81;
+    port = 444;
+    ciname = "cidev.crescentcode.net";
+    servername = "dev.crescentcode.net";
+    ciport = 556;
+    serverport = 555;
+    docsport = 557;
+});

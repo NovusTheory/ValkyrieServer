@@ -1,32 +1,44 @@
-local config = require("lapis.config");
+local config     = require("lapis.config");
 
 config("prod", {
-  port      = 445,
-  servername= "valkyrie.crescentcode.net";
-  host      = "127.0.0.1",
-  database  = "valkyrie_engine",
-  robloxun  = "ValkyrieBot",
-  robloxpw  = "hunter2",
-  mysql     = {
-    host    = "127.0.0.1",
-    user    = "valkyrie",
-    password= "hunter3",
-    database= "valkyrie_engine" 
+  port           = 445,
+  servername     = "valkyrie.crescentcode.net";
+  host           = "127.0.0.1",
+  database       = "valkyrie_engine",
+  robloxun       = "ValkyrieBot",
+  robloxpw       = "hunter2",
+  mysql          = {
+    host         = "127.0.0.1",
+    user         = "valkyrie",
+    password     = "hunter3",
+    database     = "valkyrie_engine"
   },
-  secret    = "TopSecret"
+  secret         = "TopSecret";
+  code_cache     = "on";
+  user           = "linuxuser linuxgroup";
+  logging        = {
+    queries      = false;
+    requests     = true;
+  };
 });
 config("dev", {
-  port      = 1445,
-  servername= "dev.crescentcode.net;
-  host      = "127.0.0.1",
-  database  = "valkyrie_dev",
-  robloxun  = "ValkyrieBot",
-  robloxpw  = "hunter2",
-  mysql     = {
-    host    = "127.0.0.1",
-    user    = "valkyrie",
-    password= "hunter3",
-    database= "valkyrie_dev"
+  port           = 1445,
+  servername     = "dev.crescentcode.net;
+  host           = "127.0.0.1",
+  database       = "valkyrie_dev",
+  robloxun       = "ValkyrieBot",
+  robloxpw       = "hunter2",
+  mysql          = {
+    host         = "127.0.0.1",
+    user         = "valkyrie",
+    password     = "hunter3",
+    database     = "valkyrie_dev"
   },
-  secret    = "TopSecret"
+  secret         = "TopSecret"
+  code_cache     = "off";
+  user           = "linuxuser linuxgroup";
+  logging        = {
+    queries      = true;
+    requests     = true;
+  };
 });
