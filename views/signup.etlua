@@ -1,4 +1,4 @@
-<% if not bare then %>
+<% if not Bare then %>
 	<style>
 		main {
 			position: absolute;
@@ -37,19 +37,19 @@
 	<% render('utilRenders.Nav',{SignedIn=SignedIn, HideLogin=true}) %>
 	<main>
 <% end %>
-<% if page == "signup" then %>
+<% if Page == "signup" then %>
 	<%
-		local usernameClasses = "";
-		local usernameError = "";
-		local passwordClasses = "";
-		local passwordError = "";
-		if invalid.username then
-			usernameClasses = "invalid";
-			usernameError = invalid.username;
+		local UsernameClasses = "";
+		local UsernameError = "";
+		local PasswordClasses = "";
+		local PasswordError = "";
+		if Invalid.Username then
+			UsernameClasses = "invalid";
+			UsernameError = Invalid.Username;
 		end
-		if invalid.password then
-			passwordClasses = "invalid";
-			passwordError = invalid.password;
+		if Invalid.Password then
+			PasswordClasses = "invalid";
+			PasswordError = Invalid.Password;
 		end
 	%>
 	<div class="card">
@@ -59,12 +59,12 @@
 			</span>
 			<div class="card-content row">
 				<div class="input-field col s12">
-					<input id="username" name="username" type="text" placeholder="Roblox username" value="<%= params.username or "" %>" class="<%= usernameClasses %>">
-					<label for="username" data-error="<%= usernameError %>"></label>
+					<input id="Username" name="Username" type="text" placeholder="Roblox username" value="<%= params.Username or "" %>" class="<%= UsernameClasses %>">
+					<label for="Username" data-error="<%= usernameError %>"></label>
 				</div>
 				<div class="input-field col s12">
-					<input maxlength="50" pattern=".{6,50}" name="password" id="password" type="password" class="validate <%= passwordClasses %>" placeholder="Password (NOT your Roblox password)">
-					<label for="password" data-error="<%= passwordError %>"></label>
+					<input maxlength="50" pattern=".{6,50}" name="Password" id="Password" type="password" class="validate <%= PasswordClasses %>" placeholder="Password (NOT your Roblox password)">
+					<label for="Password" data-error="<%= PasswordError %>"></label>
 					<div class="fancy-pw-meter">
 						<div class="fancy-pw-bar" id="fancy-pw-bar"></div>
 					</div>
@@ -94,13 +94,13 @@
 		<script type="text/javascript" src="//cdn.rawgit.com/dropbox/zxcvbn/master/dist/zxcvbn.js"></script>
 		<script>
 			function connect() {
-				$("#username").on('input', function(evt) {
-					var elem = $("#username");
+				$("#Username").on('input', function(evt) {
+					var elem = $("#Username");
 					elem.removeClass("valid");
 					elem.removeClass("invalid");
 				});
-				$("#username").on('change', function(evt) {
-					var elem 	= $("#username");
+				$("#Username").on('change', function(evt) {
+					var elem 	= $("#Username");
 					var value 	= elem.val();
 					elem.removeClass("valid");
 					elem.removeClass("invalid");
@@ -111,8 +111,8 @@
 						});
 					}
 				});
-				$("#password").on('input', function(evt) {
-					var elem 	= $("#password");
+				$("#Password").on('input', function(evt) {
+					var elem 	= $("#Password");
 					elem.removeClass("valid");
 					elem.removeClass("invalid");
 					var result 	= zxcvbn(elem.val());
@@ -153,24 +153,24 @@
 			$(document).ready(connect);
 		</script>
 	</div>
-<% elseif page == "signup2" then %>
+<% elseif Page == "signup2" then %>
 	<div class="card">
 		<form action="#">
-			<input type="hidden" name="username" value="<%= params.username %>">
-			<input type="hidden" name="password" value="<%= params.password %>">
+			<input type="hidden" name="Username" value="<%= params.Username %>">
+			<input type="hidden" name="Password" value="<%= params.Password %>">
 			<span class="card-title white-text blue row" style="padding: 1em; padding-top: .5em; padding-bottom: .5em;">
 				Verify Your Account
 			</span>
 			<div class="card-content s3">
 				<% if _error then %>
-					<span class="red-text"><%= _error %></span><br>
+                <span class="red-text"><%= _error %></span><br>
 				<% end %>
-				To verify your account (<a href="http://www.roblox.com/User.aspx?username=<%= params.username %>"><%= params.username %></a>):<br>
-				First, follow our dear friend <a href="http://www.roblox.com/users/80771103/profile" target="_blank">ValkyrieBot</a>.<br>
+				To verify your account (<a href="https://www.roblox.com/User.aspx?username=<%= params.Username %>"><%= params.Username %></a>):<br>
+				First, follow our dear friend <a href="https://www.roblox.com/users/80771103/profile" target="_blank">ValkyrieBot</a>.<br>
 				Next, set "Who can message me" to "Friends and Users I Follow" in <a href="https://www.roblox.com/my/account#!/privacy" target="_blank">your privacy settings</a>.<br>
-				Finally send a message to <a href="http://www.roblox.com/users/80771103/profile" target="_blank">ValkyrieBot</a> containing the following:<br>
+				Finally send a message to <a href="https://www.roblox.com/users/80771103/profile" target="_blank">ValkyrieBot</a> containing the following:<br>
 				<% math.randomseed(os.time()); %>
-				<% local token = params.token or require "lapis.util".trim((function(l)
+				<% local Token = params.Token or require "lapis.util".trim((function(l)
 						if l < 1 then return nil end -- Check for l < 1
 				        local s = "" -- Start string
 				        for i = 1, l do
@@ -179,8 +179,8 @@
 				        return s -- Return string
 					end)(15));
 				%>
-				<input type="hidden" name="token" value="<%= token %>">
-				<code class="green-text"><%= token %></code> <a href="#" id="copy" class="blue-text lighten-text-1"><i class="material-icons" style="font-size: 1em;">content_copy</i></a><br>
+				<input type="hidden" name="Token" value="<%= Token %>">
+				<code class="green-text"><%= Token %></code> <a href="#" id="copy" class="blue-text lighten-text-1"><i class="material-icons" style="font-size: 1em;">content_copy</i></a><br>
 				And when you're done, click the below button:
 			</div>
 			<div class="card-action row">
@@ -230,7 +230,7 @@
 			});
 		</script>
 	</div>
-<% elseif page == "signup3" then %>
+<% elseif Page == "signup3" then %>
 	<div class="card">
 		<form action="#">
 			<span class="card-title white-text blue row" style="padding: 1em; padding-top: .5em; padding-bottom: .5em;">
@@ -238,7 +238,7 @@
 			</span>
 			<div class="card-content s3">
 				Thank you for registering a Valkyrie account!<br>
-                You can now unfollow <a href="http://www.roblox.com/User.aspx?username=ValkyrieBot">ValkyrieBot</a> and set your <a href="https://www.roblox.com/my/account#!/privacy">privacy settings</a> back to normal.
+                You can now unfollow <a href="https://www.roblox.com/User.aspx?username=ValkyrieBot">ValkyrieBot</a> and set your <a href="https://www.roblox.com/my/account#!/privacy">privacy settings</a> back to normal.
 			</div>
 			<div class="card-action row">
                 <a href="/" class="blue-text">Home page</a>
@@ -251,6 +251,6 @@
 		</script>
 	</div>
 <% end %>
-<% if not bare then %>
+<% if not Bare then %>
 	</main>
 <% end %>
