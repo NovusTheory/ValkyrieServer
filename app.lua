@@ -498,18 +498,14 @@ end
 App:match("/api/:Module/:Function/:GID/:CoKey", json_params(capture_errors({
     on_error = ErrorFunction;
     function(self)
-        self.params.cokey = util.unescape(self.params.cokey);
+        self.params.CoKey = LapisUtil.unescape(self.params.CoKey);
         local Result;
-        local Success, Message = pcall(function() Result = Modules[self.params.module][self.params.funct](self); end);
+        local Success, Message = pcall(function() Result = Modules[self.params.Module][self.params.Function](self); end);
         if not Success then
             yield_error(Message, self.params);
         end
         return  {render = "empty"; layout = false; content_type = "application/json"; json = Result};
     end
 })));
-
-App:match("/item-thumbnails-proxy", function(self) -- I HATE YOU ROBLOX
-    return {render = "empty"; layout = false; content_type = "application/json"; ({http.simple("https://www.roblox.com/item-thumbnails?" .. util.encode_query_string(self.params))})[1]};
-end);
 
 return App;

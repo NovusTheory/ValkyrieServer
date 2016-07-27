@@ -23,7 +23,7 @@ Module                        = setmetatable(Module, {
         return function(Request)
           local PassArgs      = {};
           local MissingArgs   = {};
-          local Request       = Request.Params;
+          local Request       = Request.params;
 
           for i = 1, #FunctionMeta do
             local MetaType    = type(FunctionMeta[i]);
@@ -44,10 +44,10 @@ Module                        = setmetatable(Module, {
             error("Missing arguments: " .. table.concat(MissingArgs, ", "));
           end
 
-          if not Perms.GetPermission(Request.GID, "modules.require") then
-            return ({success = false; error = "You do not have the permission modules.require"});
-          elseif not Perms.GetPermission(Request.GID, "modules.function") then
-            return ({success = false; error = "You do not have the permission modules.function"});
+          if not Perms.GetPermission(Request.GID, "Modules.Require") then
+            return ({success = false; error = "You do not have the permission Modules.Require"});
+          elseif not Perms.GetPermission(Request.GID, "Modules.Function") then
+            return ({success = false; error = "You do not have the permission Modules.Function"});
           elseif not Perms.GetPermission(Request.GID, ("%s.%s"):format(Module, FuncName)) then
             return ({success = false; error = "You do not have the permission " .. ("%s.%s"):Format(Module, FuncName)});
           end
@@ -63,4 +63,4 @@ Module                        = setmetatable(Module, {
   end; -- __index
 }); -- setmetatable
 
-return module;
+return Module;
