@@ -1,4 +1,4 @@
-<% render('utilRenders.Nav',{SignedIn=session.user}) %>
+<% render('utilRenders.Nav',{SignedIn=session.User}) %>
 <link rel="stylesheet" href="/static/styles/monokai.css">
 <script src="/static/highlight.pack.js"></script>
 <script>hljs.configure({languages:["lua"]});hljs.initHighlightingOnLoad();</script>
@@ -33,7 +33,7 @@
         <a href="/signup" class="">Get Started</a> -
         <a href="/login" class="">Log In</a>
     <% else %> -
-    <a href="/user/<%= session.user %>/games">Manage Games</a>
+    <a href="/user/<%= session.User %>/games">Manage Games</a>
     <% end %>
 </p>
 <!--

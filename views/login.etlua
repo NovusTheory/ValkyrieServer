@@ -1,4 +1,4 @@
-<% if not bare then %>
+<% if not Bare then %>
     <style>
     .demo-card-square.mdl-card {
     position: absolute;
@@ -36,13 +36,13 @@
 
     local UsernameError   = "";
     local PasswordError   = "";
-    if invalid.username then
+    if Invalid.Username then
         UsernameClasses   = "invalid";
-        UsernameError     = invalid.username;
+        UsernameError     = Invalid.Username;
     end
-    if invalid.password then
+    if Invalid.Password then
         PasswordClasses   = "invalid";
-        PasswordError     = invalid.password;
+        PasswordError     = Invalid.Password;
     end
 %>
     <div class="card">
@@ -52,12 +52,12 @@
             </span>
             <div class="card-content row">
                 <div class="input-field col s12">
-                    <input name="username" id="username" type="text" class="<%= UsernameClasses %>" placeholder="Username">
-                    <label for="username" data-error="<%= UsernameError %>"></label>
+                    <input name="Username" id="Username" type="text" class="<%= UsernameClasses %>" placeholder="Username">
+                    <label for="Username" data-error="<%= UsernameError %>"></label>
                 </div>
                 <div class="input-field col s12">
-                    <input id="password" name="password" type="password" class="<%= PasswordClasses %>" placeholder="Password">
-                    <label for="password" data-error="<%= PasswordError %>"></label>
+                    <input id="Password" name="Password" type="password" class="<%= PasswordClasses %>" placeholder="Password">
+                    <label for="Password" data-error="<%= PasswordError %>"></label>
                 </div>
             </div>
             <div class="card-action">
@@ -100,6 +100,6 @@
             return false;
         });
     </script>
-<% if not bare then %>
+<% if not Bare then %>
     </main>
 <% end %>

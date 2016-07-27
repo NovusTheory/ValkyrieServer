@@ -1,110 +1,102 @@
-local module              = {};
-local mysql               = require "lapis.db";
-local gid_table           = library("gid_table");
-local encoder             = library("encode");
-local metamanager         = library("meta");
-local app_helpers         = require"lapis.application";
+local Module      = {};
+local MySQL       = require "lapis.db";
+local MetaManager = Library("meta");
+local PlayerInfo  = Library("userinfo");
+local AppHelpers  = require"lapis.application";
 
-local yield_error         = app_helpers.yield_error;
+local YieldError  = app_helpers.yield_error;
 
-function module.create(gid, id, desc, name, reward, icon)
-  if tonumber(reward) < 1 then
-    yield_error("The reward can't be less than 1!");
+function Module.Create(GID, ID, Description, Name, Reward, Icon)
+    local GID = MySQL.select("id from game_ids where gid=?", GID)[1].id;
+  if tonumber(Reward) < 1 then
+    YieldError("The reward can't be less than 1!");
   end
 
-  local uniq_result       = mysql.select("id from ? where achv_id=?", gid_table("achievements", gid), id);
+  local IsUnique       = MySQL.select("id from achievements where achv_id=? and gid=?", ID, GID); -- Achievements do not need to be unique across games
 
-  if #uniq_result ~= 0 then
-    yield_error("An achievement with that ID already exists!");
+  if #IsUnique ~= 0 then
+    YieldError("An achievement with that ID already exists!");
   end
 
-  local usedreward        = metamanager.getMeta("usedreward", gid);
-  local maxreward         = 1000 - usedreward;
+  local UsedReward        = MetaManager.GetMeta("usedreward", GID);
+  local MaxReward         = 1000 - UsedReward;
 
-  if maxreward < tonumber(reward) then
-    yield_error("The reward exceeds the maximum available reward (" .. maxreward .. ")!");
+  if MaxReward < tonumber(Reward) then
+    YieldError("The reward exceeds the maximum available reward (" .. MaxReward .. ")!");
   end
-  metamanager.setMeta("usedreward", usedreward + reward, gid);
+  MetaManager.SetMeta("usedreward", UsedReward + Reward, GID);
 
-  mysql.insert(("achievements_%s"):format(gid), {
-        achv_id           = id,
-        description       = desc,
-        name              = name,
-        reward            = reward,
-        icon              = icon
+  MySQL.insert("achievements", {
+        achv_id           = ID,
+        description       = Description,
+        name              = Name,
+        reward            = Reward,
+        icon              = Icon,
+        gid               = GID
     });
 
-  return ({success = true, error = ""});
+  return {success = true, error = ""};
 end
 
-function module.award(gid, pid, aid)
-  local uniq_result       = mysql.select("id from ? where achv_id=?", gid_table("achievements", gid), id);
-  if #uniq_result == 0 then
-    yield_error("That achievement doesn't exist!");
+function Module.Award(GID, PlayerID, AchievementID)
+    local GID = MySQL.select("id from game_ids where gid=?", GID)[1].id;
+  local IsUnique = MySQL.select("id from ? where achv_id=? and gid=?", ID, GID);
+  if #IsUnique == 0 then
+    YieldError("That achievement doesn't exist!");
   end
 
-  local aw_uniq_res       = mysql.select("id from awarded_achv where achv_id=? and player=? and gid=?", aid, pid, gid);
-  if #aw_uniq_res ~= 0 then
-    yield_error("That achievement has already been awarded to the player");
+  local IsAwarded       = mysql.select("id from awarded_achv where achv_id=? and player=? and gid=?", AchievementID, PlayerInfo.RobloxToInternal(PlayerID), GID);
+  if #IsAwarded ~= 0 then
+    YieldError("That achievement has already been awarded to the player");
   end
 
-  mysql.insert(("awarded_achv"):format(pid), {
-      achvid              = aid,
-      gid                 = gid,
-      player              = pid
+  MySQL.insert(("awarded_achv"):format(PlayerID), { -- No I have no clue either
+      achvid              = AchievementID,
+      gid                 = GID,
+      player              = PlayerID
   });
 
   return ({success = true, error = ""});
 end
 
-local function escape_filter(name, filter)
-  return ("AND %s LIKE %s"):format(name, mysql.escape_literal(("%%%s%%"):format(filter)));
+local function EscapeFilter(Name, Filter)
+  return ("AND %s LIKE %s"):format(Name, MySQL.escape_literal(("%%%s%%"):format(Filter)));
 end
 
-function module.list(gid, othgid, filter)
-  local exists_result   = mysql.select("table_name from information_schema.tables where table_name=?", ("achievements_%s"):format(othgid));
-  if #exists_result == 0 then
-    yield_error("That game doesn't exist");
-  end
-
-  local query = "* from ? where 1=1 ";
-  if filter[1] and filter[2] and filter[1] ~= "" then
-    if filter[1] == ">" then
-      query = query .. ("AND %s>=%d "):format("reward", filter[2]);
+function Module.List(GID, TargetGID, Filter)
+    local GID = MySQL.select("id from game_ids where gid=?", GID)[1].id;
+  local Query = "achievements from ? where GID=? ";
+  if Filter[1] and Filter[2] and Filter[1] ~= "" then -- TODO: Convert to named keys
+    if Filter[1] == ">" then
+      Query = Query .. ("AND %s>=%d "):format("reward", Filter[2]);
     else
-      query = query .. ("AND %s<=%d "):format("reward", filter[2]);
+      Query = Query .. ("AND %s<=%d "):format("reward", Filter[2]);
     end
   end
-  if filter[3] and filter[3] ~= "" then
-    query = query .. escape_filter("achv_id", filter[3]);
+  if Filter[3] and Filter[3] ~= "" then
+    Query = Query .. EscapeFilter("achv_id", Filter[3]);
   end
-  if filter[4] and filter[4] ~= "" then
-    query = query .. escape_filter("name", filter[4]);
+  if Filter[4] and Filter[4] ~= "" then
+    Query = Query .. EscapeFilter("name", Filter[4]);
   end
-  if filter[5] and filter[5] ~= "" then
-    query = query .. escape_filter("description", filter[5]);
+  if Filter[5] and Filter[5] ~= "" then
+    Query = Query .. EscapeFilter("description", Filter[5]);
   end
 
-  local ret  = mysql.select(query, gid_table("achievements", othgid));
-  --[[local ret     = {};
-  local row     = result:fetch({}, "a");
-  while row do
-    table.insert(ret, {tonumber(row.reward), row.achv_id, row.name, row.description, tonumber(row.icon)});
-    row         = result:fetch({}, "a");
-end]]
+  local Ret  = MySQL.select(Query, GID);
 
-  return ({
-    success = true,
-    error   = "",
-    result  = ret
-  });
+  return {
+      success = true,
+      error   = "",
+      result  = Ret
+  };
 end
 
-function module.getReward(gid)
-  local usedreward  = metamanager.getMeta("usedreward", gid);
-  local limit       = 1000 - usedreward;
+function Module.GetReward(gid)
+  local UsedReward  = MetaManager.GetMeta("usedreward", GID);
+  local Limit       = 1000 - UsedReward;
 
-  return ({success = true; error = ""; result = {1000, limit, tonumber(usedreward)}});
+  return {success = true; error = ""; result = {1000, Limit, tonumber(UsedReward)}};
 end
 
-return module;
+return Module;
