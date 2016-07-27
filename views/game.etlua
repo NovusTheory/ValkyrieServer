@@ -63,9 +63,9 @@ local JSONLib       = require "cjson";
 local MetaManager   = require "lib.meta";
 local GameUtils     = require "lib.game_utils";
 
-local IsOwner       = MySQL.select("count(1) from game_ids where owner=(select id from users where username=?) and gid=GID", session.user, GameUtils.GIDToInternal(params.GID))[1]["count(id)"] == "1";
+local IsOwner       = MySQL.select("count(1) from game_ids where owner=(select id from users where username=?) and gid=GID", session.User, GameUtils.GIDToInternal(params.GID))[1]["count(id)"] == "1";
 
-local OnlineResult  = MySQL.select("b.robloxid as robloxid from player_ingame a left join player_info b on a.player=b.id where gid=? order by id desc", GameUtils.GIDToInternal(params.GID));
+local OnlineResult  = MySQL.select("b.robloxid as robloxid from player_ingame a left join player_info b on a.player=b.id where gid=? order by a.id desc", GameUtils.GIDToInternal(params.GID));
 %>
 
 <div class="container">
@@ -140,7 +140,7 @@ local OnlineResult  = MySQL.select("b.robloxid as robloxid from player_ingame a 
                     </div>
                     <ul class="collection">
                         <%
-                        local Achievements = MySQL.select("a.achv_id as achv_id, a.name as name, a.description as description, a.reward as reward, a.icon as icon, count(b.id) as awarded_times from achievements a left join awarded_achv b on b.achv_id=a.id where gid=? group by a.id", GameUtils(params.GID));
+                        local Achievements = MySQL.select("a.achv_id as achv_id, a.name as name, a.description as description, a.reward as reward, a.icon as icon, count(b.id) as awarded_times from achievements a left join awarded_achv b on b.achv_id=a.id where a.gid=? group by a.id", GameUtils.GIDToInternal(params.GID));
 
                         ThumbnailRequest = {};
                         for i = 1, #Achievements do
