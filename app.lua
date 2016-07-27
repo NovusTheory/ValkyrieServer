@@ -294,7 +294,7 @@ local function CheckSentMessage(ID, Token, Cookie, Force)
     end
     Result = JSONLib.decode(Result:match("\r\n\r\n(.*)$"));
     for i = 1, #Result.Collection do
-        if tonumber(Result.Collection[i].Sender.UserID) == tonumber(ID) then
+        if tonumber(Result.Collection[i].Sender.UserId) == tonumber(ID) then
             if htmlunentities(Result.Collection[i].Body):find(Token, 1, true) then
                 return true;
             else
@@ -329,7 +329,7 @@ App:match("signup2", "/signup/2", respond_to{
         if not Invalid.Username then
             if self.params.Username:len() > 20 then
                 Invalid.Username = "There is no such user on Roblox";
-            elseif MySQL.select("count(*) from users where username=?", self.params.username)[1]["count(*)"] ~= "0" then
+            elseif MySQL.select("count(*) from users where username=?", self.params.Username)[1]["count(*)"] ~= "0" then
                 Invalid.Username = "This username is already in use";
             elseif ({LapisHTTP.simple("https://api.roblox.com/users/get-by-username?username=" .. self.params.Username)})[1] == '{"success":false,"errorMessage":"User not found"}' then
                 Invalid.Username = "There is no such user on Roblox";

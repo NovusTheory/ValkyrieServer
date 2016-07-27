@@ -162,8 +162,8 @@
 				Verify Your Account
 			</span>
 			<div class="card-content s3">
-				<% if _error then %>
-                <span class="red-text"><%= _error %></span><br>
+				<% if _Error then %>
+                <span class="red-text"><%= _Error %></span><br>
 				<% end %>
 				To verify your account (<a href="https://www.roblox.com/User.aspx?username=<%= params.Username %>"><%= params.Username %></a>):<br>
 				First, follow our dear friend <a href="https://www.roblox.com/users/80771103/profile" target="_blank">ValkyrieBot</a>.<br>
