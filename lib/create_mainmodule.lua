@@ -1,16 +1,17 @@
-local module    = {};
+-- TODO: Possibly replace with Valkyrie_CI?
+local Module    = {};
 if not jit then
   error("LuaJIT not installed!");
 end
-local lz4       = dofile("lib/lz4.lua");
-local bit32     = require"bit32";
-local config    = require("lapis.config").get();
+local LZ4       = dofile("lib/lz4.lua");
+local BitLib    = require"bit32";
+local Config    = require("lapis.config").get();
 
-function num2hex(IN)
+function NumberToHex(IN)
     return string.format("%x", IN);
 end
 
-function str2hex(str)
+function StringToHex(str)
     local hex = ''
     while #str > 0 do
         local hb = num2hex(string.byte(str, 1, 1))
@@ -21,172 +22,168 @@ function str2hex(str)
     return hex
 end
 
-local function toLittleEndian(int)
-  return string.char(bit32.band(int, 0xFF))
-      .. string.char(bit32.rshift(bit32.band(int, 0xFF00), 8))
-      .. string.char(bit32.rshift(bit32.band(int, 0xFF0000), 16))
-      .. string.char(bit32.rshift(bit32.band(int, 0xFF000000), 24));
+local function ToLittleEndian(int)
+  return string.char(BitLib.band(int, 0xFF))
+      .. string.char(BitLib.rshift(BitLib.band(int, 0xFF00), 8))
+      .. string.char(BitLib.rshift(BitLib.band(int, 0xFF0000), 16))
+      .. string.char(BitLib.rshift(BitLib.band(int, 0xFF000000), 24));
 end
 
-function module.encodeProperty(propName, propType, propData)
-  local ret = "\0\0\0\0"; -- Always zeroes since it's the only instance
-  ret = ret .. toLittleEndian(propName:len());
-  ret = ret .. propName;
-  ret = ret .. string.char(propType);
-  ret = ret .. propData;
+function Module.EncodeProperty(PropertyName, PropertyType, PropertyData)
+  local Return = "\0\0\0\0" -- Always zeroes since it's the only instance
+            .. ToLittleEndian(PropertyName:len())
+            .. PropertyName
+            .. string.char(PropertyType)
+            .. PropertyData
 
-  local origLen = ret:len();
-  ret, err = lz4.compress(ret);
-  if err then
-    error(err);
+  local UncompressedSize = Return:len();
+  Return, Error = LZ4.compress(Return);
+  if Error then
+    error(Error);
   end
 
-  ret = ret:sub(9);
-  local compLen = ret:len();
-  ret = "PROP" .. toLittleEndian(compLen) .. toLittleEndian(origLen) .. "\0\0\0\0" .. ret;
+  Return = Return:sub(9);
+  local CompressedSize = Return:len();
+  Return = "PROP" .. ToLittleEndian(CompressedSize) .. ToLittleEndian(UncompressedSize) .. "\0\0\0\0" .. Return;
 
-  return ret;
+  return Return;
 end
 
-function module.encodeInstance(instName)
-  local ret = "\0\0\0\0";
-  ret = ret .. toLittleEndian(instName:len());
-  ret = ret .. instName;
-  ret = ret .. "\0"; -- No additional data
-  ret = ret .. "\1\0\0\0"; -- One instance
-  ret = ret .. "\0\0\0\0"; -- Always zeroes since it's the only instance
-  local origLen = ret:len();
-  ret, err = lz4.compress(ret);
-  if err then
-    error(err);
+function Module.EncodeInstance(InstanceName)
+  local Return = "\0\0\0\0"
+              .. ToLittleEndian(InstanceName:len())
+              .. InstanceName
+              .. "\0" -- No additional data
+              .. "\1\0\0\0" -- One instance
+              .. "\0\0\0\0" -- Always zeroes since it's the only instance
+  local UncompressedSize = Return:len();
+  Return, Error = LZ4.compress(Return);
+  if Error then
+    error(Error);
   end
 
-  ret = ret:sub(9);
-  local compLen = ret:len();
-  ret = "INST" .. toLittleEndian(compLen) .. toLittleEndian(origLen) .. "\0\0\0\0" .. ret;
+  Return = Return:sub(9);
+  local CompressedSize = Return:len();
+  Return = "INST" .. ToLittleEndian(CompressedSize) .. ToLittleEndian(UncompressedSize) .. "\0\0\0\0" .. Return;
 
-  return ret;
+  return Return;
 end
 
-function module.encodeParent(num, refarr, pararr)
-  local ret = "\0";
-  ret = ret .. toLittleEndian(num);
-  ret = ret .. refarr;
-  ret = ret .. pararr;
+function Module.EncodeParent(Number, ReferentArray, ParentArray)
+  local Return = "\0"
+              .. ToLittleEndian(Number)
+              .. ReferentArray
+              .. ParentArray
 
-  local origLen = ret:len();
-  ret, err = lz4.compress(ret);
-  if err then
-    error(err);
+  local UncompressedSize = Return:len();
+  Return, Error = LZ4.compress(Return);
+  if Error then
+    error(Error);
   end
 
-  ret = ret:sub(9);
-  local compLen = ret:len();
-  ret = "PRNT" .. toLittleEndian(compLen) .. toLittleEndian(origLen) .. "\0\0\0\0" .. ret;
+  Return = Return:sub(9);
+  local CompressedSize = Return:len();
+  Return = "PRNT" .. ToLittleEndian(CompressedSize) .. ToLittleEndian(UncompressedSize) .. "\0\0\0\0" .. Return;
 
-  return ret;
+  return Return;
 end
 
-function module.createModel(source)
-  local modelData = "<roblox!\137\255\13\10\26\10\0\0"; -- Header
-  modelData = modelData .. "\1\0\0\0\1\0\0\0"; -- One instance total, one unique
-  modelData = modelData .. "\0\0\0\0\0\0\0\0"; -- Padding
-  modelData = modelData .. module.encodeInstance("ModuleScript");
-  modelData = modelData .. module.encodeProperty("LinkedSource", 1, "\0\0\0\0");
-  modelData = modelData .. module.encodeProperty("Name", 1, "\n\0\0\0MainModule"); -- \n\0\0\0 == 10 in LE == ("MainModule"):len()
-  modelData = modelData .. module.encodeProperty("Source", 1, toLittleEndian(source:len()) .. source);
-  modelData = modelData .. module.encodeParent(1, "\0\0\0\0", "\0\0\0\1");
-  modelData = modelData .. "END\0\0\0\0\0\9\0\0\0\0\0\0\0</roblox>";
+function Module.CreateModel(Source)
+  local ModelData = "<roblox!\137\255\13\10\26\10\0\0" -- Header
+                 .. "\1\0\0\0\1\0\0\0" -- One instance total, one unique
+                 .. "\0\0\0\0\0\0\0\0" -- Padding
+                 .. Module.EncodeInstance("ModuleScript")
+                 .. Module.EncodeProperty("LinkedSource", 1, "\0\0\0\0")
+                 .. Module.EncodeProperty("Name", 1, "\n\0\0\0MainModule") -- \n\0\0\0 == 10 in LE == ("MainModule"):len()
+                 .. Module.EncodeProperty("Source", 1, ToLittleEndian(Source:len()) .. Source)
+                 .. Module.EncodeParent(1, "\0\0\0\0", "\0\0\0\1")
+                 .. "END\0\0\0\0\0\9\0\0\0\0\0\0\0</roblox>";
 
-  return modelData;
+  return ModelData;
 end
 
-local sockets   = require("socket");
-local ssl       = require("ssl");
-local encoder   = library("encode");
-local lapisutl  = require("lapis.util");
+local Sockets   = require("socket");
+local SSL       = require("ssl");
+local LapisUtil = require("lapis.util");
 
-local function postReq(url, fields, extrahead)
-  local req = "POST " .. url .. " HTTP/1.1\n";
-  req = req .. "Host: www.roblox.com\n";
-  req = req .. "Accept: */*\n";
-  req = req .. "Connection: close\n";
-  req = req .. "Content-Length: " .. fields:len() .. "\n";
-  req = req .. "Accept-Encoding: gzip\n";
-  req = req .. "User-Agent: Roblox/WinINet\n";
-  req = req .. extrahead .. "\n";
-  req = req .. fields;
-  print(req);
+local function PostRequest(URL, Fields, ExtraHeaders)
+  local Request =  "POST " .. URL .. " HTTP/1.1\n"
+                .. "Host: data.roblox.com\n"
+                .. "Accept: */*\n"
+                .. "Connection: close\n"
+                .. "Content-Length: " .. Fields:len() .. "\n"
+              --  .. "Accept-Encoding: gzip\n"
+                .. "User-Agent: Roblox/WinINet\n"
+                .. ExtraHeaders .. "\n"
+                .. Fields;
+                print(Reqyest);
 
-  local sock  = sockets.tcp();
-  sock:connect("www.roblox.com", 443);
-  sock        = ssl.wrap(sock, {mode = "client", protocol = "tlsv1_2"});
-  sock:dohandshake();
-  sock:send(req);
-  local rep = sock:receive("*a");
-  print(rep);
-  sock:close();
-  return rep;
+  local Socket  = Sockets.tcp();
+  Socket:connect("data.roblox.com", 443);
+  Socket        = SSL.wrap(Socket, {mode = "client", protocol = "tlsv1_2"});
+  Socket:dohandshake();
+  Socket:send(Request);
+  local Response = Socket:receive("*a");
+  Socket:close();
+  return Response;
 end
 
-local function aspPostBack(url, currstate, evttarget, formvals, security, force)
-  local viewstate   = currstate:match("id=\"__VIEWSTATE\" value=\"(.-)\"");
-  local vsgenerator = currstate:match("id=\"__VIEWSTATEGENERATOR\" value=\"(.-)\"");
-  local prevpage    = currstate:match("id=\"__PREVIOUSPAGE\" value=\"(.-)\"");
-  local evtvalid    = currstate:match("id=\"__EVENTVALIDATION\" value=\"(.-)\"");
-  local evtarg      = currstate:match("id=\"__EVENTARGUMENT\" value=\"(.-)\"");
+local function StripHeaders(Response)
+  local Index = Response:find("\r\n\r\n");
+  return Response:sub(Index + 4);
+end
 
-  local urlargs     = {__VIEWSTATE = viewstate, __VIEWSTATEGENERATOR = vsgenerator, __PREVIOUSPAGE = prevpage, __EVENTVALIDATION = evtvalid, __EVENTARGUMENT = evtarg, __EVENTTARGET = evttarget};
-  for index, value in pairs(formvals) do
-    urlargs[index]  = value;
+local function ASPPostBack(URL, CurrentState, EventTarget, FormValues, SessionCookie, Force)
+  local ViewState       = CurrentState:match("id = \"__VIEWSTATE\" value          = \"(.-)\"");
+  local VSGenerator     = CurrentState:match("id = \"__VIEWSTATEGENERATOR\" value = \"(.-)\"");
+  local PreviousPage    = CurrentState:match("id = \"__PREVIOUSPAGE\" value       = \"(.-)\"");
+  local EventValidation = CurrentState:match("id = \"__EVENTVALIDATION\" value    = \"(.-)\"");
+  local EventArgument   = CurrentState:match("id = \"__EVENTARGUMENT\" value      = \"(.-)\"");
+
+  local URLArgumnets    = {__VIEWSTATE = ViewState, __VIEWSTATEGENERATOR = VSGenerator, __PREVIOUSPAGE = PreviousPage, __EVENTVALIDATION = EventValidation, __EVENTARGUMENT = EventArguments, __EVENTTARGET = EventTarget};
+  for Index, Value in pairs(FormValues) do
+    URLArguments[Index]  = Value;
   end
 
-  local encoded     = lapisutl.encode_query_string(urlargs);
-  print(encoded);
+  local Encoded        = LapisUtil.encode_query_string(URLArguments);
 
-  local ret         = postReq(url, encoded, "Content-Type: application/x-www-form-urlencoded\nCookie: " .. security .. "\n");
-  if ret:match("/Login/Default.aspx") then
-    if force then
-      yield_error("ROBLOX LOGIN FAILED! Please contact gskw. Remember to include the time this happened at.");
+  local Return         = PostRequest(URL, Encoded, "Content-Type: application/x-www-form-urlencoded\nCookie: " .. SessionCookie .. "\n");
+  if Return:match("/Login/Default.aspx") then
+    if Force then
+      YieldError("ROBLOX LOGIN FAILED! Please contact gskw. Remember to include the time this happened at.");
     end
-    return aspPostBack(url, currstate, evttarget, formvals, module.login(config.robloxun, config.robloxpw), true);
+    return ASPPostBack(URL, CurrentState, EventTarget, FormValues, Module.Login(Config.robloxun, Config.robloxpw), true); -- TODO: Possibly use user-specificed account?
   end
 
-  return ret;
+  return Return;
 end
 
-local function stripHeaders(str)
-  local index = str:find("\r\n\r\n");
-  return str:sub(index + 4);
+function Module.Login(User, Password)
+  local Result    = PostRequest("https://www.roblox.com/Services/Secure/LoginService.asmx/ValidateLogin", ("{\"userName\":\"%s\",\"password\":\"%s\",\"isCaptchaOn\":false,\"challenge\":\"\",\"captchaResponse\":\"\"}"):format(User, Password), "X-Requested-With: XMLHttpRequest\nContent-Type: application/json\nAccept-Encoding: gzip\n");
+  local Security  = Result:match("(%.ROBLOSECURITY=.-);");
+  local CSRF      = Result:match("X-CSRF-TOKEN: (.-)\r\n");
+
+  io.open(("security_%s.sec"):format(User), "w"):write(Security);
+  io.open(("csrf_%s.csrf"):format(User), "w"):write(CSRF);
+
+  return Security, CSRF;
 end
 
-function module.login(user, pw)
-  local result    = postReq("https://www.roblox.com/Services/Secure/LoginService.asmx/ValidateLogin", ("{\"userName\":\"%s\",\"password\":\"%s\",\"isCaptchaOn\":false,\"challenge\":\"\",\"captchaResponse\":\"\"}"):format(user, pw), "X-Requested-With: XMLHttpRequest\nContent-Type: application/json\nAccept-Encoding: gzip\n");
-  local security  = result:match("(%.ROBLOSECURITY=.-);");
 
-  local secfile, err = io.open("security.sec", "w");
-  if not secfile then
-    error(err);
-  end
-  secfile:write(security);
-
-  return security;
-end
-
-local function getPostArgs(url, security)
-  local result    = postReq(url, "", "Cookie: " .. (security or io.open("security.sec", "r"):read("*all")) .. "\n");
-  if result:match("/Login/Default.aspx") then
-    result        = getPostArgs(url, module.login(config.robloxun, config.robloxpw));
+local function GetPostArguments(URL, SessionCookie)
+  local Result    = PostRequest(url, "", "Cookie: " .. (SessionCookie or io.open("security.sec", "r"):read("*all")) .. "\n");
+  if Result:match("/Login/Default.aspx") then
+    Result        = GetPostArguments(URL, Module.Login(Config.robloxun, Config.robloxpw));
   end
 
-  return stripHeaders(result);
+  return StripHeaders(Result);
 end
 
-function module.lockAsset(mid)
-  local result    = getPostArgs("https://www.roblox.com/My/Item.aspx?ID=" .. mid);
-  print("POSTBACKOUT", aspPostBack("https://www.roblox.com/My/Item.aspx?ID=" .. mid, stripHeaders(result), "ctl00$cphRoblox$SubmitButtonBottom", {
-    ["ctl00$cphRoblox$NameTextBox"]             = "loadstring",
-    ["ctl00$cphRoblox$DescriptionTextBox"]      = "a",
+function Module.LockAsset(ModelID)
+  local Result    = GetPostArguments("https://www.roblox.com/My/Item.aspx?ID=" .. ModelID);
+  print("POSTBACKOUT", ASPPostBack("https://www.roblox.com/My/Item.aspx?ID=" .. ModelID, StripHeaders(Result), "ctl00$cphRoblox$SubmitButtonBottom", {
+    ["ctl00$cphRoblox$NameTextBox"]             = "Valkyrie Server Upload",
+    ["ctl00$cphRoblox$DescriptionTextBox"]      = "Loadstring model",
     ["ctl00$cphRoblox$EnableCommentsCheckBox"]  = "on",
     ["GenreButtons2"]                           = 1,
     ["ctl00$cphRoblox$actualGenreSelection"]    = 1,
@@ -197,27 +194,21 @@ function module.lockAsset(mid)
   return ({success = true, error = ""});
 end
 
-function module.uploadRaw(data, mid)
-    return module.upload(data, 0, io.open("security.sec", "r"):read("*all"));
-end
-
-function module.upload(data, mid, security, force)
-  local result = postReq("/Data/Upload.ashx?assetid=" .. mid .. "&type=Model&name=loadstring&description=a&genreTypeId=1&ispublic=True&allowComments=True",
-    data, "Cookie: " .. security .. "\nContent-Type: text/xml\n");
-  if result:match("/RobloxDefaultErrorPage") then
-    if force then
-      yield_error("ROBLOX LOGIN FAILED! Please contact gskw. Remember to include the time this happened at.");
+function Module.Upload(Data, ModelID, SessionCookie, Force)
+  local Result = PostRequest("/Data/Upload.ashx?assetid=" .. ModelID .. "&type=Model&name=Valkyrie%20Server%20Upload&description=Loadstring%20model&genreTypeId=1&ispublic=True&allowComments=True",
+    Data, "Cookie: " .. SessionCookie .. "\nContent-Type: text/xml\n");
+  if Result:match("/request%-error") then
+    if Force then
+      YieldError("ROBLOX LOGIN FAILED! Please contact gskw. Remember to include the time this happened at.");
     end
-    print("NEW LOGIN!");
-    return module.upload(data, mid, module.login(config.user .. "Bot", config.password), true);
+    return Module.Upload(Data, ModelID, Module.Login(Config.robloxun, Config.robloxpw), true);
   end
-  return stripHeaders(result);
+  return StripHeaders(Result);
 end
 
-function module.load(data, mid)
-  local ret = module.upload(module.createModel(data), mid, io.open("security.sec", "r"):read("*all"));
-  print(ret);
-  return ({success = true; error = ""; result = ret});
+function Module.Load(Data, ModelID)
+  local Result = Module.Upload(Module.CreateModel(Data), ModelID, io.open("security.sec", "r"):read("*all"));
+  return ({success = true; error = ""; result = Result});
 end
 
-return module;
+return Module;

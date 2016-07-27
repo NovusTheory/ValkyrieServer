@@ -1,69 +1,89 @@
-local module          = {};
-local mysql           = require"lapis.db";
-local encoder         = library("encode");
-local app_helpers     = require"lapis.application";
-local http            = require("socket.http");
-local json            = require("cjson");
-local userinfo        = library("userinfo");
+local Module     = {};
+local MySQL      = require"lapis.db";
+local AppHelpers = require"lapis.application";
+local HTTP       = require("socket.http");
+local JSON       = require("cjson");
+local UserInfo   = Library("userinfo");
+local GameUtils  = Library("game_utils");
+local Socket     = require("socket");
 
-local yield_error     = app_helpers.yield_error;
+local YieldError = AppHelpers.yield_error;
 
-function module.getFriends(id)
-  local ret           = {};
-  local ingamep_ret   = mysql.select("gid, player from player_ingame");
-  local friends       = http.request(("https://api.roblox.com/users/%d/friends"):format(id));
-  friends             = json.decode(friends);
-
-  for index, value in next, friends do
-    local toinsert    = {value.Id; value.Username; ingamep_ret[value.Id] and true or false};
-    table.insert(toinsert, ingamep_ret[value.Id]);
-    table.insert(ret, toinsert);
+function Module.GetFriends(ID)
+  local Result        = {};
+  local Friends       = HTTP.request(("https://api.roblox.com/users/%d/friends"):format(ID));
+  local PlayerIDs     = {};
+  Friends             = JSON.decode(Friends);
+  for i = 1, #Friends do
+      table.insert(PlayerIDs, Friends[i].Id);
+  end
+  local IsInGame      = {};
+  local FriendsInGame = MySQL.select("select c.robloxid as player, b.gid as gid from player_ingame a left join game_ids b on b.id=a.gid left join player_info c on c.id=a.player where c.robloxid in (?);", MySQL.raw(table.concat(PlayerIDs, ", ")));
+  for i = 1, #FriendsInGame do
+      IsInGame[FriendsInGame[i].player] = FriendsInGame[i].gid;
   end
 
-  return ({success = true, error = "", result = ret});
+  for Index, Value in next, Friends do
+    table.insert(Result, {value.Id; value.Username; IsInGame[value.Id] and true or false; IsInGame[value.Id]});
+  end
+
+  return {success = true, error = "", result = Result};
 end
 
-function module.setOnlineGame(id, gid, name)
-  local exists_ret    = mysql.select("gid from player_ingame where player=?", id);
-  if #exists_ret < 1 then
-    mysql.insert("player_ingame", {
-      player          = id;
-      gid             = gid;
-      name            = name;
+function Module.SetOnlineGame(ID, GID, Name)
+  Userinfo.TryCreateUser(ID);
+
+  local DoesExist    = MySQL.select("gid from player_ingame where player=?", UserInfo.RobloxToInternal(ID));
+  if #DoesExist < 1 then
+    MySQL.insert("player_ingame", {
+      player          = UserInfo.RobloxToInternal(ID);
+      gid             = GameUtils.GIDToInternal(GID);
     });
   else
-    mysql.update("player_ingame", {
-      player           = id;
-      gid              = gid;
-      name             = name;
+    MySQL.update("player_ingame", {
+      gid             = GameUtils.GIDToInternal(GID);
     }, {
-      player           = id;
+      player          = UserInfo.RobloxToInternal(ID);
     });
   end
 
-  userinfo.tryCreateUser(id);
+  local PlayerInfoExists = MySQL.select("gid from player_sessions where player=? and gid=?", ID, GameUtils.GIDToInternal(GID));
 
-  mysql.update("player_info", {
-    last_online      = 0;
-  }, {
-    player           = id;
-  });
+  if #PlayerInfoExists < 1 then
+    MySQL.insert("player_sessions", {
+        player           = UserInfo.RobloxToInternal(ID);
+        time_ingame      = 0;
+        joined           = math.floor(Socket.gettime());
+        last_online      = 0;
+        num_sessions     = 0;
+        gid              = GameUtils.GIDToInternal(GID);
+    });
+  else
+    MySQL.update("player_sessions", {
+        last_online      = 0;
+    }, {
+        player           = ID;
+        gid              = GameUtils.GIDToInternal(GID);
+    });
+  end
 
-  return ({success = true, error = ""});
+  return {success = true, error = ""};
 end
 
-function module.goOffline(id, time_ingame)
-  mysql.delete("player_ingame", {
-    player           = id;
+function Module.GoOffline(ID, TimeIngame, GID)
+  MySQL.delete("player_ingame", {
+    player           = ID;
   });
-  mysql.update("player_info", {
-    last_online      = math.floor(socket.gettime());
-    time_ingame      = mysql.raw(("time_ingame+%d"):format(time_ingame));
+  MySQL.update("player_sessions", {
+    last_online      = math.floor(Socket.gettime());
+    time_ingame      = MySQL.raw(("time_ingame+%d"):format(TimeIngame));
+    num_sessions     = MySQL.raw("num_sessions+1");
   }, {
-    player           = id;
+    player           = UserInfo.RobloxToInternal(ID);
+    GID              = GameUtils.GIDToInternal(GID);
   });
 
-  return ({success = true, error = ""})
+  return {success = true, error = ""};
 end
 
-return module;
+return Module;

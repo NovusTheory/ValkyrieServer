@@ -1,140 +1,161 @@
-local module        = {};
-local permsfile     = io.open("permissions.perms", "r");
-local permissions   = {};
-local ins           = require("inspect");
-local app_helpers   = require "lapis.application";
-local possperms     = {
-  modules           = {
-    "require";
-    "function";
+local Module         = {};
+local PermissionFile = io.open("permissions.perms", "r");
+local Permissions    = {};
+local AppHelpers     = require "lapis.application";
+local AllPermissions = {
+  Modules            = {
+    "Require";
+    "Function";
   };
-  achievements      = {
-    "award";
-    "create";
-    "list";
-    "getReward";
+  Achievements      = {
+    "Award";
+    "Create";
+    "List";
+    "GetReward";
   };
-  auth              = {
-    "check";
+  Auth              = {
+    "Check";
   };
-  loadstring        = {
-    "load";
-    "lockAsset";
+  Loadstring        = {
+    "Load";
+    "LockAsset";
   };
-  messages          = {
-    "addMessage";
-    "checkMessages";
+  Messages          = {
+    "AddMessage";
+    "CheckMessages";
   };
-  playerinfo        = {
-    "getUserinfo";
-    "tryCreateUser";
+  PlayerInfo        = {
+    "GetUserinfo";
+    "TryCreateUser";
   };
-  friends           = {
-    "getFriends";
-    "setOnlineGame";
-    "goOffline";
+  Friends           = {
+    "GetFriends";
+    "SetOnlineGame";
+    "GoOffline";
   };
-  datastore         = {
-    "saveData";
-    "loadData";
-    "getSpace";
-    "listKeys";
+  DataStore         = {
+    "SaveData";
+    "LoadData";
+    "GetSpace";
+    "ListKeys";
   };
-  bans              = {
-    "createBan";
-    "isBanned";
+  Bans              = {
+    "CreateBan";
+    "IsBanned";
   };
   ["*"]             = {
-    "modules.*";
-    "achievements.*";
-    "auth.*";
-    "loadstring.*";
-    "messages.*";
-    "playerinfo.*";
-    "friends.*";
-    "datastore.*";
-    "bans.*";
+    "Modules.*";
+    "Achievements.*";
+    "Auth.*";
+    "Loadstring.*";
+    "Messages.*";
+    "PlayerInfo.*";
+    "Friends.*";
+    "DataStore.*";
+    "Bans.*";
   };
 };
 
-local function arg(num, ...)
-  return ({...})[num];
-end
+local RuleSets = {
+  Basic = {
+    Allow = {
+      "Modules.*";
+      "Achievements.*";
+      "Auth.*";
+      "Message.*";
+      "PlayerInfo.*";
+      "Friends.*";
+      "DataStore.*";
+      "Bans.*";
+    };
+    Deny = {
+      "Loadstring.*";
+    }
+  }
+};
 
-local currentperms  = {allow = {}, deny = {}};
+local CurrentPermissions  = {Allow = {}, Deny = {}};
 
 -- Do not try to understand this function. It works, k?
-local function insertRecursively(table, path, value, prevvalue)
-  if path:sub(1, 1) == "*" then
-    if prevvalue then
-      for index, name in next, possperms[prevvalue] do
-        if name:find("*") then
-          insertRecursively(table, name, value, nil);
-        elseif not path:find("%.") then
-          table[prevvalue][name] = value;
+local function InsertRecursively(Table, Path, Value, PreviousValue)
+  if Path:sub(1, 1) == "*" then
+    if PreviousValue then
+      for Index, Name in next, AllPermissions[PreviousValue] do
+        if Name:find("*") then
+          InsertRecursively(Table, Name, Value, nil);
+        elseif not Path:find("%.") then
+          Table[PreviousValue][Name] = Value;
         else
-          if table[name:sub(1, arg(1, name:find(".")) - 1)] == nil then
-            table[name:sub(1, arg(1, name:find(".")) - 1)]  = {};
+          if Table[Name:sub(1, (Name:find(".")) - 1)] == nil then
+            Table[Name:sub(1, (Name:find(".")) - 1)]  = {};
           end
-          insertRecursively(table[name:sub(1, arg(1, name:find(".")) - 1)], path:sub(arg(1, path:find("%.")) + 1), value, name);
+          InsertRecursively(Table[Name:sub(1, (Name:find(".")) - 1)], Path:sub((path:find("%.")) + 1), Value, Name);
         end
       end
     else
-      insertRecursively(table, path:sub(arg(1, path:find("%.")) + 1), value, "*");
+      InsertRecursively(Table, Path:sub((path:find("%.")) + 1), Value, "*");
     end
   end
-  if not path:find("%.") and path:sub(1, 1) ~= "*" then
-    table[prevvalue][path]     = value;
-  elseif path:sub(1, 1) ~= "*" then
-    if table[path:sub(1, arg(1, path:find("%.")) - 1)] == nil then
-      table[path:sub(1, arg(1, path:find("%.")) - 1)]  = {};
+  if not Path:find("%.") and Path:sub(1, 1) ~= "*" then
+    Table[PreviousValue][Path]     = Value;
+  elseif Path:sub(1, 1) ~= "*" then
+    if Table[Path:sub(1, (Path:find("%.")) - 1)] == nil then
+      Table[Path:sub(1, (Path:find("%.")) - 1)]  = {};
     end
-    insertRecursively(table, path:sub(arg(1, path:find("%.")) + 1), value, path:sub(1, arg(1, path:find("%.")) - 1));
+    InsertRecursively(Table, Path:sub((Path:find("%.")) + 1), Value, Path:sub(1, (Path:find("%.")) - 1));
   end
 end
 
-local function getRecursively(table, path)
-  if not path:find("%.") then
-    return table[path];
+local function GetRecursively(Table, Path)
+  if not Path:find("%.") then
+    return Table[Path];
   else
-    if table[path:sub(1, arg(1, path:find("%.")) - 1)] == nil then
+    if Table[Path:sub(1, (Path:find("%.")) - 1)] == nil then
       return nil;
     end
-    return getRecursively(table[path:sub(1, arg(1, path:find("%.") - 1))], path:sub(arg(1, path:find("%.") + 1)));
+    return GetRecursively(Table[Path:sub(1, (Path:find("%.") - 1))], Path:sub((Path:find("%.") + 1)));
   end
 end
 
-function module.parsePermissions()
-  local line          = permsfile:read("*line");
-  local currentgid    = "";
-  currentperms        = {allow = {}, deny = {}}
-  while line do
-    if line:sub(1, 1) == ":" then
-      if currentgid ~= "" then
-        permissions[currentgid] = currentperms;
+function Module.ParsePermissions()
+  local Line          = PermissionFile:read("*line");
+  local CurrentGID    = "";
+  CurrentPermissions  = {allow = {}, deny = {}}
+  while Line do
+    if Line:sub(1, 1) == ":" then
+      if CurrentGID ~= "" then
+        Permissions[CurrentGID] = CurrentPermissions;
       end
-      currentgid    = line:sub(2);
-    elseif line:sub(1, 1) == "+" then
-      insertRecursively(currentperms.allow, line:sub(2), true);
-    elseif line:sub(1, 1) == "-" then
-      insertRecursively(currentperms.deny, line:sub(2), true);
+      CurrentGID    = Line:sub(2);
+    elseif Line:sub(1, 1) == "+" then
+      InsertRecursively(CurrentPermissions.Allow, Line:sub(2), true);
+    elseif Line:sub(1, 1) == "-" then
+      InsertRecursively(CurrentPermissions.Deny, Line:sub(2), true);
+    elseif Line:sub(1, 1) == "!" then
+      local Rules = RuleSets[Line:sub(2)];
+      for _, Rule in next, Rules.Allow do
+          InsertRecursively(CurrentPermissions.Allow, Rule, true);
+      end
+      for _, Rule in next, Rules.Deny do
+          InsertRecursively(CurrentPermissions.Deny, Rule, true);
+      end
     end
-    line            = permsfile:read("*line");
+    Line            = PermissionFile:read("*line");
   end
 end
 
-function module.getPermission(gid, key)
+function Module.GetPermission(GID, Key)
     -- Vim's 4-width soft tabs vs Atom's 2-width soft tabs <_<
 
-    if permissions[gid] == nil then
-        app_helpers.yield_error("This GID does not have any permissions set, or does not exist!");
+    if Permissions[GID] == nil then
+        AppHelpers.yield_error("This GID does not have any permissions set, or does not exist!");
     end
 
-  local allowed     = getRecursively(permissions[gid].allow, key);
-  local denied      = getRecursively(permissions[gid].deny, key);
+  local Allowed     = GetRecursively(Permissions[GID].Allow, Key);
+  local Denied      = GetRecursively(Permissions[GID].Deny, Key);
 
-  if allowed then
-    if denied then
+  if Allowed then
+    if Denied then
       return false;
     else
       return true;
@@ -143,4 +164,4 @@ function module.getPermission(gid, key)
   return false;
 end
 
-return module;
+return Module;

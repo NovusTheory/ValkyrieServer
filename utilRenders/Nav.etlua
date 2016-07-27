@@ -33,7 +33,7 @@ nav {
 				<li class="nosession"><a href="/login">Log In</a></li>
 			<% end %>
             <% if SignedIn then %>
-                <li><a href="/user/<%= session.user %>/games">Develop</a></li>
+                <li><a href="/user/<%= session.User %>/games">Develop</a></li>
                 <li><a href="/logout">Log Out</a></li>
             <% end %>
 		</ul>
@@ -45,7 +45,7 @@ nav {
 				<li class="nosession"><a href="/login">Log In</a></li>
 			<% end %>
             <% if SignedIn then %>
-                <li><a href="/user/<%= session.user %>/games" class="greenhover"><i class="material-icons left">gamepad</i>Develop</a></li>
+                <li><a href="/user/<%= session.User %>/games" class="greenhover"><i class="material-icons left">gamepad</i>Develop</a></li>
                 <li><a href="/logout">Log Out</a></li>
             <% end %>
 		</ul>

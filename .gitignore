@@ -24,3 +24,5 @@ security.sec
 config.lua
 nginx.conf.compiled
 .well-known
+*.csrf
+*.sec

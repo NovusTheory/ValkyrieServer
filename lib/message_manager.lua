@@ -1,35 +1,36 @@
-local module      = {};
-local mysql       = require"lapis.db";
-local encoder     = library("encode");
-local app_helpers = require"lapis.application";
-local socket      = require"socket"; -- For time
+local Module      = {};
+local MySQL       = require"lapis.db";
+local AppHelpers  = require"lapis.application";
+local Socket      = require"socket"; -- For time
+local GameUtil    = Library"game_util";
+local UserInfo    = Library"userinfo";
 
-local yield_error = app_helpers.yield_error;
+local YieldError  = AppHelpers.yield_error;
 
-function module.addMessage(user, message, gid)
-  local time    = math.floor(socket.gettime());
-  local result  = mysql.insert("messages", {
-    sent        = time,
-    user        = user,
-    message     = message,
-    gid         = gid
+function Module.AddMessage(User, Message, GID)
+  local Time    = math.floor(Socket.gettime());
+  local Result  = MySQL.insert("messages", {
+    sent        = Time,
+    user        = UserInfo.RobloxToInternal(User),
+    message     = Message,
+    gid         = GameUtil.GIDToInternal(GID)
   });
 
-  return ({success = true, error = ""});
+  return {success = true, error = ""};
 end
 
-function module.checkMessages(since, fresh, gidfilter)
-  if fresh then
-    return ({success = true, error = "", result = math.floor(socket.gettime())});
+function Module.CheckMessages(Since, Fresh, GIDFilter)
+  if Fresh then
+    return {success = true, error = "", result = math.floor(Socket.gettime())};
   end
 
-  local result  = mysql.select("message, sent, user from messages where sent > ? and gid=?", since, gidfilter);
-  local ret     = {math.floor(socket.gettime())};
-  for i = 1, #result do
-    table.insert(ret, result[i]);
+  local Result  = MySQL.select("a.message as message, a.sent as sent, b.robloxid as user from messages a left join player_info b on a.user=b.id where sent > ? and gid=?", Since, GameUtil.GIDToInternal(GIDFilter));
+  local Return  = {math.floor(Socket.gettime())};
+  for i = 1, #Result do
+    table.insert(Return, Result[i]);
   end
 
-  return ({success = true, error = "", result = ret});
+  return {success = true, error = "", result = Result};
 end
 
-return module;
+return Module;

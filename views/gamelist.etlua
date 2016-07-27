@@ -1,10 +1,10 @@
-<% render('utilRenders.Nav',{SignedIn=session.user}) %>
+<% render('utilRenders.Nav',{SignedIn=session.User}) %>
 
 <%
 local MySQL       = require "lapis.db";
 local MetaManager = require "lib.meta";
 
-local OwnedGIDs = MySQL.select("* from game_ids where owner=(select id from users where username=?)", session.user);
+local OwnedGIDs = MySQL.select("* from game_ids where owner=(select id from users where username=?)", session.User);
 %>
 <div class="container">
     <div class="row">
@@ -19,7 +19,7 @@ local OwnedGIDs = MySQL.select("* from game_ids where owner=(select id from user
                         <%
                         for i = 1, #OwnedGIDs do
                         %>
-                        <a class="collection-item" href="/game/<%= OwnedGIDs[i].gid %>"><%= MetaManager.getMeta("name", OwnedGIDs[i].gid) %> (<code><%= OwnedGIDs[i].gid %></code>)</a>
+                        <a class="collection-item" href="/game/<%= OwnedGIDs[i].gid %>"><%= MetaManager.GetMeta("name", OwnedGIDs[i].gid) %> (<code><%= OwnedGIDs[i].gid %></code>)</a>
                         <%
                         end
                         if #OwnedGIDs == 0 then
