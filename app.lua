@@ -436,7 +436,7 @@ App:match("game", "/game/:GID", respond_to{
         self.Invalid = {};
 
         if not CSRF.validate_token(self, self.session.User) then
-            self.invalid.GID = "Error: Invalid CSRF Token! (This message should never be displayed on a browser. If it has, contant gskw)";
+            self.Invalid.GID = "Error: Invalid CSRF Token! (This message should never be displayed on a browser. If it has, contant gskw)";
         end
 
         if not self.params.GID or #self.params.GID < 1 then
@@ -455,7 +455,7 @@ App:match("game", "/game/:GID", respond_to{
             return {layout = false; render = "newgame"};
         end
 
-        if MySQL.select("count(*) from game_ids where owner=(select id from users where username=?)", self.session.user)[1]["count(*)"] == "5" then
+        if MySQL.select("count(*) from game_ids where owner=(select id from users where username=?)", self.session.User)[1]["count(*)"] == "5" then
             self.Invalid.GID = "You already own 5 games!";
         end
 
@@ -481,14 +481,14 @@ App:match("game", "/game/:GID", respond_to{
             connection_key = MySQL.raw("sha2(" .. MySQL.escape_literal(self.params.Key) .. ", 256)");
             uses_md5 = false;
             uid = MySQL.select("robloxid from users where username=?", self.session.User)[1].robloxid;
-            gid = self.params.GID;
+            gid = MySQL.select("id from game_ids where gid=?", self.params.GID)[1].id;
         });
 
         local function MakeMeta(Key, Value)
             MySQL.insert("meta", {
                 key = Key,
                 value = Value,
-                gid = self.params.GID
+                gid = MySQL.select("id from game_ids where gid=?", self.params.GID)[1].id;
             });
         end
         MakeMeta("usedReward", 0);

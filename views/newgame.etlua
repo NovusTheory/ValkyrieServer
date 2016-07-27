@@ -30,11 +30,11 @@ local GameError   = "";
 
 if Invalid.GID then
 GIDClasses    = "invalid";
-GIDError      = Invalid.gid;
+GIDError      = Invalid.GID;
 end
 if Invalid.Key then
 KeyClasses    = "invalid";
-KeyError      = Invalid.key;
+KeyError      = Invalid.Key;
 end
 if Invalid.GameName then
 GameClasses   = "invalid";
