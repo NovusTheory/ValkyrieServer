@@ -18,7 +18,7 @@ local JSONLib     = require "cjson";
 local BuildRequest, HTTPRequestSSL, HTTPRequest, StripHeaders, Login, DataRequest, RunPostBack, FindPostState, HTTPGet = unpack(Library("httputil"));
 
 local cachefunc = function(URL, X, self)
-    return (self.Session.User or "") .. URL;
+    return (self.session.User or "") .. URL;
 end;
 
 App:enable"etlua"
@@ -99,7 +99,7 @@ App:match("login", "/login", respond_to{
         end
 
         if MySQL.select("count(*) from users where username=? and password=?", self.params.Username, MySQL.raw("sha2(" .. MySQL.escape_literal(self.params.Password) .. ", 256)"))[1]["count(*)"] == "1" then
-            self.Session.User = self.params.Username;
+            self.session.User = self.params.Username;
             return "<script>window.location.replace('/')</script>";
         else
             self.Invalid.Password = "The username and password do not match";
