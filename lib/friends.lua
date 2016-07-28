@@ -24,10 +24,10 @@ function Module.GetFriends(ID)
   end
 
   for Index, Value in next, Friends do
-    table.insert(Result, {value.Id; value.Username; IsInGame[value.Id] and true or false; IsInGame[value.Id]});
+    table.insert(Result, {ID = value.Id; Username = value.Username; IsInGame = IsInGame[value.Id] and true or false; Game = IsInGame[value.Id]});
   end
 
-  return {success = true, error = "", result = Result};
+  return Result;
 end
 
 function Module.SetOnlineGame(ID, GID, Name)
@@ -67,7 +67,7 @@ function Module.SetOnlineGame(ID, GID, Name)
     });
   end
 
-  return {success = true, error = ""};
+  return nil;
 end
 
 function Module.GoOffline(ID, TimeIngame, GID)
@@ -83,7 +83,7 @@ function Module.GoOffline(ID, TimeIngame, GID)
     GID              = GameUtils.GIDToInternal(GID);
   });
 
-  return {success = true, error = ""};
+  return nil;
 end
 
 return Module;
