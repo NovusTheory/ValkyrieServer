@@ -10,7 +10,7 @@ function Module.Check(GID, CoKey, UID)
     YieldError("Invalid UID-GID-CoKey combination!");
   end
 
-  local UserIDResult = MySQL.select("id from trusted_users where uid=? and gid=? and (uses_md5=1 and connection_key=md5(?) or connection_key=sha2(?, 256))", UID, GID, CoKey, CoKey);
+  local UserIDResult = MySQL.select("id from trusted_users where uid=? and gid=(select id from game_ids where gid=?) and (uses_md5=1 and connection_key=md5(?) or connection_key=sha2(?, 256))", UID, GID, CoKey, CoKey);
   if #UserIDResult < 1 then
     YieldError("Invalid UID-CoKey-GID combination!");
   end
@@ -18,7 +18,7 @@ function Module.Check(GID, CoKey, UID)
   return ({success = true, error = "", result = true});
 end
 
-function Module.CheckNoUID(gid, cokey)
+function Module.CheckNoUID(GID, CoKey)
   local GameIDResult  = MySQL.select("id from game_ids where gid=? and (uses_md5=1 and cokey=md5(?) or cokey=sha2(?, 256))", GID, CoKey, CoKey);
   if #GameIDResult < 1 then
     YieldError("Invalid GID-CoKey pair!");

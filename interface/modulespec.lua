@@ -35,6 +35,10 @@ local Modules       = {
         "CoKey";
         "UID";
       };
+      CheckNoUID    = {
+        "GID";
+        "CoKey";
+      };
     };
   };
 

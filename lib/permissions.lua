@@ -15,6 +15,7 @@ local AllPermissions = {
   };
   Auth              = {
     "Check";
+    "CheckNoUID";
   };
   Loadstring        = {
     "Load";
@@ -62,7 +63,7 @@ local RuleSets = {
       "Modules.*";
       "Achievements.*";
       "Auth.*";
-      "Message.*";
+      "Messages.*";
       "PlayerInfo.*";
       "Friends.*";
       "DataStore.*";
@@ -80,6 +81,7 @@ local CurrentPermissions  = {Allow = {}, Deny = {}};
 local function InsertRecursively(Table, Path, Value, PreviousValue)
   if Path:sub(1, 1) == "*" then
     if PreviousValue then
+        print(PreviousValue);
       for Index, Name in next, AllPermissions[PreviousValue] do
         if Name:find("*") then
           InsertRecursively(Table, Name, Value, nil);
@@ -89,11 +91,11 @@ local function InsertRecursively(Table, Path, Value, PreviousValue)
           if Table[Name:sub(1, (Name:find(".")) - 1)] == nil then
             Table[Name:sub(1, (Name:find(".")) - 1)]  = {};
           end
-          InsertRecursively(Table[Name:sub(1, (Name:find(".")) - 1)], Path:sub((path:find("%.")) + 1), Value, Name);
+          InsertRecursively(Table[Name:sub(1, (Name:find(".")) - 1)], Path:sub((Path:find("%.")) + 1), Value, Name);
         end
       end
     else
-      InsertRecursively(Table, Path:sub((path:find("%.")) + 1), Value, "*");
+      InsertRecursively(Table, Path:sub((Path:find("%.")) + 1), Value, "*");
     end
   end
   if not Path:find("%.") and Path:sub(1, 1) ~= "*" then
@@ -120,7 +122,7 @@ end
 function Module.ParsePermissions()
   local Line          = PermissionFile:read("*line");
   local CurrentGID    = "";
-  CurrentPermissions  = {allow = {}, deny = {}}
+  CurrentPermissions  = {Allow = {}, Deny = {}}
   while Line do
     if Line:sub(1, 1) == ":" then
       if CurrentGID ~= "" then
