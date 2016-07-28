@@ -20,26 +20,26 @@ function Module.CreateBan(GID, Player, Reason, Meta)
     meta          = Meta;
   });
 
-  return ({success = true; error = ""});
+  return nil;
 end
 
 function Module.IsBanned(Player, GID)
   local BanExists = MySQL.select("* from bans where player=?", PlayerInfo.RobloxToInternal(Player));
   if #BanExists > 0 then
-    return ({success = true; error = ""; result = {true, BanExists[1].reason, BanExists[1].from_gid, "global"}});
+    return {IsBanned = true, Reason = BanExists[1].reason, GID = BanExists[1].from_gid, Type = "global", Meta = BanExists[1].meta};
   end
 
   local LocalBanExists = MySQL.select("* from local_bans where player=? and gid=?", PlayerInfo.RobloxToInternal(Player), GameUtil.GIDToInternal(GID));
   if #BanExists > 0 then
-      return {success = true; error = ""; result = {true, BanExists[1].reason, BanExists[1].from_gid, "local"}};
+      return {IsBanned = true, Reason = LocalBanExists[1].reason, GID = LocalBanExists[1].from_gid, Type = "local"};
   end
-  return ({success = true; error = ""; result = {false}});
+  return {IsBanned = false};
 end
 
 function Module.CreateGameBan(GID, Player, Reason)
   local Player = PlayerInfo.RobloxToInternal(Player);
   local BanExists = Module.IsBanned(Player, GID);
-  if BanExists.result then
+  if BanExists.IsBanned then
     YieldError("That user is already banned!");
   end
 
@@ -49,11 +49,11 @@ function Module.CreateGameBan(GID, Player, Reason)
       reason = Reason
   });
 
-  return {success = true; error = ""};
+  return nil;
 end
 
 function Module.RemoveGameBan(GID, Player)
-  if not Module.IsBanned(Player, GID).result then
+  if not Module.IsBanned(Player, GID).IsBanned then
       YieldError("That user is not banned!");
   end
 
@@ -62,7 +62,7 @@ function Module.RemoveGameBan(GID, Player)
     gid = GameUtil.GIDToInternal(GID);
   });
 
-  return {success = true; error = ""};
+  return nil;
 end
 
 return Module;
