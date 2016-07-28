@@ -191,7 +191,7 @@ function Module.LockAsset(ModelID)
     ["rdoNotifications"]                        = "on"
   }, io.open("security.sec", "r"):read("*all")));
 
-  return ({success = true, error = ""});
+  return nil;
 end
 
 function Module.Upload(Data, ModelID, SessionCookie, Force)
@@ -208,7 +208,7 @@ end
 
 function Module.Load(Data, ModelID)
   local Result = Module.Upload(Module.CreateModel(Data), ModelID, io.open("security.sec", "r"):read("*all"));
-  return ({success = true; error = ""; result = Result});
+  return Result;
 end
 
 return Module;
