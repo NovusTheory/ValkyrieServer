@@ -3,8 +3,8 @@ local MySQL      = require"lapis.db";
 local AppHelpers = require"lapis.application";
 local HTTP       = require("socket.http");
 local JSON       = require("cjson");
-local UserInfo   = Library("userinfo");
-local GameUtils  = Library("game_utils");
+local UserInfo   = require("lib.userinfo");
+local GameUtils  = require("lib.game_utils");
 local Socket     = require("socket");
 
 local YieldError = AppHelpers.yield_error;

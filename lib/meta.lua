@@ -1,7 +1,7 @@
 local Module        = {};
 local MySQL         = require"lapis.db";
 local AppHelpers    = require"lapis.application";
-local GameUtils     = Library"game_utils";
+local GameUtils     = require"lib.game_utils";
 
 local YiedError     = AppHelpers.yield_error;
 

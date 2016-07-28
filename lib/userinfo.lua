@@ -4,8 +4,8 @@ local AppHelpers            = require"lapis.application";
 local HTTP                  = require("socket.http");
 local Socket                = require("socket");
 local JSON                  = require("cjson");
-local Meta                  = Library("meta");
-local Friends               = Library("friends");
+local Meta                  = require("lib.meta");
+local Friends               = require("lib.friends");
 
 local YieldError           = AppHelpers.yield_error;
 

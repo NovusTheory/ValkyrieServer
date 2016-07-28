@@ -1,7 +1,7 @@
 local Module      = {};
 local MySQL       = require "lapis.db";
-local MetaManager = Library("meta");
-local PlayerInfo  = Library("userinfo");
+local MetaManager = require("lib.meta");
+local PlayerInfo  = require("lib.userinfo");
 local AppHelpers  = require"lapis.application";
 
 local YieldError  = app_helpers.yield_error;

@@ -1,7 +1,7 @@
 local Module      = {};
 local MySQL       = require "lapis.db";
-local Encoder     = Library("encode");
-local PlayerInfo  = Library("userinfo");
+local Encoder     = require("lib.encode");
+local PlayerInfo  = require("lib.userinfo");
 
 local YieldError = require"lapis.application".yield_error;
 

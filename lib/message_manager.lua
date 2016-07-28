@@ -2,8 +2,8 @@ local Module      = {};
 local MySQL       = require"lapis.db";
 local AppHelpers  = require"lapis.application";
 local Socket      = require"socket"; -- For time
-local GameUtil    = Library"game_util";
-local UserInfo    = Library"userinfo";
+local GameUtil    = require"lib.game_util";
+local UserInfo    = require"lib.userinfo";
 
 local YieldError  = AppHelpers.yield_error;
 

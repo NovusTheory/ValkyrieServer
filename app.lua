@@ -2,7 +2,6 @@ local Lapis       = require("lapis");
 local App         = Lapis.Application();
 local Cache       = require("lapis.cache");
 
-function Library(name) return require("lib." .. name); end
 local Modules    = require "interface.modules";
 local AppHelpers = require"lapis.application";
 
@@ -15,7 +14,7 @@ local MySQL       = require "lapis.db";
 local LapisHTTP   = require "lapis.nginx.http";
 local LapisUtil   = require "lapis.util";
 local JSONLib     = require "cjson";
-local BuildRequest, HTTPRequestSSL, HTTPRequest, StripHeaders, Login, DataRequest, RunPostBack, FindPostState, HTTPGet = unpack(Library("httputil"));
+local BuildRequest, HTTPRequestSSL, HTTPRequest, StripHeaders, Login, DataRequest, RunPostBack, FindPostState, HTTPGet = unpack(require("lib.httputil"));
 
 local cachefunc = function(URL, X, self)
     return (self.session.User or "") .. URL;

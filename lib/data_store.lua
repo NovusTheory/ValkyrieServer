@@ -1,5 +1,5 @@
 local Module      = {};
-local Meta        = Library("meta");
+local Meta        = require("lib.meta");
 local YieldError = require"lapis.application".yield_error;
 local LFS         = require("lfs");
 

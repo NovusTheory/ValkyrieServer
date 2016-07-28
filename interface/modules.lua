@@ -1,8 +1,8 @@
 local Module                  = {};
 local Modules                 = require "interface.modulespec";
-local Auth                    = Library("check_cokey");
+local Auth                    = require("lib.check_cokey");
 local Inspect                 = require("inspect");
-local Perms                   = Library("permissions");
+local Perms                   = require("lib.permissions");
 
 Module                        = setmetatable(Module, {
   __index                     = function(self, Module)
@@ -12,7 +12,7 @@ Module                        = setmetatable(Module, {
       error("Invalid module name!");
     end
 
-    local Lib                 = Library(ModuleMeta.LibName);
+    local Lib                 = require("lib."..ModuleMeta.LibName);
 
     return setmetatable({}, {
       __index                 = function(self2, FuncName)
