@@ -63,7 +63,7 @@ local RuleSets = {
       "Modules.*";
       "Achievements.*";
       "Auth.*";
-      "Message.*";
+      "Messages.*";
       "PlayerInfo.*";
       "Friends.*";
       "DataStore.*";
@@ -81,6 +81,7 @@ local CurrentPermissions  = {Allow = {}, Deny = {}};
 local function InsertRecursively(Table, Path, Value, PreviousValue)
   if Path:sub(1, 1) == "*" then
     if PreviousValue then
+        print(PreviousValue);
       for Index, Name in next, AllPermissions[PreviousValue] do
         if Name:find("*") then
           InsertRecursively(Table, Name, Value, nil);
