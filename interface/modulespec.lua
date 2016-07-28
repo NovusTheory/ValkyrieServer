@@ -92,7 +92,6 @@ local Modules       = {
       SetOnlineGame = {
         "ID";
         "Game";
-        "Name";
       };
       GoOffline     = {
         "ID";
