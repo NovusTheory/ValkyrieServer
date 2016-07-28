@@ -9,7 +9,7 @@ local YieldError = require"lapis.application".yield_error;
 function Module.CreateBan(GID, Player, Reason, Meta)
     local Player = PlayerInfo.RobloxToInternal(Player);
   local BanExists = Module.IsBanned(Player, GID);
-  if BanExists.result then
+  if BanExists.IsBanned then
     YieldError("That user is already banned!");
   end
 
