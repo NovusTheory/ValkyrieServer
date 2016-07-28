@@ -62,7 +62,7 @@ function Module.SaveData(GID, Key, Value)
   file:write(Value);
   Meta.SetMeta("usedSpace", UsedSpace - Change, GID);
 
-  return ({success = true; error = ""});
+  return nil;
 end
 
 function Module.LoadData(GID, Key)
@@ -75,14 +75,14 @@ function Module.LoadData(GID, Key)
     YieldError(Error);
   end
 
-  return ({success = true; error = ""; result = File:read("*all")});
+  return File:read("*all");
 end
 
 function Module.GetSpace(gid)
   local UsedSpace = Meta.GetMeta("usedSpace", GID);
   local Limit   = 1024 * 1024 * 10 - UsedSpace;
 
-  return ({success = true; error = ""; result = {{"10 MiB"; ProperDataRepresentation(Limit); ProperDataRepresentation(usedspc)}, {1024 * 1024 * 10, Limit, tonumber(UsedSpace)}}});
+  return {HumanReadable = {Limit = "10 MiB"; Quota = ProperDataRepresentation(Limit); Used = ProperDataRepresentation(UsedSpace)}, Numeric = {Limit = 1024 * 1024 * 10, Quota = Limit, Used = tonumber(UsedSpace)}};
 end
 
 local function GetDirectoryRecursively(Table, Path, Ignore)
@@ -106,7 +106,7 @@ function Module.ListKeys(GID)
     YieldError("Nice try, you dirty injector! (Gid can't contain a .)");
   end
 
-  return ({success = true; error = ""; result = GetDirectoryRecursively({}, ("ds/%s"):format(GID), ("ds/%s/?"):format(GID))});
+  return GetDirectoryRecursively({}, ("ds/%s"):format(GID), ("ds/%s/?"):format(GID));
 end
 
 return Module;
