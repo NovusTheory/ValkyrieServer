@@ -21,7 +21,7 @@ local function GetGeneralInfo(ID)
     GameName                = Meta.GetMeta("name", IsPlayerInGame[1].gid);
   end
 
-  return {OtherInfo.Id; OtherInfo.Username; Online; Online and IsPlayerInGame[1].gid or nil; GameName};
+  return {ID = OtherInfo.Id; Username = OtherInfo.Username; IsInGame = Online; Game = Online and IsPlayerInGame[1].gid or nil; GameName = GameName};
 end
 
 local function FixDate(Date, Difference)
@@ -47,18 +47,20 @@ local function FixDate(Date, Difference)
 end
 
 local function GetPlayTimes(id)
-  local Result              = {{}, {}};
+  local Result              = {HumanReadable = {}, Numeric = {}};
   local UserInfoResult      = MySQL.select("sum(time_ingame) as time_ingame, min(joined) as joined sum(num_sessions) as num_sessions, max(last_online) as last_left, min(last_online) = 0 as internal_still_online from player_sessions where player=?", Module.RobloxToInternal(id));
 
   local Row                 = UserInfoResult[1];
   if Row then
-    Result[2]               = {Row.time_ingame, Row.joined, Row.last_online, Row.num_sessions};
-    table.insert(Result[1], FixDate(os.date("%Yy %mm %dd %Hh %Mmin", Row.time_ingame), true));
-    table.insert(Result[1], FixDate(os.date("%Yy %mm %dd", math.floor(Socket.gettime()) - Row.joined)));
-    table.insert(Result[1], FixDate(os.date("%Yy %mm %dd %Hh %Mmin", Row.internal_still_online == 1 and 0 or math.floor(Socket.gettime()) - Row.last_left)));
-    table.insert(Result[1], Row.num_sessions);
+    Result.Numeric          = {TotalTime = Row.time_ingame, Joined = Row.joined, LastSeen = Row.last_online, Sessions = Row.num_sessions};
+    Result.HumanReadable   = {
+        TotalTime = FixDate(os.date("%Yy %mm %dd %Hh %Mmin", Row.time_ingame), true);
+        Joined = FixDate(os.date("%Yy %mm %dd", math.floor(Socket.gettime()) - Row.joined));
+        LastSeen = FixDate(os.date("%Yy %mm %dd %Hh %Mmin", Row.internal_still_online == 1 and 0 or math.floor(Socket.gettime()) - Row.last_left))
+        Sessions = Row.num_sessions;
+    };
   else
-    Ret = {{"N/A","N/A","N/A", "N/A"}, {-1, -1, -1, -1}};
+    Result = {HumanReadable = {"N/A","N/A","N/A", "N/A"}, Numeric = {-1, -1, -1, -1}};
   end
 
   return Result;
@@ -72,26 +74,26 @@ function Module.TryCreateUser(ID)
     });
   end
 
-  return {success = true; error = ""};
+  return nil;
 end
 
 function Module.GetUserInfo(ID)
   local Result              = {};
 
-  table.insert(Result, math.floor(Socket.gettime()));
+  Result.Time = math.floor(Socket.gettime());
 
-  table.insert(Result, GetGeneralInfo(ID));
-  table.insert(Result, GetPlayTimes(ID));
+  Result.GeneralInfo = GetGeneralInfo(ID);
+  Result.PlayTimes = GetPlayTimes(ID);
 
-  local Achievements        = MySQL.select("c.achv_id as achv_id, c.name as name, c.description as description, c.reward as reward, c.icon as icon, b.gid as gid, d.value as gamename from awarded_achv a left join game_ids b on a.gid=b.id left join achievements c on a.achv_id=c.id left join meta d on d.`key`='name' and b.id=d.gid where player=?", Module.RobloxToInternal(ID));
-  table.insert(Result, Achievements);
+  local Achievements        = MySQL.select("c.achv_id as AchievementID, c.name as Name, c.description as Description, c.reward as Reward, c.icon as Icon, b.gid as GID, d.value as GameName from awarded_achv a left join game_ids b on a.gid=b.id left join achievements c on a.achv_id=c.id left join meta d on d.`key`='name' and b.id=d.gid where player=?", Module.RobloxToInternal(ID));
+  Result.Achievements = Achievements;
 
   local TotalReward         = MySQL.select("sum(b.reward) as reward from awarded_achv a left join achievements b on a.achv_id=b.id where player=?", Module.RobloxToInternal(ID))[1].reward;
-  table.insert(Result, TotalReward);
+  Result.TotalReward = TotalReward;
 
-  table.insert(Result, (Friends.GetFriends(ID)).Result);
+  Result.Friends =  Friends.GetFriends(ID);
 
-  return {success = true; error = ""; result = ret};
+  return Result;
 end
 
 function Module.RobloxToInternal(RobloxID)
