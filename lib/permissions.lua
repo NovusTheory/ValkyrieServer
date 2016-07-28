@@ -42,6 +42,8 @@ local AllPermissions = {
   Bans              = {
     "CreateBan";
     "IsBanned";
+    "CreateGameBan";
+    "RemoveGameBan";
   };
   ["*"]             = {
     "Modules.*";
@@ -70,8 +72,17 @@ local RuleSets = {
     };
     Deny = {
       "Loadstring.*";
+      "Bans.CreateBan"; -- Global ban
     }
-  }
+  };
+  Trusted = {
+    Allow = {
+      "*.*";
+    };
+    Deny = {
+
+    };
+  };
 };
 
 local CurrentPermissions  = {Allow = {}, Deny = {}};
