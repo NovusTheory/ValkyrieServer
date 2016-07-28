@@ -16,21 +16,18 @@ function Module.AddMessage(User, Message, GID)
     gid         = GameUtil.GIDToInternal(GID)
   });
 
-  return {success = true, error = ""};
+  return nil;
 end
 
 function Module.CheckMessages(Since, Fresh, GIDFilter)
   if Fresh then
-    return {success = true, error = "", result = math.floor(Socket.gettime())};
+    return math.floor(Socket.gettime());
   end
 
-  local Result  = MySQL.select("a.message as message, a.sent as sent, b.robloxid as user from messages a left join player_info b on a.user=b.id where sent > ? and gid=?", Since, GameUtil.GIDToInternal(GIDFilter));
-  local Return  = {math.floor(Socket.gettime())};
-  for i = 1, #Result do
-    table.insert(Return, Result[i]);
-  end
+  local Result  = MySQL.select("a.message as Message, a.sent as Sent, b.robloxid as User from messages a left join player_info b on a.user=b.id where sent > ? and gid=?", Since, GameUtil.GIDToInternal(GIDFilter));
+  Result.Time   = math.floor(Socket.gettime());
 
-  return {success = true, error = "", result = Result};
+  return Result;
 end
 
 return Module;

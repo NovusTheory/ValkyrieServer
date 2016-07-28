@@ -45,18 +45,18 @@ Module                        = setmetatable(Module, {
           end
 
           if not Perms.GetPermission(Request.GID, "Modules.Require") then
-            return ({success = false; error = "You do not have the permission Modules.Require"});
+            return {success = false; error = "You do not have the permission Modules.Require"};
           elseif not Perms.GetPermission(Request.GID, "Modules.Function") then
-            return ({success = false; error = "You do not have the permission Modules.Function"});
+            return {success = false; error = "You do not have the permission Modules.Function"};
           elseif not Perms.GetPermission(Request.GID, ("%s.%s"):format(Module, FuncName)) then
-            return ({success = false; error = "You do not have the permission " .. ("%s.%s"):Format(Module, FuncName)});
+            return {success = false; error = "You do not have the permission " .. ("%s.%s"):Format(Module, FuncName)};
           end
 
           if not ModuleMeta.SkipAuth then
             Auth.CheckNoUID(Request.GID, Request.CoKey);
           end
 
-          return Lib[FuncName](unpack(PassArgs));
+          return {success = true; error = ""; result = Lib[FuncName](unpack(PassArgs))};
         end; -- return
       end; -- __index
     }); -- setmetatable

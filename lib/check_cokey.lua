@@ -15,7 +15,7 @@ function Module.Check(GID, CoKey, UID)
     YieldError("Invalid UID-CoKey-GID combination!");
   end
 
-  return ({success = true, error = "", result = true});
+  return true;
 end
 
 function Module.CheckNoUID(GID, CoKey)
@@ -24,7 +24,7 @@ function Module.CheckNoUID(GID, CoKey)
     YieldError("Invalid GID-CoKey pair!");
   end
 
-  return {success = true, error = "", result = true};
+  return true;
 end
 
 return Module;

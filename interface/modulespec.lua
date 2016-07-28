@@ -125,23 +125,22 @@ local Modules       = {
   Bans              = {
     LibName         = "bans";
     Functions       = {
-      CreateGlobalBan     = {
+      CreateBan     = {
         "GID";
         "Player";
         "Reason";
         "Meta";
-        "Secret";
       };
       IsBanned      = {
         "Player";
         "GID";
       };
-      CreateLocalBan = {
+      CreateGameBan = {
         "GID";
         "Player";
         "Reason";
       };
-      RemoveLocalBan = {
+      RemoveGameBan = {
         "GID";
         "Player";
       };
