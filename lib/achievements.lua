@@ -35,7 +35,7 @@ function Module.Create(GID, ID, Description, Name, Reward, Icon)
         gid               = GID
     });
 
-  return {success = true, error = ""};
+  return nil;
 end
 
 function Module.Award(GID, PlayerID, AchievementID)
@@ -56,7 +56,7 @@ function Module.Award(GID, PlayerID, AchievementID)
       player              = PlayerID
   });
 
-  return ({success = true, error = ""});
+  return nil;
 end
 
 local function EscapeFilter(Name, Filter)
@@ -65,7 +65,7 @@ end
 
 function Module.List(GID, TargetGID, Filter)
     local GID = MySQL.select("id from game_ids where gid=?", GID)[1].id;
-  local Query = "achievements from ? where GID=? ";
+  local Query = "achv_id as AchievementID, name as Name, description as Description, icon as Icon, reward as Reward from achievements where GID=? ";
   if Filter[1] and Filter[2] and Filter[1] ~= "" then -- TODO: Convert to named keys
     if Filter[1] == ">" then
       Query = Query .. ("AND %s>=%d "):format("reward", Filter[2]);
@@ -85,18 +85,14 @@ function Module.List(GID, TargetGID, Filter)
 
   local Ret  = MySQL.select(Query, GID);
 
-  return {
-      success = true,
-      error   = "",
-      result  = Ret
-  };
+  return Ret;
 end
 
 function Module.GetReward(gid)
   local UsedReward  = MetaManager.GetMeta("usedreward", GID);
   local Limit       = 1000 - UsedReward;
 
-  return {success = true; error = ""; result = {1000, Limit, tonumber(UsedReward)}};
+  return result = {Limit = Limit, Quota = Limit, Used = tonumber(UsedReward)};
 end
 
 return Module;
