@@ -56,7 +56,7 @@ local function GetPlayTimes(id)
     Result.HumanReadable   = {
         TotalTime = FixDate(os.date("%Yy %mm %dd %Hh %Mmin", Row.time_ingame), true);
         Joined = FixDate(os.date("%Yy %mm %dd", math.floor(Socket.gettime()) - Row.joined));
-        LastSeen = FixDate(os.date("%Yy %mm %dd %Hh %Mmin", Row.internal_still_online == 1 and 0 or math.floor(Socket.gettime()) - Row.last_left))
+        LastSeen = FixDate(os.date("%Yy %mm %dd %Hh %Mmin", Row.internal_still_online == 1 and 0 or math.floor(Socket.gettime()) - Row.last_left));
         Sessions = Row.num_sessions;
     };
   else
