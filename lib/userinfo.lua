@@ -5,7 +5,6 @@ local HTTP                  = require("socket.http");
 local Socket                = require("socket");
 local JSON                  = require("cjson");
 local Meta                  = require("lib.meta");
-local Friends               = require("lib.friends");
 
 local YieldError           = AppHelpers.yield_error;
 
@@ -77,6 +76,28 @@ function Module.TryCreateUser(ID)
   return nil;
 end
 
+local function GetFriends(ID)
+  local Result        = {};
+  local Friends       = HTTP.request(("https://api.roblox.com/users/%d/friends"):format(ID));
+  local PlayerIDs     = {};
+  Friends             = JSON.decode(Friends);
+  for i = 1, #Friends do
+      table.insert(PlayerIDs, Friends[i].Id);
+  end
+  local IsInGame      = {};
+  local FriendsInGame = MySQL.select("select c.robloxid as player, b.gid as gid from player_ingame a left join game_ids b on b.id=a.gid left join player_info c on c.id=a.player where c.robloxid in (?);", MySQL.raw(table.concat(PlayerIDs, ", ")));
+  for i = 1, #FriendsInGame do
+      IsInGame[FriendsInGame[i].player] = FriendsInGame[i].gid;
+  end
+
+  for Index, Value in next, Friends do
+    table.insert(Result, {ID = value.Id; Username = value.Username; IsInGame = IsInGame[value.Id] and true or false; Game = IsInGame[value.Id]});
+  end
+
+  return Result;
+end
+
+
 function Module.GetUserInfo(ID)
   local Result              = {};
 
@@ -91,7 +112,7 @@ function Module.GetUserInfo(ID)
   local TotalReward         = MySQL.select("sum(b.reward) as reward from awarded_achv a left join achievements b on a.achv_id=b.id where player=?", Module.RobloxToInternal(ID))[1].reward;
   Result.TotalReward = TotalReward;
 
-  Result.Friends =  Friends.GetFriends(ID);
+  Result.Friends =  GetFriends(ID);
 
   return Result;
 end
