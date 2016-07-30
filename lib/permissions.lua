@@ -137,6 +137,7 @@ function Module.ParsePermissions()
     if Line:sub(1, 1) == ":" then
       if CurrentGID ~= "" then
         Permissions[CurrentGID] = CurrentPermissions;
+        CurrentPermissions  = {Allow = {}, Deny = {}}
       end
       CurrentGID    = Line:sub(2);
     elseif Line:sub(1, 1) == "+" then
