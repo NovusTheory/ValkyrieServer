@@ -63,7 +63,7 @@ local JSONLib       = require "cjson";
 local MetaManager   = require "lib.meta";
 local GameUtils     = require "lib.game_utils";
 
-local IsOwner       = MySQL.select("count(1) from game_ids where owner=(select id from users where username=?) and gid=GID", session.User, GameUtils.GIDToInternal(params.GID))[1]["count(id)"] == "1";
+local IsOwner       = MySQL.select("count(1) from game_ids where owner=(select id from users where username=?) and gid=?", session.User, GameUtils.GIDToInternal(params.GID))[1]["count(id)"] == "1";
 
 local OnlineResult  = MySQL.select("b.robloxid as robloxid from player_ingame a left join player_info b on a.player=b.id where gid=? order by a.id desc", GameUtils.GIDToInternal(params.GID));
 %>
