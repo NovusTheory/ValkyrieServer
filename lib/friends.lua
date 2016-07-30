@@ -31,7 +31,7 @@ function Module.GetFriends(ID)
 end
 
 function Module.SetOnlineGame(ID, GID)
-  Userinfo.TryCreateUser(ID);
+  UserInfo.TryCreateUser(ID);
 
   local DoesExist    = MySQL.select("gid from player_ingame where player=?", UserInfo.RobloxToInternal(ID));
   if #DoesExist < 1 then
