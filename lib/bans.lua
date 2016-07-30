@@ -6,59 +6,57 @@ local GameUtil    = require("lib.game_utils");
 local YieldError = require"lapis.application".yield_error;
 
 function Module.CreateBan(GID, Player, Reason, Meta)
-    local Player = PlayerInfo.RobloxToInternal(Player);
   local BanExists = Module.IsBanned(Player, GID);
   if BanExists.IsBanned then
     YieldError("That user is already banned!");
   end
 
   MySQL.insert("bans", {
-    player	      = Player;
-    from_gid      = GID;
+    player	      = PlayerInfo.RobloxToInternal(Player);
+    from_gid      = GameUtil.GIDToInternal(GID);
     reason        = Reason;
     meta          = Meta;
+    global        = 1;
   });
 
   return nil;
 end
 
 function Module.IsBanned(Player, GID)
-  local BanExists = MySQL.select("* from bans where player=?", PlayerInfo.RobloxToInternal(Player));
+  local BanExists = MySQL.select("a.reason as reason, b.gid as from_gid, if(a.global=1,'global','local') as type, a.meta from bans a left join game_ids b on a.from_gid=b.id where player=? and (global=1 or from_gid=?)", PlayerInfo.RobloxToInternal(Player), GameUtil.GIDToInternal(GID));
   if #BanExists > 0 then
-    return {IsBanned = true, Reason = BanExists[1].reason, GID = BanExists[1].from_gid, Type = "global", Meta = BanExists[1].meta};
+    return {IsBanned = true, Reason = BanExists[1].reason, GID = BanExists[1].from_gid, Type = BanExists[1].type, Meta = BanExists[1].meta};
   end
 
-  local LocalBanExists = MySQL.select("* from local_bans where player=? and gid=?", PlayerInfo.RobloxToInternal(Player), GameUtil.GIDToInternal(GID));
-  if #BanExists > 0 then
-      return {IsBanned = true, Reason = LocalBanExists[1].reason, GID = LocalBanExists[1].from_gid, Type = "local"};
-  end
   return {IsBanned = false};
 end
 
 function Module.CreateGameBan(GID, Player, Reason)
-  local Player = PlayerInfo.RobloxToInternal(Player);
   local BanExists = Module.IsBanned(Player, GID);
   if BanExists.IsBanned then
     YieldError("That user is already banned!");
   end
 
-  MySQL.insert("local_bans", {
-      player = Player;
-      gid = GameUtil.GIDToInternal(GID);
-      reason = Reason
+  MySQL.insert("bans", {
+      player = PlayerInfo.RobloxToInternal(Player);
+      from_gid = GameUtil.GIDToInternal(GID);
+      reason = Reason;
+      global = 0;
   });
 
   return nil;
 end
 
 function Module.RemoveGameBan(GID, Player)
-  if not Module.IsBanned(Player, GID).IsBanned then
+    local IsBanned = Module.IsBanned(Player, GID);
+  if not IsBanned.IsBanned or IsBanned.Type ~= "local" then
       YieldError("That user is not banned!");
   end
 
-  MySQL.delete("local_bans", {
-    player = Player;
-    gid = GameUtil.GIDToInternal(GID);
+  MySQL.delete("bans", {
+    player = PlayerInfo.RobloxToInternal(Player);
+    from_gid = GameUtil.GIDToInternal(GID);
+    global = 0;
   });
 
   return nil;
