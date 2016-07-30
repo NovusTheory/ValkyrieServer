@@ -49,7 +49,7 @@ Module                        = setmetatable(Module, {
           elseif not Perms.GetPermission(Request.GID, "Modules.Function") then
             return {success = false; error = "You do not have the permission Modules.Function"};
           elseif not Perms.GetPermission(Request.GID, ("%s.%s"):format(Module, FuncName)) then
-            return {success = false; error = "You do not have the permission " .. ("%s.%s"):Format(Module, FuncName)};
+            return {success = false; error = "You do not have the permission " .. ("%s.%s"):format(Module, FuncName)};
           end
 
           if not ModuleMeta.SkipAuth then
