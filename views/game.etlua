@@ -81,7 +81,7 @@ local OnlineResult  = MySQL.select("b.robloxid as robloxid from player_ingame a 
                         <%
                         local ThumbnailRequest = {};
                         for i = 1, math.min(48, #OnlineResult) do
-                        table.insert(ThumbnailRequest, {userId = OnlineResult[i].player});
+                        table.insert(ThumbnailRequest, {userId = OnlineResult[i].robloxid});
                         end
 
                         local ThumbnailURLs;
