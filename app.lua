@@ -442,7 +442,7 @@ App:match("game", "/game/:GID", respond_to{
         end
 
         ----- DEFAULT PERMISSIONS!
-        io.open("permissions.perms", "a"):write(self.params.GID .. "\n+*.*\n:");
+        io.open("permissions.perms", "a"):write(self.params.GID .. "\n!Basic\n:");
         MySQL.insert("game_ids", {
             gid = self.params.GID;
             cokey = MySQL.raw("sha2(" .. MySQL.escape_literal(self.params.Key) .. ", 256)");
