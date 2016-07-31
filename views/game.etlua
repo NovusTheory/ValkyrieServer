@@ -95,7 +95,7 @@ local OnlineResult  = MySQL.select("b.robloxid as robloxid from player_ingame a 
                         for i = 1, math.min(48, #OnlineResult), 12 do
                         for j = i, math.min(48, i + 11, #OnlineResult) do
                         local User = OnlineResult[j];
-                        local ThumbnailURL = ThumbnailURLs[j].thumbnailUrl;
+                        local ThumbnailURL = type(ThumbnailURLs[j]) ~= "userdata" and ThumbnailURLs[j].thumbnailUrl or "https://cdn.rawgit.com/Templarian/MaterialDesign/master/icons/svg/help.svg";
                         %>
                         <div class="user col s4 m2 l1 center" style="margin:0; padding:0;">
                             <img src="<%= ThumbnailURL %>" class="online-userimage">
