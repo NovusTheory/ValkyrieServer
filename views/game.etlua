@@ -144,7 +144,7 @@ local OnlineResult  = MySQL.select("b.robloxid as robloxid from player_ingame a 
 
                         ThumbnailRequest = {};
                         for i = 1, #Achievements do
-                            if type(Achievements[i].id) ~= "userdata" then
+                            if type(Achievements[i].achv_id) ~= "userdata" then
                                 table.insert(ThumbnailRequest, {assetId = Achievements[i].icon});
                             end
                         end
@@ -155,10 +155,10 @@ local OnlineResult  = MySQL.select("b.robloxid as robloxid from player_ingame a 
                         end
 
                         for i = 1, #Achievements do
-                        if type(Achievements[i].id) ~= "userdata" then
+                        if type(Achievements[i].achv_id) ~= "userdata" then
                             %>
                             <li class="collection-item avatar">
-                                <img src="<%= ThumbnailURLs[i].thumbnailUrl or "https://cdn.rawgit.com/Templarian/MaterialDesign/master/icons/svg/help.svg" %>" alt="<%= Achievements[i].name %>" class="circle">
+                                <img src="<%= type(ThumbnailURLs[1]) ~= "userdata" and ThumbnailURLs[i].thumbnailUrl or "https://cdn.rawgit.com/Templarian/MaterialDesign/master/icons/svg/help.svg" %>" alt="<%= Achievements[i].name %>" class="circle">
                                 <span class="title"><b><%= Achievements[i].name %></b></span>
                                 <p>
                                     "<%- LapisHTML.escape(Achievements[i].description):gsub("\n", "<br>") %>"<br>
