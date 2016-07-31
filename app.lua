@@ -344,7 +344,7 @@ App:match("signup2", "/signup/2", respond_to{
         MySQL.insert("users", {
             username = self.params.Username;
             password = MySQL.raw("sha2(" .. MySQL.escape_literal(self.params.Password) .. ", 256)");
-            robloxid = UserId;
+            robloxid = UserID;
         });
         self.SignedIn = true;
         self.session.User = self.params.Username;
