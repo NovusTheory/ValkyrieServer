@@ -70,6 +70,10 @@ function Module.SetOnlineGame(ID, GID)
   return nil;
 end
 
+function Module.PingOnline(ID)
+    MySQL.update("player_ingame", {last_updated = MySQL.raw("current_timestamp")}, {player = UserInfo.RobloxToInternal(ID)});
+end
+
 function Module.GoOffline(ID, TimeIngame, GID)
   MySQL.delete("player_ingame", {
     player           = ID;

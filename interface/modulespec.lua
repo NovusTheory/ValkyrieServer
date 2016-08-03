@@ -98,6 +98,9 @@ local Modules       = {
         "TimeInGame";
         "GID";
       };
+      PingOnline    = {
+        "ID";
+      };
     };
   };
 
