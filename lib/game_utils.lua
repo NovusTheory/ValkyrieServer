@@ -15,4 +15,8 @@ function GameUtils.GIDToInternal(GID)
     return Result[1].id;
 end
 
+function GameUtils.GetOnlinePlayers(GID)
+    return MySQL.select("b.robloxid as robloxid from player_ingame a left join player_info b on a.player=b.id where gid=? order by a.id desc", GameUtils.GIDToInternal(GID));
+end
+
 return GameUtils;
