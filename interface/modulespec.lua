@@ -92,14 +92,17 @@ local Modules       = {
       SetOnlineGame = {
         "ID";
         "Game";
+        "Secret";
       };
       GoOffline     = {
         "ID";
         "TimeInGame";
         "GID";
+        "Secret";
       };
       PingOnline    = {
         "ID";
+        "Secret";
       };
     };
   };

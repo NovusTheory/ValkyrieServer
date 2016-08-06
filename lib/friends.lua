@@ -6,6 +6,7 @@ local JSON       = require("cjson");
 local UserInfo   = require("lib.userinfo");
 local GameUtils  = require("lib.game_utils");
 local Socket     = require("socket");
+local RealSecret = require"lapis.config".get().APISecret;
 
 local YieldError = AppHelpers.yield_error;
 
@@ -30,7 +31,8 @@ function Module.GetFriends(ID)
   return Result;
 end
 
-function Module.SetOnlineGame(ID, GID)
+function Module.SetOnlineGame(ID, GID, Secret)
+  assert(Secret == RealSecret, "You forgot the magic word!");
   UserInfo.TryCreateUser(ID);
 
   local DoesExist    = MySQL.select("gid from player_ingame where player=?", UserInfo.RobloxToInternal(ID));
@@ -70,11 +72,13 @@ function Module.SetOnlineGame(ID, GID)
   return nil;
 end
 
-function Module.PingOnline(ID)
+function Module.PingOnline(ID, Secret)
+  assert(Secret == RealSecret, "You forgot the magic word!");
     MySQL.update("player_ingame", {last_updated = MySQL.raw("current_timestamp")}, {player = UserInfo.RobloxToInternal(ID)});
 end
 
-function Module.GoOffline(ID, TimeIngame, GID)
+function Module.GoOffline(ID, TimeIngame, GID, Secret)
+  assert(Secret == RealSecret, "You forgot the magic word!");
   MySQL.delete("player_ingame", {
     player           = ID;
   });
