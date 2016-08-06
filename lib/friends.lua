@@ -57,12 +57,13 @@ function Module.SetOnlineGame(ID, GID, Secret)
         time_ingame      = 0;
         joined           = math.floor(Socket.gettime());
         last_online      = 0;
-        num_sessions     = 0;
+        num_sessions     = 1;
         gid              = GameUtils.GIDToInternal(GID);
     });
   else
     MySQL.update("player_sessions", {
         last_online      = 0;
+        num_sessions     = MySQL.raw("num_sessions+1");
     }, {
         player           = ID;
         gid              = GameUtils.GIDToInternal(GID);
@@ -75,17 +76,21 @@ end
 function Module.PingOnline(ID, Secret)
   assert(Secret == RealSecret, "You forgot the magic word!");
     MySQL.update("player_ingame", {last_updated = MySQL.raw("current_timestamp")}, {player = UserInfo.RobloxToInternal(ID)});
+  MySQL.update("player_sessions", {
+    time_ingame      = MySQL.raw("time_ingame+60");
+  }, {
+    player           = UserInfo.RobloxToInternal(ID);
+    GID              = GameUtils.GIDToInternal(GID);
+  });
 end
 
-function Module.GoOffline(ID, TimeIngame, GID, Secret)
+function Module.GoOffline(ID, GID, Secret)
   assert(Secret == RealSecret, "You forgot the magic word!");
   MySQL.delete("player_ingame", {
     player           = ID;
   });
   MySQL.update("player_sessions", {
     last_online      = math.floor(Socket.gettime());
-    time_ingame      = MySQL.raw(("time_ingame+%d"):format(TimeIngame));
-    num_sessions     = MySQL.raw("num_sessions+1");
   }, {
     player           = UserInfo.RobloxToInternal(ID);
     GID              = GameUtils.GIDToInternal(GID);
