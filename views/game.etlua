@@ -63,7 +63,7 @@ local JSONLib       = require "cjson";
 local MetaManager   = require "lib.meta";
 local GameUtils     = require "lib.game_utils";
 
-local IsOwner       = MySQL.select("count(1) as num_records from game_ids where owner=(select id from users where username=?) and gid=?", session.User, GameUtils.GIDToInternal(params.GID))[1].num_records == "1";
+local IsOwner       = MySQL.select("count(1) as num_records from game_ids where owner=(select id from users where username=?) and id=?", session.User, GameUtils.GIDToInternal(params.GID))[1].num_records == "1";
 
 local OnlineResult  = MySQL.select("b.robloxid as robloxid from player_ingame a left join player_info b on a.player=b.id where gid=? order by a.id desc", GameUtils.GIDToInternal(params.GID));
 %>
@@ -96,11 +96,12 @@ local OnlineResult  = MySQL.select("b.robloxid as robloxid from player_ingame a 
                         for j = i, math.min(48, i + 11, #OnlineResult) do
                         local User = OnlineResult[j];
                         local ThumbnailURL = type(ThumbnailURLs[j]) ~= "userdata" and ThumbnailURLs[j].thumbnailUrl or "https://cdn.rawgit.com/Templarian/MaterialDesign/master/icons/svg/help.svg";
+                        local UserName = type(ThumbnailURLs[j]) ~= "userdata" and ThumbnailURLs[j].name or "Guest";
                         %>
                         <div class="user col s4 m2 l1 center" style="margin:0; padding:0;">
                             <img src="<%= ThumbnailURL %>" class="online-userimage">
                             <div class="online-username center <%= j % 12 == 1 and "first" or (j % 12 == 0 or j == #OnlineResult) and "last" or "" %>">
-                                <b><%= User.name %></b>
+                                <b><%= UserName %></b>
                             </div>
                         </div>
                         <%
