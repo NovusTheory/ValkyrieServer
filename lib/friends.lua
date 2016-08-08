@@ -87,13 +87,13 @@ end
 function Module.GoOffline(ID, GID, Secret)
   assert(Secret == RealSecret, "You forgot the magic word!");
   MySQL.delete("player_ingame", {
-    player           = ID;
+    player           = UserInfo.RobloxToInternal(ID);
   });
   MySQL.update("player_sessions", {
     last_online      = math.floor(Socket.gettime());
   }, {
     player           = UserInfo.RobloxToInternal(ID);
-    GID              = GameUtils.GIDToInternal(GID);
+    gid              = GameUtils.GIDToInternal(GID);
   });
 
   return nil;
