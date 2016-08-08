@@ -49,7 +49,7 @@ function Module.SetOnlineGame(ID, GID, Secret)
     });
   end
 
-  local PlayerInfoExists = MySQL.select("gid from player_sessions where player=? and gid=?", ID, GameUtils.GIDToInternal(GID));
+  local PlayerInfoExists = MySQL.select("gid from player_sessions where player=? and gid=?", UserInfo.RobloxToInternal(ID), GameUtils.GIDToInternal(GID));
 
   if #PlayerInfoExists < 1 then
     MySQL.insert("player_sessions", {
@@ -65,7 +65,7 @@ function Module.SetOnlineGame(ID, GID, Secret)
         last_online      = 0;
         num_sessions     = MySQL.raw("num_sessions+1");
     }, {
-        player           = ID;
+        player           = UserInfo.RobloxToInternal(ID);
         gid              = GameUtils.GIDToInternal(GID);
     });
   end
