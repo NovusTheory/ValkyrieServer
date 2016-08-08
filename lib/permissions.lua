@@ -33,6 +33,7 @@ local AllPermissions = {
     "GetFriends";
     "SetOnlineGame";
     "GoOffline";
+    "PingOnline";
   };
   DataStore         = {
     "SaveData";

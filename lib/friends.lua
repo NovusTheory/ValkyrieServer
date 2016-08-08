@@ -6,6 +6,7 @@ local JSON       = require("cjson");
 local UserInfo   = require("lib.userinfo");
 local GameUtils  = require("lib.game_utils");
 local Socket     = require("socket");
+local RealSecret = require"lapis.config".get().APISecret;
 
 local YieldError = AppHelpers.yield_error;
 
@@ -30,7 +31,8 @@ function Module.GetFriends(ID)
   return Result;
 end
 
-function Module.SetOnlineGame(ID, GID)
+function Module.SetOnlineGame(ID, GID, Secret)
+  assert(Secret == RealSecret, "You forgot the magic word!");
   UserInfo.TryCreateUser(ID);
 
   local DoesExist    = MySQL.select("gid from player_ingame where player=?", UserInfo.RobloxToInternal(ID));
@@ -47,7 +49,7 @@ function Module.SetOnlineGame(ID, GID)
     });
   end
 
-  local PlayerInfoExists = MySQL.select("gid from player_sessions where player=? and gid=?", ID, GameUtils.GIDToInternal(GID));
+  local PlayerInfoExists = MySQL.select("gid from player_sessions where player=? and gid=?", UserInfo.RobloxToInternal(ID), GameUtils.GIDToInternal(GID));
 
   if #PlayerInfoExists < 1 then
     MySQL.insert("player_sessions", {
@@ -55,14 +57,15 @@ function Module.SetOnlineGame(ID, GID)
         time_ingame      = 0;
         joined           = math.floor(Socket.gettime());
         last_online      = 0;
-        num_sessions     = 0;
+        num_sessions     = 1;
         gid              = GameUtils.GIDToInternal(GID);
     });
   else
     MySQL.update("player_sessions", {
         last_online      = 0;
+        num_sessions     = MySQL.raw("num_sessions+1");
     }, {
-        player           = ID;
+        player           = UserInfo.RobloxToInternal(ID);
         gid              = GameUtils.GIDToInternal(GID);
     });
   end
@@ -70,17 +73,27 @@ function Module.SetOnlineGame(ID, GID)
   return nil;
 end
 
-function Module.GoOffline(ID, TimeIngame, GID)
-  MySQL.delete("player_ingame", {
-    player           = ID;
-  });
+function Module.PingOnline(ID, GID, Secret)
+  assert(Secret == RealSecret, "You forgot the magic word!");
+    MySQL.update("player_ingame", {last_updated = MySQL.raw("current_timestamp")}, {player = UserInfo.RobloxToInternal(ID)});
   MySQL.update("player_sessions", {
-    last_online      = math.floor(Socket.gettime());
-    time_ingame      = MySQL.raw(("time_ingame+%d"):format(TimeIngame));
-    num_sessions     = MySQL.raw("num_sessions+1");
+    time_ingame      = MySQL.raw("time_ingame+60");
   }, {
     player           = UserInfo.RobloxToInternal(ID);
     GID              = GameUtils.GIDToInternal(GID);
+  });
+end
+
+function Module.GoOffline(ID, GID, Secret)
+  assert(Secret == RealSecret, "You forgot the magic word!");
+  MySQL.delete("player_ingame", {
+    player           = UserInfo.RobloxToInternal(ID);
+  });
+  MySQL.update("player_sessions", {
+    last_online      = math.floor(Socket.gettime());
+  }, {
+    player           = UserInfo.RobloxToInternal(ID);
+    gid              = GameUtils.GIDToInternal(GID);
   });
 
   return nil;

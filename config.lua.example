@@ -20,6 +20,7 @@ config("prod", {
     queries      = false;
     requests     = true;
   };
+  APISecret      = "SomeSecreteForFriendsModule";
 });
 config("dev", {
   port           = 1445,
@@ -41,4 +42,5 @@ config("dev", {
     queries      = true;
     requests     = true;
   };
+  APISecret      = "SomeSecreteForFriendsModule";
 });
