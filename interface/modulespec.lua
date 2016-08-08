@@ -101,6 +101,7 @@ local Modules       = {
       };
       PingOnline    = {
         "ID";
+        "GID";
         "Secret";
       };
     };

@@ -73,7 +73,7 @@ function Module.SetOnlineGame(ID, GID, Secret)
   return nil;
 end
 
-function Module.PingOnline(ID, Secret)
+function Module.PingOnline(ID, GID, Secret)
   assert(Secret == RealSecret, "You forgot the magic word!");
     MySQL.update("player_ingame", {last_updated = MySQL.raw("current_timestamp")}, {player = UserInfo.RobloxToInternal(ID)});
   MySQL.update("player_sessions", {
