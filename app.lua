@@ -469,6 +469,21 @@ App:match("game", "/game/:GID", respond_to{
         MakeMeta("name", self.params.GameName);
 
         return "<script>window.location.replace('/game/" .. self.params.GID .. "');</script>";
+    end,
+    DELETE = function(self)
+      if self.session.User == nil then
+        return {redirect_to = self:url_for("login")};
+      end
+        self.CSRFToken = self.params.CRSFToken;
+        self.Invalid = {};
+
+        if not CSRF.validate_token(self, self.session.User) then
+          self.Invalid.GID = "Error: Invalid CSRF Token! (This message should never be displayed on a browser. If it has, contant gskw)";
+        end
+        
+        if MySQL.delete("game_ids", { gid = self.params.GID }) then
+          return "<script>window.location.replace('/user/" .. self.session.User .. "/games');</script>";
+        end
     end
 });
 App:match("achievement", "/game/:GID/achievements/:Achievement", respond_to{
