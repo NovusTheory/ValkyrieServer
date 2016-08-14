@@ -69,7 +69,10 @@ local OnlineResult  = GameUtils.GetOnlinePlayers(params.GID);
 %>
 
 <div class="container">
-    <h1><%= MetaManager.GetMeta("name", params.GID) %></h1>
+    <div class="title-bar valign-wrapper">
+      <h1><%= MetaManager.GetMeta("name", params.GID) %></h1>
+      <% if IsOwner then %><a class="btn-floating btn-medium waves-effect waves-light red right valign modal-trigger" href="#del_modal" style="margin-left: auto; margin-top: 12px"><i class="material-icons">delete</i></a><% end %>
+    </div>
     <div class="row">
         <div class="col s12">
             <div class="list-online card">
@@ -212,6 +215,34 @@ local OnlineResult  = GameUtils.GetOnlinePlayers(params.GID);
                 </div>
             </div>
         </div>
+    </div>
+    <div class="modal" id="del_modal">
+      <form action"#" id="del_form">
+        <div class="modal-content" style="overflow: hidden">
+          <h4>Delete <%= MetaManager.GetMeta("name", params.GID) %></h4>
+          <div class="row">
+            <p style="font-size: 18px">Are you sure you want to permanently delete <%= MetaManager.GetMeta("name", params.GID) %>?</p>
+            <p style="font-size: 16px"><b>This action is not reversible</b></p>
+            <div class="modal-footer center" style="overflow: hidden">
+              <a class="waves-effect waves-light red white-text btn modal-action" id="del_delete">Delete</a>
+            </div>
+            <script>
+              $(document).ready(function() {
+                $("#del_delete").click(function() {
+                  $("#del_delete").addClass("disabled");
+                  $.ajax({
+                    url: "/game/<%= params.GID %>",
+                    type: 'DELETE',
+                    success: function(data) {
+                      $("body").html(data);
+                    }
+                  });
+                });
+              });
+            </script>
+          </div>
+        </div>
+      </form>
     </div>
     <div class="modal modal-fixed-footer" id="achv_modal">
         <form action="#" id="achv_form">
