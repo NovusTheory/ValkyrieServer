@@ -216,25 +216,34 @@ local OnlineResult  = GameUtils.GetOnlinePlayers(params.GID);
             </div>
         </div>
     </div>
-    <div class="modal" id="del_modal">
-      <form action"#" id="del_form">
+    <div class="modal modal-fixed-footer" id="del_modal">
+      <form action="#" id="del_form">
         <div class="modal-content" style="overflow: hidden">
           <h4>Delete <%= MetaManager.GetMeta("name", params.GID) %></h4>
           <div class="row">
-            <p style="font-size: 18px">Are you sure you want to permanently delete <%= MetaManager.GetMeta("name", params.GID) %>?</p>
-            <p style="font-size: 16px"><b>This action is not reversible</b></p>
-            <div class="modal-footer center" style="overflow: hidden">
-              <a class="waves-effect waves-light red white-text btn modal-action" id="del_delete">Delete</a>
-            </div>
+            <p class="col s12" style="font-size: 18px">Are you sure you want to permanently delete <%= MetaManager.GetMeta("name", params.GID) %>?</p>
+            <p class="col s12" style="font-size: 16px"><b>This action is not reversible</b></p>
             <script>
               $(document).ready(function() {
                 $("#del_delete").click(function() {
                   $("#del_delete").addClass("disabled");
+                  // This is to be added at a later point
+                  //$("#del_spinner").addClass("active");
+                              
                   $.ajax({
                     url: "/game/<%= params.GID %>",
                     type: 'DELETE',
                     success: function(data) {
-                      $("body").html(data);
+                      if (data) {
+                          if (data.success) {
+                              window.location.replace('/user/<%= session.User %>/games');
+                          } else {
+                              var $toastContent = $('<span class="white-text">Failed to delete game, try again later!</span>');
+                              Materialize.toast($toastContent, 4000);
+                              $("#del_modal").closeModal();
+                              $("#del_delete").removeClass("disabled");
+                          }
+                      }
                     }
                   });
                 });
@@ -243,6 +252,20 @@ local OnlineResult  = GameUtils.GetOnlinePlayers(params.GID);
           </div>
         </div>
       </form>
+      <div class="modal-footer center" style="overflow: hidden">
+        <div id="del_spinner" class="preloader-wrapper small">
+          <div class="spinner-layer spinner-green-only">
+            <div class="circle-clipper left">
+              <div class="circle"></div>
+            </div><div class="gap-patch">
+              <div class="circle"></div>
+            </div><div class="circle-clipper right">
+              <div class="circle"></div>
+            </div>
+          </div>
+        </div>
+        <a class="waves-effect waves-light red white-text btn modal-action" id="del_delete">Delete</a>
+      </div>
     </div>
     <div class="modal modal-fixed-footer" id="achv_modal">
         <form action="#" id="achv_form">
