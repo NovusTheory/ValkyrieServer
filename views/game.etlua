@@ -69,7 +69,10 @@ local OnlineResult  = GameUtils.GetOnlinePlayers(params.GID);
 %>
 
 <div class="container">
-    <h1><%= MetaManager.GetMeta("name", params.GID) %></h1>
+    <div class="title-bar valign-wrapper">
+      <h1><%= MetaManager.GetMeta("name", params.GID) %></h1>
+      <% if IsOwner then %><a class="btn-floating btn-medium waves-effect waves-light red right valign modal-trigger" href="#del_modal" style="margin-left: auto; margin-top: 12px"><i class="material-icons">delete</i></a><% end %>
+    </div>
     <div class="row">
         <div class="col s12">
             <div class="list-online card">
@@ -212,6 +215,60 @@ local OnlineResult  = GameUtils.GetOnlinePlayers(params.GID);
                 </div>
             </div>
         </div>
+    </div>
+    <div class="modal modal-fixed-footer" id="del_modal">
+      <form action="#" id="del_form">
+        <input id="__VALIDATION" type="hidden" name="csrf_token" value="<%= CSRFToken %>"/>
+        <div class="modal-content" style="overflow: hidden">
+          <h4>Delete <%= MetaManager.GetMeta("name", params.GID) %></h4>
+          <div class="row">
+            <p class="col s12" style="font-size: 18px">Are you sure you want to permanently delete <%= MetaManager.GetMeta("name", params.GID) %>?</p>
+            <p class="col s12" style="font-size: 16px"><b>This action is not reversible</b></p>
+            <script>
+              $(document).ready(function() {
+                $("#del_delete").click(function() {
+                  $("#del_delete").addClass("disabled");
+                  // This is to be added at a later point
+                  //$("#del_spinner").addClass("active");
+                              
+                  $.ajax({
+                    url: "/game/<%= params.GID %>",
+                    type: 'DELETE',
+                    contentType: 'application/x-www-form-urlencoded',
+                    data: "csrf_token=" + $("#__VALIDATION").val(),
+                    success: function(data) {
+                      if (data) {
+                          if (data.success) {
+                              window.location.replace('/user/<%= session.User %>/games');
+                          } else {
+                              var $toastContent = $('<span class="white-text">Failed to delete game, try again later!</span>');
+                              Materialize.toast($toastContent, 4000);
+                              $("#del_modal").closeModal();
+                              $("#del_delete").removeClass("disabled");
+                          }
+                      }
+                    }
+                  });
+                });
+              });
+            </script>
+          </div>
+        </div>
+      </form>
+      <div class="modal-footer center" style="overflow: hidden">
+        <div id="del_spinner" class="preloader-wrapper small">
+          <div class="spinner-layer spinner-green-only">
+            <div class="circle-clipper left">
+              <div class="circle"></div>
+            </div><div class="gap-patch">
+              <div class="circle"></div>
+            </div><div class="circle-clipper right">
+              <div class="circle"></div>
+            </div>
+          </div>
+        </div>
+        <a class="waves-effect waves-light red white-text btn modal-action" id="del_delete">Delete</a>
+      </div>
     </div>
     <div class="modal modal-fixed-footer" id="achv_modal">
         <form action="#" id="achv_form">
