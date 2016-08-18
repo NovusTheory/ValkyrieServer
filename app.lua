@@ -477,11 +477,13 @@ App:match("game", "/game/:GID", respond_to{
       if self.session.User == nil then
         return {redirect_to = self:url_for("login")};
       end
-        self.CSRFToken = self.params.CRSFToken;
+        -- Should this be done? This would save the CSRFToken for the session (kind of)
+        --self.CSRFToken = self.params.csrf_token;
         self.Invalid = {};
 
         if not CSRF.validate_token(self, self.session.User) then
           self.Invalid.GID = "Error: Invalid CSRF Token! (This message should never be displayed on a browser. If it has, contant gskw)";
+          return {json = {success = false, error = self.Invalid}}
         end
         
         if MySQL.select("count(b.id) from users a left join game_ids b on b.owner = a.id where a.username = ? and b.gid = ?", self.session.User, self.params.GID)[1]["count(b.id)"] == "1" then
