@@ -93,19 +93,19 @@ local OnlineResult  = GameUtils.GetOnlinePlayers(params.GID);
 
 
                         for i = 1, math.min(48, #OnlineResult), 12 do
-                        for j = i, math.min(48, i + 11, #OnlineResult) do
-                        local User = OnlineResult[j];
-                        local ThumbnailURL = type(ThumbnailURLs[j]) ~= "userdata" and ThumbnailURLs[j].thumbnailUrl or "https://cdn.rawgit.com/Templarian/MaterialDesign/master/icons/svg/help.svg";
-                        local UserName = type(ThumbnailURLs[j]) ~= "userdata" and ThumbnailURLs[j].name or "Guest";
-                        %>
-                        <div class="user col s4 m2 l1 center" style="margin:0; padding:0;">
-                            <img src="<%= ThumbnailURL %>" class="online-userimage">
-                            <div class="online-username center <%= j % 12 == 1 and "first" or (j % 12 == 0 or j == #OnlineResult) and "last" or "" %>">
-                                <b><%= UserName %></b>
-                            </div>
-                        </div>
-                        <%
-                        end
+                            for j = i, math.min(48, i + 11, #OnlineResult) do
+                                local User = OnlineResult[j];
+                                local ThumbnailURL = ("https://www.roblox.com/bust-thumbnail/image?userId=%d&width=420&height=420&format=png"):format(User.robloxid);
+                                local UserName = User.robloxid < 0 and ThumbnailURLs[j].name or "Guest";
+                                %>
+                                <div class="user col s4 m2 l1 center" style="margin:0; padding:0;">
+                                    <img src="<%= ThumbnailURL %>" class="online-userimage">
+                                    <div class="online-username center <%= j % 12 == 1 and "first" or (j % 12 == 0 or j == #OnlineResult) and "last" or "" %>">
+                                        <b><%= UserName %></b>
+                                    </div>
+                                </div>
+                                <%
+                            end
                         end
                         if #ThumbnailURLs < 1 then
                             %>
@@ -149,17 +149,12 @@ local OnlineResult  = GameUtils.GetOnlinePlayers(params.GID);
                                 table.insert(ThumbnailRequest, {assetId = Achievements[i].icon});
                             end
                         end
-                        if #ThumbnailRequest > 0 then
-                            ThumbnailURLs = JSONLib.decode(({LapisHTTP.simple("http://www.roblox.com/item-thumbnails?params=" .. JSONLib.encode(ThumbnailRequest))})[1]);
-                        else
-                            ThumbnailURLs = {};
-                        end
 
                         for i = 1, #Achievements do
                         if type(Achievements[i].achv_id) ~= "userdata" then
                             %>
                             <li class="collection-item avatar">
-                                <img src="<%= type(ThumbnailURLs[1]) ~= "userdata" and ThumbnailURLs[i].thumbnailUrl or "https://cdn.rawgit.com/Templarian/MaterialDesign/master/icons/svg/help.svg" %>" alt="<%= Achievements[i].name %>" class="circle">
+                                <img src="<%= "https://www.roblox.com/asset-thumbnail/image?assetId=" .. Achievements[i].icon .. "&width=60&height=60&format=png" %>" alt="<%= Achievements[i].name %>" class="circle" >
                                 <span class="title"><b><%= Achievements[i].name %></b></span>
                                 <p>
                                     "<%- LapisHTML.escape(Achievements[i].description):gsub("\n", "<br>") %>"<br>
