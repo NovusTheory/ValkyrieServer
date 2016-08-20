@@ -399,6 +399,9 @@ end);
 
 App:match("game", "/game/:GID", respond_to{
     GET = function(self)
+        if self.session.User then
+          self.CSRFToken = CSRF.generate_token(self, self.session.User)
+        end
         return {render = true};
     end,
     PUT = function(self)
@@ -469,6 +472,29 @@ App:match("game", "/game/:GID", respond_to{
         MakeMeta("name", self.params.GameName);
 
         return "<script>window.location.replace('/game/" .. self.params.GID .. "');</script>";
+    end,
+    DELETE = function(self)
+      if self.session.User == nil then
+        return {redirect_to = self:url_for("login")};
+      end
+        -- Should this be done? This would save the CSRFToken for the session (kind of)
+        --self.CSRFToken = self.params.csrf_token;
+        self.Invalid = {};
+
+        if not CSRF.validate_token(self, self.session.User) then
+          self.Invalid.GID = "Error: Invalid CSRF Token! (This message should never be displayed on a browser. If it has, contant gskw)";
+          return {json = {success = false, error = self.Invalid}}
+        end
+        
+        if MySQL.select("count(b.id) from users a left join game_ids b on b.owner = a.id where a.username = ? and b.gid = ?", self.session.User, self.params.GID)[1]["count(b.id)"] == "1" then
+            if MySQL.delete("game_ids", { gid = self.params.GID }) then
+              return {json = {success = true}};
+            end
+        else
+          self.Invalid.GID = "Error: User does not own GID"
+        end
+        
+        return {json = {success = false, error = self.Invalid}}
     end
 });
 App:match("achievement", "/game/:GID/achievements/:Achievement", respond_to{
