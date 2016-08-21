@@ -12,6 +12,7 @@ local json_params    = AppHelpers.json_params;
 
 local BanLib     = require "lib.bans";
 local GameUtil   = require "lib.game_utils";
+local UserInfo   = require "lib.userinfo";
 
 local MySQL       = require "lapis.db";
 local LapisHTTP   = require "lapis.nginx.http";
@@ -531,6 +532,13 @@ App:match("game_ban_create", "/game/:GID/bans/create", respond_to{
         if not CSRF.validate_token(self, self.session.User) then
           self.Invalid.GID = "Error: Invalid CSRF Token! (This message should never be displayed on a browser. If it has, contant gskw)";
           return {json = {success = false, error = self.Invalid}}
+        end
+        
+        local infoCount = MySQL.select("count(*) as count from player_info where robloxid=?", self.params.Player);
+        
+        
+        if infoCount[1].count == "0" then
+          UserInfo.TryCreateUser(self.params.Player);
         end
         
         local Success, Message = pcall(function() BanLib.CreateGameBan(self.params.GID, self.params.Player, self.params.Reason) end)
