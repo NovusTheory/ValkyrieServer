@@ -96,19 +96,19 @@ local OnlineResult  = GameUtils.GetOnlinePlayers(params.GID);
 
 
                         for i = 1, math.min(48, #OnlineResult), 12 do
-                            for j = i, math.min(48, i + 11, #OnlineResult) do
-                                local User = OnlineResult[j];
-                                local ThumbnailURL = ("https://www.roblox.com/bust-thumbnail/image?userId=%d&width=420&height=420&format=png"):format(User.robloxid);
-                                local UserName = User.robloxid < 0 and ThumbnailURLs[j].name or "Guest";
-                                %>
-                                <div class="user col s4 m2 l1 center" style="margin:0; padding:0;">
-                                    <img src="<%= ThumbnailURL %>" class="online-userimage">
-                                    <div class="online-username center <%= j % 12 == 1 and "first" or (j % 12 == 0 or j == #OnlineResult) and "last" or "" %>">
-                                        <b><%= UserName %></b>
-                                    </div>
-                                </div>
-                                <%
-                            end
+                        for j = i, math.min(48, i + 11, #OnlineResult) do
+                        local User = OnlineResult[j];
+                        local ThumbnailURL = type(ThumbnailURLs[j]) ~= "userdata" and ThumbnailURLs[j].thumbnailUrl or "https://cdn.rawgit.com/Templarian/MaterialDesign/master/icons/svg/help.svg";
+                        local UserName = type(ThumbnailURLs[j]) ~= "userdata" and ThumbnailURLs[j].name or "Guest";
+                        %>
+                        <div class="user col s4 m2 l1 center" style="margin:0; padding:0;">
+                            <img src="<%= ThumbnailURL %>" class="online-userimage">
+                            <div class="online-username center <%= j % 12 == 1 and "first" or (j % 12 == 0 or j == #OnlineResult) and "last" or "" %>">
+                                <b><%= UserName %></b>
+                            </div>
+                        </div>
+                        <%
+                        end
                         end
                         if #ThumbnailURLs < 1 then
                             %>
@@ -135,6 +135,198 @@ local OnlineResult  = GameUtils.GetOnlinePlayers(params.GID);
                 </div>
             </div>
         </div>
+        <% if IsOwner then %>
+        <div class="col s12">
+            <div class="list-online card">
+                <div class="card-content">
+                    <div class="card-title valign-wrapper">
+                        <i class="material-icons" style="font-size: 100%">people</i> Bans
+                        <% if IsOwner then %><a class="btn-floating btn-medium waves-effect waves-light blue right valign modal-trigger" href="#createban_modal" style="margin-left: auto"><i class="material-icons">add</i></a><% end %>
+                    </div>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th data-field="action"></th>
+                          <th data-field="player">Player</th>
+                          <th data-field="name">Reason</th>
+                        </tr>
+                      </thead>
+
+                      <tbody id="ban_list">
+                        
+                      </tbody>
+                    </table>
+                    <ul class="pagination" style="display: none">
+                      <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+                      <li class="active"><a href="#!">1</a></li>
+                      <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+                    </ul>
+                    
+                    <script>
+                      var banlist_element;
+                    
+                      function deletebanModal(element, id) {
+                        banlist_element = element;
+                        currentban_id = id;
+                        $('#ban_bantext').html("Are you sure you you want to remove the ban for <a target='_blank' href='https://www.roblox.com/users/" + id + "/profile'>" + id + "</a>?");
+                      }
+                    
+                      $(document).ready(function() {
+                        $.ajax({
+                          url: "/game/<%= params.GID %>/bans",
+                          type: 'GET',
+                          success: function(data) {
+                            if (data) {
+                                if (data.success) {
+                                    $.each(data.result.bans, function(index, value) {
+                                      console.log(index, value);
+                                      $("#ban_list").append(
+                                          "<tr>"
+                                          + "<td><% if IsOwner then %><a href='#deleteban_modal' class='btn-flat btn-medium waves-effect waves-light valign modal-trigger deleteban-modal-trigger' onclick='deletebanModal(this, " + value.player + ")' style='margin-left: auto'><i class='material-icons'>delete</i></a><% end %></td>"
+                                          + "<td><a target='_blank' href='https://www.roblox.com/users/" + value.player + "/profile'>" + value.player + "</a></td>"
+                                          + "<td>" + value.reason + "</td>"
+                                        + "</tr>"
+                                      );
+                                    });
+                                    
+                                    // Reinitialize the triggers
+                                    $('.deleteban-modal-trigger').leanModal();
+                                } else {
+                                    // Display message error retrieving list
+                                }
+                            }
+                          }
+                        });
+                      });
+                    </script>
+                </div>
+            </div>
+        </div>
+        <% end %>
+        <% if IsOwner then %>
+        <div class="modal modal-fixed-footer" id="createban_modal">
+          <form action="#" id="del_form">
+            <input id="__VALIDATION" type="hidden" name="csrf_token" value="<%= CSRFToken %>"/>
+            <div class="modal-content" style="overflow: hidden">
+              <h4>Create Ban</h4>
+              <div class="row">
+                <div class="input-field col s12">
+                  <input id="ban_userid" name="ban_userid" type="text" class="validate" maxlength="11" required>
+                  <label for="ban_userid">UserId</label>
+                </div>
+                <div class="input-field col s12">
+                  <input id="ban_reason" name="ban_reason" type="text" class="validate" maxlength="255" required>
+                  <label for="ban_reason">Reason</label>
+                </div>
+                <script>
+                  $(document).ready(function() {
+                    $("#ban_create").click(function() {
+                      $("#ban_create").addClass("disabled");
+                      // This is to be added at a later point
+                      //$("#ban_create").addClass("active");
+                                  
+                      $.ajax({
+                        url: "/game/<%= params.GID %>/bans/create",
+                        type: 'POST',
+                        contentType: 'application/x-www-form-urlencoded',
+                        data: "csrf_token=" + $("#__VALIDATION").val() + "&Player=" + $("#ban_userid").val() + "&Reason=" + $("#ban_reason").val(),
+                        success: function(data) {
+                          if (data) {
+                              if (data.success) {
+                                  $("#createban_modal").closeModal();
+                                  var $toastContent = $('<span class="white-text">Ban created, reload page to update list!</span>');
+                                  Materialize.toast($toastContent, 4000);
+                              } else {
+                                  var $toastContent = $('<span class="white-text">Failed to create ban, try again later!</span>');
+                                  Materialize.toast($toastContent, 4000);
+                                  $("#createban_modal").closeModal();
+                                  $("#ban_create").removeClass("disabled");
+                              }
+                          }
+                        }
+                      });
+                    });
+                  });
+                </script>
+              </div>
+            </div>
+          </form>
+          <div class="modal-footer center" style="overflow: hidden">
+            <div id="ban_spinner" class="preloader-wrapper small">
+              <div class="spinner-layer spinner-green-only">
+                <div class="circle-clipper left">
+                  <div class="circle"></div>
+                </div><div class="gap-patch">
+                  <div class="circle"></div>
+                </div><div class="circle-clipper right">
+                  <div class="circle"></div>
+                </div>
+              </div>
+            </div>
+            <a class="waves-effect waves-light blue-text btn-flat modal-action" id="ban_create">Create</a>
+            <a class="waves-effect waves-light red-text btn-flat modal-action modal-close" id="ban_cancel">Cancel</a>
+          </div>
+        </div>
+        <% end %>
+        <% if IsOwner then %>
+        <div class="modal modal-fixed-footer" id="deleteban_modal">
+          <form action="#" id="del_form">
+            <input id="__VALIDATION" type="hidden" name="csrf_token" value="<%= CSRFToken %>"/>
+            <div class="modal-content" style="overflow: hidden">
+              <h4>Remove Ban</h4>
+              <div class="row">
+                <p id="ban_bantext" class="col s12" style="font-size: 18px">Are you sure you you want to remove the ban for [player_id]?</p>
+                <script>
+                  $(document).ready(function() {
+                    $("#deleteban_yes").click(function() {
+                      $("#deleteban_yes").addClass("disabled");
+                      $("#deleteban_no").addClass("disabled");
+                      // This is to be added at a later point
+                      //$("#ban_create").addClass("active");
+                                  
+                      $.ajax({
+                        url: "/game/<%= params.GID %>/bans/delete",
+                        type: 'POST',
+                        contentType: 'application/x-www-form-urlencoded',
+                        data: "csrf_token=" + $("#__VALIDATION").val() + "&Player=" + currentban_id,
+                        success: function(data) {
+                          if (data) {
+                              if (data.success) {
+                                  $("#deleteban_modal").closeModal();
+                                  banlist_element.parentNode.parentNode.remove();
+                              } else {
+                                  var $toastContent = $('<span class="white-text">Failed to remove ban, try again later!</span>');
+                                  Materialize.toast($toastContent, 4000);
+                                  $("#deleteban_modal").closeModal();
+                                  $("#deleteban_yes").removeClass("disabled");
+                                  $("#deleteban_no").removeClass("disabled");
+                              }
+                          }
+                        }
+                      });
+                    });
+                  });
+                </script>
+              </div>
+            </div>
+          </form>
+          <div class="modal-footer center" style="overflow: hidden">
+            <div id="ban_spinner" class="preloader-wrapper small">
+              <div class="spinner-layer spinner-green-only">
+                <div class="circle-clipper left">
+                  <div class="circle"></div>
+                </div><div class="gap-patch">
+                  <div class="circle"></div>
+                </div><div class="circle-clipper right">
+                  <div class="circle"></div>
+                </div>
+              </div>
+            </div>
+            <a class="waves-effect waves-light blue-text btn-flat modal-action" id="deleteban_yes">Yes</a>
+            <a class="waves-effect waves-light red-text btn-flat modal-action modal-close" id="deleteban_no">No</a>
+          </div>
+        </div>
+        <% end %>
         <div class="col s12">
             <div class="achievement-view card">
                 <div class="card-content">
@@ -152,12 +344,17 @@ local OnlineResult  = GameUtils.GetOnlinePlayers(params.GID);
                                 table.insert(ThumbnailRequest, {assetId = Achievements[i].icon});
                             end
                         end
+                        if #ThumbnailRequest > 0 then
+                            ThumbnailURLs = JSONLib.decode(({LapisHTTP.simple("http://www.roblox.com/item-thumbnails?params=" .. JSONLib.encode(ThumbnailRequest))})[1]);
+                        else
+                            ThumbnailURLs = {};
+                        end
 
                         for i = 1, #Achievements do
                         if type(Achievements[i].achv_id) ~= "userdata" then
                             %>
                             <li class="collection-item avatar">
-                                <img src="<%= "https://www.roblox.com/asset-thumbnail/image?assetId=" .. Achievements[i].icon .. "&width=60&height=60&format=png" %>" alt="<%= Achievements[i].name %>" class="circle" >
+                                <img src="<%= type(ThumbnailURLs[1]) ~= "userdata" and ThumbnailURLs[i].thumbnailUrl or "https://cdn.rawgit.com/Templarian/MaterialDesign/master/icons/svg/help.svg" %>" alt="<%= Achievements[i].name %>" class="circle">
                                 <span class="title"><b><%= Achievements[i].name %></b></span>
                                 <p>
                                     "<%- LapisHTML.escape(Achievements[i].description):gsub("\n", "<br>") %>"<br>
@@ -211,6 +408,7 @@ local OnlineResult  = GameUtils.GetOnlinePlayers(params.GID);
             </div>
         </div>
     </div>
+    <% if IsOwner then %>
     <div class="modal modal-fixed-footer" id="del_modal">
       <form action="#" id="del_form">
         <input id="__VALIDATION" type="hidden" name="csrf_token" value="<%= CSRFToken %>"/>
@@ -263,8 +461,10 @@ local OnlineResult  = GameUtils.GetOnlinePlayers(params.GID);
           </div>
         </div>
         <a class="waves-effect waves-light red white-text btn modal-action" id="del_delete">Delete</a>
+        <a class="waves-effect waves-light red-text btn-flat modal-action modal-close" id="del_cancel">Cancel</a>
       </div>
     </div>
+    <% end %>
     <div class="modal modal-fixed-footer" id="achv_modal">
         <form action="#" id="achv_form">
             <div class="modal-content" style="overflow: hidden">
