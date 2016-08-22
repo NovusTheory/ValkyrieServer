@@ -141,9 +141,9 @@ local OnlineResult  = GameUtils.GetOnlinePlayers(params.GID);
                 <div class="card-content">
                     <div class="card-title valign-wrapper">
                         <i class="material-icons" style="font-size: 100%">people</i> Bans
-                        <% if IsOwner then %><a class="btn-floating btn-medium waves-effect waves-light blue right valign modal-trigger" href="#createban_modal" style="margin-left: auto"><i class="material-icons">add</i></a><% end %>
+                        <a class="btn-floating btn-medium waves-effect waves-light blue right valign modal-trigger" href="#createban_modal" style="margin-left: auto"><i class="material-icons">add</i></a>
                     </div>
-                    <table>
+                    <table id="ban_list_table" style="display: none;">
                       <thead>
                         <tr>
                           <th data-field="action"></th>
@@ -156,6 +156,16 @@ local OnlineResult  = GameUtils.GetOnlinePlayers(params.GID);
                         
                       </tbody>
                     </table>
+                    <div id="ban_list_fail" class="row" style="display: none;">
+                      <div class="col s12 center">
+                        Failed to retrieve list
+                      </div>
+                    </div>
+                    <div id="ban_list_empty" class="row" style="display: none;">
+                      <div class="col s12 center">
+                        No bans exist
+                      </div>
+                    </div>
                     <ul class="pagination" style="display: none">
                       <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
                       <li class="active"><a href="#!">1</a></li>
@@ -178,21 +188,27 @@ local OnlineResult  = GameUtils.GetOnlinePlayers(params.GID);
                           success: function(data) {
                             if (data) {
                                 if (data.success) {
-                                    $.each(data.result.bans, function(index, value) {
-                                      console.log(index, value);
-                                      $("#ban_list").append(
-                                          "<tr>"
-                                          + "<td><% if IsOwner then %><a href='#deleteban_modal' class='btn-flat btn-medium waves-effect waves-light valign modal-trigger deleteban-modal-trigger' onclick='deletebanModal(this, " + value.player + ")' style='margin-left: auto'><i class='material-icons'>delete</i></a><% end %></td>"
-                                          + "<td><a target='_blank' href='https://www.roblox.com/users/" + value.player + "/profile'>" + value.player + "</a></td>"
-                                          + "<td>" + value.reason + "</td>"
-                                        + "</tr>"
-                                      );
-                                    });
-                                    
-                                    // Reinitialize the triggers
-                                    $('.deleteban-modal-trigger').leanModal();
+                                    if (parseInt(data.result.count) > 0) {
+                                      $('#ban_list_table').css("display", "table")
+                                      $.each(data.result.bans, function(index, value) {
+                                        $("#ban_list").append(
+                                            "<tr>"
+                                            + "<td><a href='#deleteban_modal' class='btn-flat btn-medium waves-effect waves-light valign modal-trigger deleteban-modal-trigger' onclick='deletebanModal(this, " + value.Player + ")' style='margin-left: auto'><i class='material-icons'>delete</i></a></td>"
+                                            + "<td><a target='_blank' href='https://www.roblox.com/users/" + value.Player + "/profile'>" + value.Player + "</a></td>"
+                                            + "<td>" + value.Reason + "</td>"
+                                          + "</tr>"
+                                        );
+                                      });
+                                      
+                                      // Reinitialize the triggers
+                                      $('.deleteban-modal-trigger').leanModal();
+                                    } else {
+                                      $('#ban_list_empty').css("display", "block")
+                                      $('#ban_list_table').css("display", "none")
+                                    }
                                 } else {
-                                    // Display message error retrieving list
+                                    $('#ban_list_fail').css("display", "block")
+                                    $('#ban_list_table').css("display", "none")
                                 }
                             }
                           }
@@ -226,8 +242,8 @@ local OnlineResult  = GameUtils.GetOnlinePlayers(params.GID);
                       //$("#ban_create").addClass("active");
                                   
                       $.ajax({
-                        url: "/game/<%= params.GID %>/bans/create",
-                        type: 'POST',
+                        url: "/game/<%= params.GID %>/bans",
+                        type: 'PATCH',
                         contentType: 'application/x-www-form-urlencoded',
                         data: "csrf_token=" + $("#__VALIDATION").val() + "&Player=" + $("#ban_userid").val() + "&Reason=" + $("#ban_reason").val(),
                         success: function(data) {
@@ -285,13 +301,16 @@ local OnlineResult  = GameUtils.GetOnlinePlayers(params.GID);
                       //$("#ban_create").addClass("active");
                                   
                       $.ajax({
-                        url: "/game/<%= params.GID %>/bans/delete",
-                        type: 'POST',
+                        url: "/game/<%= params.GID %>/bans",
+                        type: 'DELETE',
                         contentType: 'application/x-www-form-urlencoded',
                         data: "csrf_token=" + $("#__VALIDATION").val() + "&Player=" + currentban_id,
                         success: function(data) {
                           if (data) {
                               if (data.success) {
+                                  var $toastContent = $('<span class="white-text">Successfully removed ban!</span>');
+                                  Materialize.toast($toastContent, 4000);
+                                  $("#deleteban_modal").closeModal();
                                   $("#deleteban_modal").closeModal();
                                   banlist_element.parentNode.parentNode.remove();
                               } else {
