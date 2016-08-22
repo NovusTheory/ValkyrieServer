@@ -502,31 +502,37 @@ App:match("game", "/game/:GID", respond_to{
     end
 });
 
-App:match("game_ban_delete", "/game/:GID/bans/delete", respond_to{
-    POST = function(self)
-      if self.session.User then
-        self.Invalid = {}
-        
-        if not CSRF.validate_token(self, self.session.User) then
-          self.Invalid.GID = "Error: Invalid CSRF Token! (This message should never be displayed on a browser. If it has, contant gskw)";
-          return {json = {success = false, error = self.Invalid}}
-        end
-        
-        local Success, Message = pcall(function() BanLib.RemoveGameBan(self.params.GID, self.params.Player) end)
-        if not Success then
-          self.Invalid.Message = Message--"Failed to remove ban" --Message (real variable)
+-- GET query ?Page=1 returns 100 bans and calling a higher number returns the next 100 bans
+App:match("game_bans", "/game/:GID/bans(/:ID)", respond_to{
+  GET = function(self)
+    if self.session.User then
+      local function getBans(page)
+        if MySQL.select("count(b.id) from users a left join game_ids b on b.owner = a.id where a.username = ? and b.gid = ?", self.session.User, self.params.GID)[1]["count(b.id)"] == "1" then
+          local limit = page * 100
+          local offset = limit - 100
+          local gid = GameUtil.GIDToInternal(self.params.GID);
+          local count = MySQL.select("count(*) as count from bans where from_gid=? and global=0", gid)[1]["count"]
+          local result = MySQL.select("b.robloxid as Player, a.reason as Reason from bans a left join player_info b on b.id=a.player where a.from_gid=? limit ? offset ?", gid, limit, offset);
+          
+          return {json = {success = true, result = {count = count, bans = result}}}
         else
-          return {json = {success = true}}
+          return {json = {success = false, error = "User does not own GID"}, status = 403}
         end
-        
-        return {json = {success = false, error = self.Invalid}}
       end
+      
+      if self.params.Page then
+        return getBans(self.params.Page);
+      else
+        return getBans(1);
+      end
+    else
+      return {json = {success = false, error = "403 Unauthorized Access"}, status = 403}
     end
-});
-
-App:match("game_ban_create", "/game/:GID/bans/create", respond_to{
-    POST = function(self)
-      if self.session.User then
+  end,
+  
+  PATCH = function(self)
+    if self.session.User then
+      if MySQL.select("count(b.id) from users a left join game_ids b on b.owner = a.id where a.username = ? and b.gid = ?", self.session.User, self.params.GID)[1]["count(b.id)"] == "1" then
         self.Invalid = {}
         
         if not CSRF.validate_token(self, self.session.User) then
@@ -549,59 +555,40 @@ App:match("game_ban_create", "/game/:GID/bans/create", respond_to{
         end
         
         return {json = {success = false, error = self.Invalid}}
+      else
+        return {json = {success = false, error = "User does not own GID"}, status = 403}
       end
-    end
-});
-
--- (/:Page/) returns 100 bans and calling a higher number returns the next 100 bans
-App:match("game_bans", "/game/:GID/bans(/:Page)", function(self)
-  if self.session.User == nil then
-    return {redirect_to = self:url_for("login")};
-  end
-  
-  local errorMessage;
-  
-  local function getBans(page)
-    if MySQL.select("count(b.id) from users a left join game_ids b on b.owner = a.id where a.username = ? and b.gid = ?", self.session.User, self.params.GID)[1]["count(b.id)"] == "1" then
-      local limit = page * 100
-      local offset = limit - 100
-      local count = MySQL.select("count(*) as count from bans where from_gid=? and global=0", self.params.GID)[1]["count"]
-      local gid = GameUtil.GIDToInternal(self.params.GID);
-      local result = MySQL.select("* from bans where global=0 and from_gid=? limit ? offset ?", gid, limit, offset);
-      
-      -- I really want to remove this because it *could* slow it down
-      -- However the purpose of this is to remove unwanted data like (from_gid and id)
-      for i = 1,#result do
-        local res = result[i]
-        
-        -- It is ASSUMED that the player_info EXISTS for a player
-        -- If it doesn't exist something is wrong because a ban CANNOT be added without player_info on the player
-        local player_info = MySQL.select("* from player_info where id=?", res.player);
-        
-        if player_info then
-          result[i] = {
-            player = player_info[1].robloxid,
-            reason = res.reason
-          }
-        else
-          table.remove(result, i) -- This means a player_info doesn't exist (SHOULD NEVER HAPPEN)
-        end
-      end
-      
-      return {json = {success = true, result = {count = count, bans = result}}}
     else
-      errorMessage = "User does not own GID";
+      return {json = {success = false, error = "403 Unauthorized Access"}, status = 403}
+    end
+  end,
+  
+  DELETE = function(self)
+    if self.session.User then
+      if MySQL.select("count(b.id) from users a left join game_ids b on b.owner = a.id where a.username = ? and b.gid = ?", self.session.User, self.params.GID)[1]["count(b.id)"] == "1" then
+        self.Invalid = {}
+        
+        if not CSRF.validate_token(self, self.session.User) then
+          self.Invalid.GID = "Error: Invalid CSRF Token! (This message should never be displayed on a browser. If it has, contant gskw)";
+          return {json = {success = false, error = self.Invalid}}
+        end
+        
+        local Success, Message = pcall(function() BanLib.RemoveGameBan(self.params.GID, self.params.Player) end)
+        if not Success then
+          self.Invalid.Message = Message--"Failed to remove ban" --Message (real variable)
+        else
+          return {json = {success = true}}
+        end
+        
+        return {json = {success = false, error = self.Invalid}}
+      else
+        return {json = {success = false, error = "User does not own GID"}, status = 403}
+      end
+    else
+      return {json = {success = false, error = "403 Unauthorized Access"}, status = 403}
     end
   end
-  
-  if self.params.Page then
-    return getBans(self.params.Page);
-  else
-    return getBans(1);
-  end
-  
-  return {json = {success = false, error = errorMessage}}
-end);
+});
 
 App:match("achievement", "/game/:GID/achievements/:Achievement", respond_to{
     -- TODO
