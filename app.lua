@@ -520,17 +520,32 @@ App:match("game_bans", "/game/:GID/bans(/:ID)", respond_to{
         end
       end
       
-      if self.params.Page then
-        return getBans(self.params.Page);
+      local function getBan(id)
+        if MySQL.select("count(b.id) from users a left join game_ids b on b.owner = a.id where a.username = ? and b.gid = ?", self.session.User, self.params.GID)[1]["count(b.id)"] == "1" then
+          local gid = GameUtil.GIDToInternal(self.params.GID);
+          local result = MySQL.select("b.robloxid as Player, a.reason as Reason from bans a left join player_info b on b.id=a.player where a.from_gid=? and a.player=b.id", gid);
+          
+          return {json = {success = true, result = result}}
+        else
+          return {json = {success = false, error = "User does not own GID"}, status = 403}
+        end
+      end
+      
+      if self.params.ID then
+        return getBan(self.params.ID)
       else
-        return getBans(1);
+        if self.params.Page then
+          return getBans(self.params.Page);
+        else
+          return getBans(1);
+        end
       end
     else
       return {json = {success = false, error = "403 Unauthorized Access"}, status = 403}
     end
   end,
   
-  PATCH = function(self)
+  PUT = function(self)
     if self.session.User then
       if MySQL.select("count(b.id) from users a left join game_ids b on b.owner = a.id where a.username = ? and b.gid = ?", self.session.User, self.params.GID)[1]["count(b.id)"] == "1" then
         self.Invalid = {}
@@ -540,13 +555,8 @@ App:match("game_bans", "/game/:GID/bans(/:ID)", respond_to{
           return {json = {success = false, error = self.Invalid}}
         end
         
-        local infoCount = MySQL.select("count(*) as count from player_info where robloxid=?", self.params.Player);
-        
-        
-        if infoCount[1].count == "0" then
-          UserInfo.TryCreateUser(self.params.Player);
-        end
-        
+        UserInfo.TryCreateUser(self.params.Player);
+               
         local Success, Message = pcall(function() BanLib.CreateGameBan(self.params.GID, self.params.Player, self.params.Reason) end)
         if not Success then
           self.Invalid.Message = "Failed to create ban" --Message (real variable)
@@ -573,7 +583,7 @@ App:match("game_bans", "/game/:GID/bans(/:ID)", respond_to{
           return {json = {success = false, error = self.Invalid}}
         end
         
-        local Success, Message = pcall(function() BanLib.RemoveGameBan(self.params.GID, self.params.Player) end)
+        local Success, Message = pcall(function() BanLib.RemoveGameBan(self.params.GID, self.params.ID) end)
         if not Success then
           self.Invalid.Message = Message--"Failed to remove ban" --Message (real variable)
         else
