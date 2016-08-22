@@ -243,7 +243,7 @@ local OnlineResult  = GameUtils.GetOnlinePlayers(params.GID);
                                   
                       $.ajax({
                         url: "/game/<%= params.GID %>/bans",
-                        type: 'PATCH',
+                        type: 'PUT',
                         contentType: 'application/x-www-form-urlencoded',
                         data: "csrf_token=" + $("#__VALIDATION").val() + "&Player=" + $("#ban_userid").val() + "&Reason=" + $("#ban_reason").val(),
                         success: function(data) {
@@ -301,10 +301,10 @@ local OnlineResult  = GameUtils.GetOnlinePlayers(params.GID);
                       //$("#ban_create").addClass("active");
                                   
                       $.ajax({
-                        url: "/game/<%= params.GID %>/bans",
+                        url: "/game/<%= params.GID %>/bans/" + currentban_id,
                         type: 'DELETE',
                         contentType: 'application/x-www-form-urlencoded',
-                        data: "csrf_token=" + $("#__VALIDATION").val() + "&Player=" + currentban_id,
+                        data: "csrf_token=" + $("#__VALIDATION").val(),
                         success: function(data) {
                           if (data) {
                               if (data.success) {
